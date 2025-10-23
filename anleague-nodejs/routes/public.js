@@ -126,4 +126,19 @@ router.get('/rankings', async (req, res) => {
   }
 });
 
+// Get match details (public)
+router.get('/match/:id', async (req, res) => {
+  try {
+    const match = await Match.findById(req.params.id)
+      .populate('team1_id', 'country')
+      .populate('team2_id', 'country');
+    if (!match) {
+      return res.render('match', { title: 'Match Details', match: null, message: 'Match not found' });
+    }
+    res.render('match', { title: 'Match Details', match });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

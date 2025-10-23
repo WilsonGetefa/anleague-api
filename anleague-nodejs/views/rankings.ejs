@@ -3,34 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Goal Scorers Rankings</title>
-  <link rel="stylesheet" href="/styles.css">
+  <title><%= title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+  <header>
+    <h1><%= title %></h1>
+  </header>
   <nav>
-    <a href="/">Home</a>
-    <a href="/bracket">Bracket</a>
-    <a href="/rankings">Rankings</a>
-    <a href="/auth/login">Login</a>
+    <a href="/">Home</a> |
+    <a href="/bracket">Bracket</a> |
+    <a href="/rankings">Rankings</a> |
+    <a href="/login">Login</a> |
+    <a href="/signup">Sign Up</a>
   </nav>
-  <h1>Goal Scorers Rankings</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Player</th>
-        <th>Team</th>
-        <th>Goals</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% rankings.forEach(rank => { %>
-        <tr>
-          <td><%= rank._id %></td>
-          <td><%= rank.team_country %></td>
-          <td><%= rank.goals %></td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
+  <main class="container">
+    <% if (rankings.length === 0) { %>
+      <p class="message">No goals scored yet</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Team</th>
+            <th>Goals</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% rankings.forEach(player => { %>
+            <tr>
+              <td><%= player.name %></td>
+              <td><%= player.team %></td>
+              <td><%= player.goals %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </main>
 </body>
 </html>
