@@ -52,6 +52,11 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'African Nations League' });
 });
 
+// Adding Login
+app.get('/login', (req, res) => {
+  res.render('login', { title: 'Login', error: null });
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

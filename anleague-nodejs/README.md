@@ -14,6 +14,19 @@ Setup Locally
   4. Start tournament: `POST /admin/start`
   5. Simulate/play matches: `POST /admin/simulate`, `/admin/play`
   6. View bracket/rankings: `GET /bracket`, `/rankings`
+# African Nations League
+- **Deployed URL**: https://anleague-api.onrender.com
+- **Admin Login**: Username: admin, Password: admin123
+- **Database**: MongoDB Atlas, `anleague` database. Collaborators (`ammarcanani@gmail.com`, `elsje.scott@uct.ac.za`) invited (pending as of 10/23/25).
+- **Endpoints**:
+  - `GET /`: Home page
+  - `GET /bracket`: Tournament bracket
+  - `GET /rankings`: Goal scorers leaderboard
+  - `GET /login`: Login form
+  - `POST /auth/signup`, `POST /auth/login`: User authentication
+  - `POST /teams/autofill`, `POST /teams/create`: Team creation
+  - `POST /admin/start`, `/admin/simulate`, `/admin/play`: Tournament management
+- **Demo**: 7 teams pre-loaded (Nigeria, Angola, Cape Verde, South Africa, Mali, Côte d'Ivoire, DR Congo). Add 8th (Egypt) via `/auth/signup` and `/teams/create` or `/teams/autofill`.
 
 Clone the repo: git clone <your-repo-url>
 Install dependencies: npm install
