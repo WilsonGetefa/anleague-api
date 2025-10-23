@@ -6,15 +6,23 @@ Setup Locally
 - **Deployed URL**: https://anleague-api.onrender.com
 - **Admin Login**: Username: admin, Password: admin123
 - **Database**: MongoDB Atlas, `anleague` database. Collaborators (`ammarcanani@gmail.com`, `elsje.scott@uct.ac.za`) invited (pending as of 10/23/25).
-- **Endpoints**:
+- **Frontend Pages**:
   - `GET /`: Home page
   - `GET /bracket`: Tournament bracket
   - `GET /rankings`: Goal scorers leaderboard
   - `GET /login`: Login form
+  - `GET /signup`: Signup form
+  - `GET /match/:id`: Match details
+- **Backend Endpoints**:
   - `POST /auth/signup`, `POST /auth/login`: User authentication
   - `POST /teams/autofill`, `POST /teams/create`: Team creation
   - `POST /admin/start`, `/admin/simulate`, `/admin/play`: Tournament management
-- **Demo**: 7 teams pre-loaded (Nigeria, Angola, Cape Verde, South Africa, Mali, Côte d'Ivoire, DR Congo). Add 8th (Egypt) via `/auth/signup` and `/teams/create` or `/teams/autofill`.
+- **Demo**:
+  1. View home, bracket, rankings at `/`, `/bracket`, `/rankings`.
+  2. Sign up 8th team (Egypt) at `/signup`, then `/teams/autofill`.
+  3. Start tournament with `/admin/start`.
+  4. Simulate matches with `/admin/simulate`.
+  5. View match details at `/match/:id`.
 
 Clone the repo: git clone <your-repo-url>
 Install dependencies: npm install
