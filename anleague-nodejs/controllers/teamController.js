@@ -1,22 +1,69 @@
 const Team = require('../models/team');
 const User = require('../models/user');
 
-// Mock real-life squad data (replace with API/scrape for bonus)
+// Mock real-life squad data for MongoDB countries (replace with API/scrape for bonus)
 const mockSquads = {
   Nigeria: [
     { name: 'Victor Osimhen', position: 'AT' },
     { name: 'Ahmed Musa', position: 'AT' },
-    // ... 21 more (simplified)
+    { name: 'Wilfred Ndidi', position: 'MD' },
+    { name: 'Kelechi Iheanacho', position: 'AT' },
+    { name: 'Alex Iwobi', position: 'MD' },
+    { name: 'Samuel Chukwueze', position: 'AT' },
+    { name: 'Frank Onyeka', position: 'MD' },
+    { name: 'William Troost-Ekong', position: 'DF' },
+    { name: 'Leon Balogun', position: 'DF' },
+    { name: 'Kenneth Omeruo', position: 'DF' },
+    { name: 'Ola Aina', position: 'DF' },
+    { name: 'Calvin Bassey', position: 'DF' },
+    { name: 'Zaidu Sanusi', position: 'DF' },
+    { name: 'Bruno Onyemaechi', position: 'DF' },
+    { name: 'Joe Aribo', position: 'MD' },
+    { name: 'Raphael Onyedika', position: 'MD' },
+    { name: 'Alhassan Yusuf', position: 'MD' },
+    { name: 'Victor Boniface', position: 'AT' },
+    { name: 'Paul Onuachu', position: 'AT' },
+    { name: 'Terem Moffi', position: 'AT' },
+    { name: 'Francis Uzoho', position: 'GK' },
+    { name: 'Stanley Nwabali', position: 'GK' },
+    { name: 'Maduka Okoye', position: 'GK' }
   ],
-  Egypt: [
-    { name: 'Mohamed Salah', position: 'AT' },
-    // ... 22 more
+  Angola: [
+    { name: 'Gelson Dala', position: 'AT' },
+    { name: 'Mabululu', position: 'AT' },
+    { name: 'Fredy', position: 'MD' },
+    // Add 20 more players
   ],
-  Ghana: [], // Add more
-  Algeria: [],
-  Morocco: [],
-  Senegal: [],
-  Cameroon: []
+  'Cape Verde': [
+    { name: 'Ryan Mendes', position: 'AT' },
+    { name: 'Bebé', position: 'AT' },
+    { name: 'Jovane Cabral', position: 'MD' },
+    // Add 20 more players
+  ],
+  'South Africa': [
+    { name: 'Percy Tau', position: 'AT' },
+    { name: 'Ronwen Williams', position: 'GK' },
+    { name: 'Themba Zwane', position: 'MD' },
+    // Add 20 more players
+  ],
+  Mali: [
+    { name: 'Amadou Haidara', position: 'MD' },
+    { name: 'Yves Bissouma', position: 'MD' },
+    { name: 'Moussa Djenepo', position: 'AT' },
+    // Add 20 more players
+  ],
+  "Côte d'Ivoire": [
+    { name: 'Franck Kessié', position: 'MD' },
+    { name: 'Sébastien Haller', position: 'AT' },
+    { name: 'Wilfried Zaha', position: 'AT' },
+    // Add 20 more players
+  ],
+  'DR Congo': [
+    { name: 'Chancel Mbemba', position: 'DF' },
+    { name: 'Cédric Bakambu', position: 'AT' },
+    { name: 'Yoane Wissa', position: 'AT' },
+    // Add 20 more players
+  ]
 };
 
 function generateRatings(naturalPosition) {
@@ -55,6 +102,7 @@ exports.autofillTeam = async (req, res) => {
     name: `Player${i + 1}`,
     position: ['GK', 'DF', 'MD', 'AT'][Math.floor(Math.random() * 4)]
   }));
+  if (squadData.length !== 23) return res.status(400).json({ error: `Squad for ${country} must have 23 players` });
   const squad = squadData.map((p, i) => ({
     name: p.name,
     natural_position: p.position,
@@ -64,7 +112,7 @@ exports.autofillTeam = async (req, res) => {
   const rating = squad.reduce((sum, p) => sum + p.ratings[p.natural_position], 0) / 23;
   const team = new Team({
     country,
-    manager: 'Auto Manager',
+    manager: `Auto Manager ${country}`,
     representative_id: req.user.id,
     squad,
     captain_name: squad[0].name,
