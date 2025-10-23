@@ -8,7 +8,7 @@ Setup Locally
 - **Database**: MongoDB Atlas, `anleague` database. Collaborators (`ammarcanani@gmail.com`, `elsje.scott@uct.ac.za`) invited (pending as of 10/23/25).
 - **Frontend Pages**:
   - `GET /`: Home page
-  - `GET /bracket`: Tournament bracket
+  - `GET /bracket`: Tournament bracket (quarterfinals, semifinals, final with clickable match links)
   - `GET /rankings`: Goal scorers leaderboard
   - `GET /login`: Login form
   - `GET /signup`: Signup form
