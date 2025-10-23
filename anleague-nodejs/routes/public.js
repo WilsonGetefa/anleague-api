@@ -79,11 +79,48 @@ router.get('/bracket', async (req, res) => {
         ]
       });
 
+    if (req.query.format === 'json') {
+      return res.json({ tournament });
+    }
+
     if (!tournament) {
       return res.render('bracket', { title: 'Tournament Bracket', tournament: null, message: 'No active tournament' });
     }
 
     res.render('bracket', { title: 'Tournament Bracket', tournament });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get rankings (public)
+router.get('/rankings', async (req, res) => {
+  try {
+    const matches = await Match.find({ type: { $in: ['simulated', 'played'] } })
+      .populate('team1_id', 'country')
+      .populate('team2_id', 'country');
+
+    // Aggregate goal scorers
+    const goalScorers = {};
+    matches.forEach(match => {
+      match.goal_scorers.forEach(goal => {
+        const player = goal.player_name;
+        const team = goal.team === 'team1' ? match.team1_id.country : match.team2_id.country;
+        if (!goalScorers[player]) {
+          goalScorers[player] = { name: player, team, goals: 0 };
+        }
+        goalScorers[player].goals += 1;
+      });
+    });
+
+    // Convert to array and sort by goals
+    const rankings = Object.values(goalScorers).sort((a, b) => b.goals - a.goals);
+
+    if (req.query.format === 'json') {
+      return res.json({ rankings });
+    }
+
+    res.render('rankings', { title: 'Goal Scorers Rankings', rankings });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
