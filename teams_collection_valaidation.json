@@ -1,0 +1,1850 @@
+[
+    {
+        "country": "Nigeria",
+        "manager": "Éric Chelle",
+        "representative_id": {
+            "$oid": "c36ca4d40bbb17d127fee11a"
+        },
+        "squad": [
+            {
+            "name": "Adebayo Adeleye",
+            "natural_position": "GK",
+            "ratings": {
+                "GK": 83,
+                "DF": 27,
+                "MD": 23,
+                "AT": 17
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Amas Obasogie",
+            "natural_position": "GK",
+            "ratings": {
+                "GK": 88,
+                "DF": 22,
+                "MD": 23,
+                "AT": 13
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Stanley Nwabali",
+            "natural_position": "GK",
+            "ratings": {
+                "GK": 83,
+                "DF": 12,
+                "MD": 24,
+                "AT": 29
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Benjamin Fredrick",
+            "natural_position": "DF",
+            "ratings": {
+                "GK": 20,
+                "DF": 90,
+                "MD": 60,
+                "AT": 30
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Zaidu Sanusi",
+            "natural_position": "DF",
+            "ratings": {
+                "GK": 39,
+                "DF": 76,
+                "MD": 57,
+                "AT": 39
+            },
+            "is_captain": false
+            },
+            {
+            "name": "William Troost-Ekong",
+            "natural_position": "DF",
+            "ratings": {
+                "GK": 40,
+                "DF": 80,
+                "MD": 58,
+                "AT": 37
+            },
+            "is_captain": true
+            },
+            {
+            "name": "Semi Ajayi",
+            "natural_position": "DF",
+            "ratings": {
+                "GK": 36,
+                "DF": 87,
+                "MD": 58,
+                "AT": 50
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Bruno Onyemaechi",
+            "natural_position": "DF",
+            "ratings": {
+                "GK": 25,
+                "DF": 95,
+                "MD": 70,
+                "AT": 47
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Calvin Bassey",
+            "natural_position": "DF",
+            "ratings": {
+                "GK": 21,
+                "DF": 88,
+                "MD": 54,
+                "AT": 30
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Olakunle Olusegun",
+            "natural_position": "DF",
+            "ratings": {
+                "GK": 35,
+                "DF": 80,
+                "MD": 59,
+                "AT": 50
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Wilfred Ndidi",
+            "natural_position": "MD",
+            "ratings": {
+                "GK": 21,
+                "DF": 64,
+                "MD": 82,
+                "AT": 68
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Frank Onyeka",
+            "natural_position": "MD",
+            "ratings": {
+                "GK": 16,
+                "DF": 58,
+                "MD": 81,
+                "AT": 57
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Alhassan Yusuf",
+            "natural_position": "MD",
+            "ratings": {
+                "GK": 24,
+                "DF": 67,
+                "MD": 90,
+                "AT": 65
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Alex Iwobi",
+            "natural_position": "MD",
+            "ratings": {
+                "GK": 27,
+                "DF": 65,
+                "MD": 95,
+                "AT": 61
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Christantus Uche",
+            "natural_position": "MD",
+            "ratings": {
+                "GK": 24,
+                "DF": 63,
+                "MD": 83,
+                "AT": 62
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Victor Osimhen",
+            "natural_position": "AT",
+            "ratings": {
+                "GK": 17,
+                "DF": 36,
+                "MD": 64,
+                "AT": 76
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Tolu Arokodare",
+            "natural_position": "AT",
+            "ratings": {
+                "GK": 25,
+                "DF": 41,
+                "MD": 69,
+                "AT": 86
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Samuel Chukwueze",
+            "natural_position": "AT",
+            "ratings": {
+                "GK": 28,
+                "DF": 37,
+                "MD": 56,
+                "AT": 86
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Moses Simon",
+            "natural_position": "AT",
+            "ratings": {
+                "GK": 16,
+                "DF": 44,
+                "MD": 67,
+                "AT": 77
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Terem Moffi",
+            "natural_position": "AT",
+            "ratings": {
+                "GK": 10,
+                "DF": 35,
+                "MD": 69,
+                "AT": 85
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Akor Adams",
+            "natural_position": "AT",
+            "ratings": {
+                "GK": 12,
+                "DF": 39,
+                "MD": 64,
+                "AT": 76
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Maduka Okoye",
+            "natural_position": "GK",
+            "ratings": {
+                "GK": 87,
+                "DF": 24,
+                "MD": 24,
+                "AT": 16
+            },
+            "is_captain": false
+            },
+            {
+            "name": "Kayode Bankole",
+            "natural_position": "GK",
+            "ratings": {
+                "GK": 85,
+                "DF": 17,
+                "MD": 24,
+                "AT": 13
+            },
+            "is_captain": false
+            }
+        ],
+        "captain_name": "William Troost-Ekong",
+        "rating": 84.3
+    },
+    {
+    "country": "Angola",
+    "manager": "Pedro Gonçalves",
+    "representative_id": {
+        "$oid": "3c6acc66fc31e3e81d798d94"
+    },
+    "squad": [
+        {
+        "name": "Neblú",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 91,
+            "DF": 15,
+            "MD": 12,
+            "AT": 14
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Hugo Marques",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 75,
+            "DF": 14,
+            "MD": 24,
+            "AT": 25
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Antonio Dominique",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 85,
+            "DF": 13,
+            "MD": 29,
+            "AT": 23
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Agostinho Calunga",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 79,
+            "DF": 29,
+            "MD": 27,
+            "AT": 22
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Jonathan Buatu",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 36,
+            "DF": 94,
+            "MD": 70,
+            "AT": 50
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Kialonda Gaspar",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 24,
+            "DF": 82,
+            "MD": 69,
+            "AT": 35
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Tó Carneiro",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 29,
+            "DF": 79,
+            "MD": 67,
+            "AT": 32
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Eddie Afonso",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 29,
+            "DF": 89,
+            "MD": 60,
+            "AT": 31
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Antonio Hossi",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 38,
+            "DF": 84,
+            "MD": 64,
+            "AT": 46
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Clinton Mata",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 28,
+            "DF": 89,
+            "MD": 53,
+            "AT": 33
+        },
+        "is_captain": false
+        },
+        {
+        "name": "David Carmo",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 35,
+            "DF": 77,
+            "MD": 52,
+            "AT": 30
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Rúben Adérito",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 39,
+            "DF": 79,
+            "MD": 63,
+            "AT": 38
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Fredy",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 29,
+            "DF": 69,
+            "MD": 93,
+            "AT": 64
+        },
+        "is_captain": true
+        },
+        {
+        "name": "Show",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 27,
+            "DF": 57,
+            "MD": 81,
+            "AT": 54
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Manuel Keliano",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 29,
+            "DF": 54,
+            "MD": 76,
+            "AT": 55
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Maestro",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 21,
+            "DF": 67,
+            "MD": 94,
+            "AT": 62
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mário Balbúrdia",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 15,
+            "DF": 60,
+            "MD": 88,
+            "AT": 60
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Megue",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 26,
+            "DF": 60,
+            "MD": 95,
+            "AT": 51
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Beni Mukendi",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 19,
+            "DF": 57,
+            "MD": 89,
+            "AT": 63
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Gelson Dala",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 21,
+            "DF": 49,
+            "MD": 63,
+            "AT": 92
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Ary Papel",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 30,
+            "DF": 35,
+            "MD": 61,
+            "AT": 76
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mabululu",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 23,
+            "DF": 35,
+            "MD": 53,
+            "AT": 89
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Felício Milson",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 18,
+            "DF": 43,
+            "MD": 50,
+            "AT": 85
+        },
+        "is_captain": false
+        }
+    ],
+    "captain_name": "Fredy",
+    "rating": 85.3
+    },
+    {
+    "country": "Cape Verde",
+    "manager": "Bubista",
+    "representative_id": {
+        "$oid": "d47e36fb67a6e8f5f8015677"
+    },
+    "squad": [
+        {
+        "name": "Vozinha",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 75,
+            "DF": 22,
+            "MD": 12,
+            "AT": 30
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Márcio Rosa",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 92,
+            "DF": 28,
+            "MD": 14,
+            "AT": 26
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Bruno Varela",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 90,
+            "DF": 10,
+            "MD": 25,
+            "AT": 13
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Stopira",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 40,
+            "DF": 75,
+            "MD": 57,
+            "AT": 37
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Pico",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 22,
+            "DF": 81,
+            "MD": 65,
+            "AT": 46
+        },
+        "is_captain": false
+        },
+        {
+        "name": "João Paulo",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 20,
+            "DF": 93,
+            "MD": 59,
+            "AT": 32
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Diney",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 21,
+            "DF": 84,
+            "MD": 61,
+            "AT": 38
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Steven Moreira",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 29,
+            "DF": 93,
+            "MD": 70,
+            "AT": 35
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Wagner Pina",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 37,
+            "DF": 76,
+            "MD": 61,
+            "AT": 32
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Sidny Lopes Cabral",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 24,
+            "DF": 76,
+            "MD": 57,
+            "AT": 39
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Kelvin Pires",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 39,
+            "DF": 90,
+            "MD": 50,
+            "AT": 30
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Jamiro Monteiro",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 11,
+            "DF": 62,
+            "MD": 94,
+            "AT": 55
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Kevin Pina",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 14,
+            "DF": 69,
+            "MD": 86,
+            "AT": 68
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Deroy Duarte",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 20,
+            "DF": 51,
+            "MD": 85,
+            "AT": 60
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Telmo Arcanjo",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 29,
+            "DF": 66,
+            "MD": 84,
+            "AT": 58
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Yannick Semedo",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 11,
+            "DF": 58,
+            "MD": 85,
+            "AT": 63
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Laros Duarte",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 13,
+            "DF": 60,
+            "MD": 92,
+            "AT": 50
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Aílson Tavares",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 14,
+            "DF": 53,
+            "MD": 94,
+            "AT": 68
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Ryan Mendes",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 16,
+            "DF": 46,
+            "MD": 55,
+            "AT": 81
+        },
+        "is_captain": true
+        },
+        {
+        "name": "Garry Rodrigues",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 26,
+            "DF": 43,
+            "MD": 64,
+            "AT": 80
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Willy Semedo",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 18,
+            "DF": 37,
+            "MD": 52,
+            "AT": 91
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Dailon Livramento",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 14,
+            "DF": 49,
+            "MD": 70,
+            "AT": 80
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Hélio Varela",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 13,
+            "DF": 38,
+            "MD": 53,
+            "AT": 85
+        },
+        "is_captain": false
+        }
+    ],
+    "captain_name": "Ryan Mendes",
+    "rating": 85.3
+    },
+    {
+    "country": "South Africa",
+    "manager": "Hugo Broos",
+    "representative_id": {
+        "$oid": "c158ae57202f220d68428a94"
+    },
+    "squad": [
+        {
+        "name": "Ronwen Williams",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 87,
+            "DF": 30,
+            "MD": 12,
+            "AT": 13
+        },
+        "is_captain": true
+        },
+        {
+        "name": "Ricardo Goss",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 83,
+            "DF": 29,
+            "MD": 19,
+            "AT": 11
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Sipho Chaine",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 91,
+            "DF": 10,
+            "MD": 19,
+            "AT": 29
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Aubrey Modiba",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 21,
+            "DF": 88,
+            "MD": 53,
+            "AT": 36
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Khuliso Mudau",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 20,
+            "DF": 95,
+            "MD": 70,
+            "AT": 32
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Nkosinathi Sibisi",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 35,
+            "DF": 75,
+            "MD": 64,
+            "AT": 39
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Malibongwe Khoza",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 21,
+            "DF": 94,
+            "MD": 65,
+            "AT": 48
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Samukele Kabini",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 21,
+            "DF": 86,
+            "MD": 55,
+            "AT": 44
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Khulumani Ndamane",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 39,
+            "DF": 93,
+            "MD": 51,
+            "AT": 36
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Thabo Moloisane",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 31,
+            "DF": 87,
+            "MD": 62,
+            "AT": 46
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Thabang Matuludi",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 27,
+            "DF": 89,
+            "MD": 53,
+            "AT": 43
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Teboho Mokoena",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 26,
+            "DF": 57,
+            "MD": 80,
+            "AT": 54
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Thapelo Morena",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 30,
+            "DF": 51,
+            "MD": 86,
+            "AT": 63
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Sphephelo Sithole",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 26,
+            "DF": 64,
+            "MD": 76,
+            "AT": 63
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Oswin Appollis",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 26,
+            "DF": 50,
+            "MD": 91,
+            "AT": 67
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Bathusi Aubaas",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 18,
+            "DF": 69,
+            "MD": 86,
+            "AT": 62
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Thalente Mbatha",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 26,
+            "DF": 68,
+            "MD": 91,
+            "AT": 61
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Sipho Mbule",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 17,
+            "DF": 54,
+            "MD": 83,
+            "AT": 55
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mduduzi Shabalala",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 10,
+            "DF": 50,
+            "MD": 86,
+            "AT": 64
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Evidence Makgopa",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 10,
+            "DF": 37,
+            "MD": 69,
+            "AT": 82
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Ashley Cupido",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 17,
+            "DF": 48,
+            "MD": 68,
+            "AT": 93
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mohau Nkota",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 20,
+            "DF": 42,
+            "MD": 64,
+            "AT": 92
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Tshepang Moremi",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 11,
+            "DF": 45,
+            "MD": 62,
+            "AT": 89
+        },
+        "is_captain": false
+        }
+    ],
+    "captain_name": "Ronwen Williams",
+    "rating": 87.1
+    },
+    {
+    "country": "Mali",
+    "manager": "Tom Saintfiet",
+    "representative_id": {
+        "$oid": "91e6e2d9b7dd77bb3796e9c7"
+    },
+    "squad": [
+        {
+        "name": "Djigui Diarra",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 77,
+            "DF": 23,
+            "MD": 19,
+            "AT": 11
+        },
+        "is_captain": true
+        },
+        {
+        "name": "Ismael Diawara",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 84,
+            "DF": 17,
+            "MD": 30,
+            "AT": 30
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mamadou Samassa",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 82,
+            "DF": 15,
+            "MD": 19,
+            "AT": 13
+        },
+        "is_captain": false
+        },
+        {
+        "name": "N'Golo Traoré",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 80,
+            "DF": 15,
+            "MD": 22,
+            "AT": 26
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Cheick Oumar Konaté",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 40,
+            "DF": 75,
+            "MD": 69,
+            "AT": 44
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Amadou Dante",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 29,
+            "DF": 83,
+            "MD": 63,
+            "AT": 31
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Ousmane Camara",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 20,
+            "DF": 84,
+            "MD": 67,
+            "AT": 44
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Fodé Doucouré",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 25,
+            "DF": 87,
+            "MD": 56,
+            "AT": 36
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mamadou Fofana",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 35,
+            "DF": 84,
+            "MD": 54,
+            "AT": 41
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Woyo Coulibaly",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 37,
+            "DF": 81,
+            "MD": 57,
+            "AT": 30
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Abdoulaye Diaby",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 39,
+            "DF": 93,
+            "MD": 54,
+            "AT": 33
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Amadou Haidara",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 14,
+            "DF": 69,
+            "MD": 84,
+            "AT": 67
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Yves Bissouma",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 13,
+            "DF": 67,
+            "MD": 83,
+            "AT": 63
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Lassana Coulibaly",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 30,
+            "DF": 57,
+            "MD": 79,
+            "AT": 70
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mohamed Camara",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 14,
+            "DF": 56,
+            "MD": 91,
+            "AT": 55
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Kamory Doumbia",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 11,
+            "DF": 63,
+            "MD": 83,
+            "AT": 58
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mamadou Sangaré",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 13,
+            "DF": 51,
+            "MD": 80,
+            "AT": 58
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Aliou Dieng",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 28,
+            "DF": 55,
+            "MD": 77,
+            "AT": 50
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Gaoussou Diakité",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 21,
+            "DF": 35,
+            "MD": 52,
+            "AT": 85
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Dorgeles Nene",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 19,
+            "DF": 31,
+            "MD": 61,
+            "AT": 95
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Moussa Sylla",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 11,
+            "DF": 43,
+            "MD": 59,
+            "AT": 90
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mamadou Doumbia",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 16,
+            "DF": 35,
+            "MD": 65,
+            "AT": 85
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Gaoussou Diarra",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 19,
+            "DF": 40,
+            "MD": 56,
+            "AT": 94
+        },
+        "is_captain": false
+        }
+    ],
+    "captain_name": "Djigui Diarra",
+    "rating": 84.2
+    },
+    {
+    "country": "Côte d'Ivoire",
+    "manager": "Emerse Faé",
+    "representative_id": {
+        "$oid": "4cdb5b66e7490c3988cda018"
+    },
+    "squad": [
+        {
+        "name": "Yahia Fofana",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 83,
+            "DF": 28,
+            "MD": 14,
+            "AT": 14
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Alban Lafont",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 77,
+            "DF": 23,
+            "MD": 19,
+            "AT": 14
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Mohamed Koné",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 85,
+            "DF": 21,
+            "MD": 20,
+            "AT": 12
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Ghislain Konan",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 33,
+            "DF": 85,
+            "MD": 57,
+            "AT": 43
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Willy Boly",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 35,
+            "DF": 95,
+            "MD": 64,
+            "AT": 49
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Evan Ndicka",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 26,
+            "DF": 82,
+            "MD": 66,
+            "AT": 48
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Emmanuel Agbadou",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 33,
+            "DF": 95,
+            "MD": 57,
+            "AT": 35
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Guéla Doué",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 23,
+            "DF": 90,
+            "MD": 67,
+            "AT": 50
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Christopher Opéri",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 28,
+            "DF": 88,
+            "MD": 56,
+            "AT": 50
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Armel Zohouri",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 23,
+            "DF": 94,
+            "MD": 52,
+            "AT": 45
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Junior Diaz",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 39,
+            "DF": 80,
+            "MD": 60,
+            "AT": 50
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Franck Kessié",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 24,
+            "DF": 68,
+            "MD": 85,
+            "AT": 57
+        },
+        "is_captain": true
+        },
+        {
+        "name": "Ibrahim Sangaré",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 30,
+            "DF": 51,
+            "MD": 90,
+            "AT": 67
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Pacôme Zouzoua",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 28,
+            "DF": 50,
+            "MD": 91,
+            "AT": 67
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Kader Keïta",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 18,
+            "DF": 63,
+            "MD": 79,
+            "AT": 61
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Nicolas Pépé",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 20,
+            "DF": 50,
+            "MD": 66,
+            "AT": 92
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Sébastien Haller",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 16,
+            "DF": 36,
+            "MD": 60,
+            "AT": 76
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Simon Adingra",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 13,
+            "DF": 44,
+            "MD": 56,
+            "AT": 88
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Oumar Diakité",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 13,
+            "DF": 39,
+            "MD": 68,
+            "AT": 84
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Evann Guessand",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 29,
+            "DF": 33,
+            "MD": 63,
+            "AT": 77
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Amad Diallo",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 24,
+            "DF": 38,
+            "MD": 67,
+            "AT": 75
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Yan Diomande",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 14,
+            "DF": 41,
+            "MD": 64,
+            "AT": 86
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Bazoumana Touré",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 16,
+            "DF": 30,
+            "MD": 54,
+            "AT": 95
+        },
+        "is_captain": false
+        }
+    ],
+    "captain_name": "Franck Kessié",
+    "rating": 85.7
+    },
+    {
+    "country": "DR Congo",
+    "manager": "Sébastien Desabre",
+    "representative_id": {
+        "$oid": "152601dd5e33fa152e3c384a"
+    },
+    "squad": [
+        {
+        "name": "Lionel Mpasi",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 79,
+            "DF": 16,
+            "MD": 10,
+            "AT": 13
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Dimitry Bertaud",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 84,
+            "DF": 24,
+            "MD": 24,
+            "AT": 20
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Timothy Fayulu",
+        "natural_position": "GK",
+        "ratings": {
+            "GK": 76,
+            "DF": 13,
+            "MD": 30,
+            "AT": 15
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Chancel Mbemba",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 27,
+            "DF": 82,
+            "MD": 50,
+            "AT": 45
+        },
+        "is_captain": true
+        },
+        {
+        "name": "Arthur Masuaku",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 40,
+            "DF": 76,
+            "MD": 63,
+            "AT": 46
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Gédéon Kalulu",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 30,
+            "DF": 80,
+            "MD": 54,
+            "AT": 43
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Joris Kayembe",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 32,
+            "DF": 76,
+            "MD": 67,
+            "AT": 30
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Dylan Batubinsika",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 24,
+            "DF": 77,
+            "MD": 62,
+            "AT": 36
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Rocky Bushiri",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 31,
+            "DF": 87,
+            "MD": 58,
+            "AT": 43
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Axel Tuanzebe",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 37,
+            "DF": 94,
+            "MD": 52,
+            "AT": 47
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Aaron Wan-Bissaka",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 26,
+            "DF": 76,
+            "MD": 66,
+            "AT": 44
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Steve Kapuadi",
+        "natural_position": "DF",
+        "ratings": {
+            "GK": 38,
+            "DF": 86,
+            "MD": 65,
+            "AT": 45
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Meschak Elia",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 16,
+            "DF": 66,
+            "MD": 82,
+            "AT": 51
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Samuel Moutoussamy",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 10,
+            "DF": 59,
+            "MD": 75,
+            "AT": 56
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Edo Kayembe",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 16,
+            "DF": 50,
+            "MD": 78,
+            "AT": 52
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Théo Bongonda",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 22,
+            "DF": 65,
+            "MD": 89,
+            "AT": 59
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Charles Pickel",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 21,
+            "DF": 66,
+            "MD": 92,
+            "AT": 65
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Noah Sadiki",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 28,
+            "DF": 61,
+            "MD": 83,
+            "AT": 60
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Nathanaël Mbuku",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 24,
+            "DF": 50,
+            "MD": 86,
+            "AT": 68
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Ngal'ayel Mukau",
+        "natural_position": "MD",
+        "ratings": {
+            "GK": 28,
+            "DF": 68,
+            "MD": 80,
+            "AT": 63
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Cédric Bakambu",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 30,
+            "DF": 38,
+            "MD": 63,
+            "AT": 93
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Fiston Mayele",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 18,
+            "DF": 48,
+            "MD": 68,
+            "AT": 76
+        },
+        "is_captain": false
+        },
+        {
+        "name": "Jackson Muleka",
+        "natural_position": "AT",
+        "ratings": {
+            "GK": 15,
+            "DF": 49,
+            "MD": 57,
+            "AT": 93
+        },
+        "is_captain": false
+        }
+    ],
+    "captain_name": "Chancel Mbemba",
+    "rating": 82.6
+    }
+]

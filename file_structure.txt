@@ -1,0 +1,30 @@
+anleague-nodejs/
+├── models/          // Database schemas (e.g., Team, User, Match)
+│   ├── user.js
+│   ├── team.js
+│   ├── match.js
+│   └── tournament.js
+├── routes/          // Express routes
+│   ├── auth.js     // Sign-up/login
+│   ├── teams.js    // Team management
+│   ├── admin.js    // Admin simulations
+│   └── public.js   // Bracket, summaries, rankings
+├── controllers/     // Business logic
+│   ├── teamController.js
+│   ├── matchController.js
+│   └── etc.
+├── views/           // EJS templates for UI
+│   ├── bracket.ejs
+│   ├── matchSummary.ejs
+│   └── etc.
+├── public/          // Static files (CSS, JS)
+│   └── styles.css
+├── .env             // Environment variables (git ignore this)
+├── app.js           // Main Express app
+├── package.json
+└── README.md
+
+-----------
+Install
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+npm install express mongoose dotenv bcryptjs jsonwebtoken nodemailer openai ejs

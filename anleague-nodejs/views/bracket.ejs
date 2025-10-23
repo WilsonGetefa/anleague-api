@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournament Bracket</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/bracket">Bracket</a>
+    <a href="/rankings">Rankings</a>
+    <a href="/auth/login">Login</a>
+  </nav>
+  <h1>Tournament Bracket</h1>
+  <% if (tournament) { %>
+    <h2>Quarterfinals</h2>
+    <ul>
+      <% tournament.bracket.quarterfinals.forEach(match => { %>
+        <li>
+          <%= match.team1_id.country %> vs <%= match.team2_id.country %>
+          (<a href="/match/<%= match.match_id %>">View</a>)
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No active tournament.</p>
+  <% } %>
+</body>
+</html>

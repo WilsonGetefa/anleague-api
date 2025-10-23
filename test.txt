@@ -1,0 +1,233 @@
+----Backend
+==--GitHubrepo
+anleague-api
+# in project root
+git init
+git add .
+git commit -m "Initial ANLeague backend"
+git config --global user.name "WilsonGetefa"
+git config --global user.email "willsonsisimi@gmail.com"
+
+git remote add origin https://github.com/WilsonGetefa/anleague-api.git
+
+gh repo create african-nations-league --public   # or create via GitHub UI
+git push -u origin main
+git push -u origin master
+git branch -M main -- rename
+
+
+==--Renderserver
+MONGO_URI : your Atlas connection string (with username & password)
+OPENAI_API_KEY : if using AI commentary
+SENDGRID_API_KEY : if sending emails via SendGrid
+JWT_SECRET : secure random string
+FROM_EMAIL : sender address used by SendGrid
+NODE_ENV=production (optional)
+
+==--MongoDB Atlas (online NoSQL DB)
+mongodb+srv://superuser_db_user:MwmbpSJkxASfvwNf@cluster0.6yy73qx.mongodb.net/anleague?retryWrites=true&w=majority
+mongosh "mongodb+srv://superuser_db_user:MwmbpSJkxASfvwNf@cluster0.6yy73qx.mongodb.net/anleague"
+mongosh "mongodb+srv://superuser_db_user:MwmbpSJkxASfvwNf@cluster0.6yy73qx.mongodb.net/anleague" --eval ''
+mongosh mongodb+srv://superuser_db_user:MwmbpSJkxASfvwNf@cluster0.6yy73qx.mongodb.net/anleague?retryWrites=true&w=majority &
+fg
+db.stats()
+show dbs
+use anleague
+show collections
+db.stats()
+db.teams.find()
+db.teams.find().pretty()
+db.teams.find().limit(10).pretty()
+db.getCollectionInfos({ name: "users" })[0].options.validator
+db.getCollectionInfos({ name: "users" })[0].options
+db.runCommand({ listCollections: 1, filter: { name: "users" } })
+db.getCollectionInfos({name: "teams"})
+db.teams.findOne({ country: "Spain" })
+db.teams.find({ country: "Spain" })
+db.teams.find({ country: "Spain" }).toArray()
+db.teams.find().toArray()
+db.teams.find().pretty()
+db.teams.find().toArray() > teams.json
+-\--collection=teams --out=teams.json
+--collection=teams --type=csv --fields=country,manager --out=teams.csv
+db.teams.find({}, { country: 1, captain_name: 1, _id: 0 }).toArray()
+db.teams.deleteOne({ country: "Spain" })
+db.teams.deleteOne({ "country": "spain" })
+db.teams.deleteMany({ country: "Spain" })
+
+Mongoshell Script
+db.getCollectionNames().forEach(function(collectionName) {
+  print("\n📁 Collection: " + collectionName);
+  db.getCollection(collectionName).find().forEach(printjson);
+});
+
+db.getCollectionNames().forEach(function(collectionName) {
+  const count = db.getCollection(collectionName).countDocuments();
+  print("📁 " + collectionName + ": " + count + " documents");
+});
+
+
+users
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["username", "password", "role", "email"],
+    "properties": {
+      "username": { "bsonType": "string" },
+      "password": { "bsonType": "string" },
+      "role": { "enum": ["representative", "admin"] },
+      "email": { "bsonType": "string" },
+      "country": { "bsonType": "string" }
+    }
+  }
+}
+
+teams
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["country", "manager", "representative_id", "squad", "captain_name", "rating"],
+    "properties": {
+      "country": { "bsonType": "string" },
+      "manager": { "bsonType": "string" },
+      "representative_id": { "bsonType": "objectId" },
+      "squad": {
+        "bsonType": "array",
+        "minItems": 23,
+        "maxItems": 23,
+        "items": {
+          "bsonType": "object",
+          "required": ["name", "natural_position", "ratings", "is_captain"],
+          "properties": {
+            "name": { "bsonType": "string" },
+            "natural_position": { "enum": ["GK", "DF", "MD", "AT"] },
+            "ratings": {
+              "bsonType": "object",
+              "required": ["GK", "DF", "MD", "AT"],
+              "properties": {
+                "GK": { "bsonType": "int", "minimum": 0, "maximum": 100 },
+                "DF": { "bsonType": "int", "minimum": 0, "maximum": 100 },
+                "MD": { "bsonType": "int", "minimum": 0, "maximum": 100 },
+                "AT": { "bsonType": "int", "minimum": 0, "maximum": 100 }
+              }
+            },
+            "is_captain": { "bsonType": "bool" }
+          }
+        }
+      },
+      "captain_name": { "bsonType": "string" },
+      "rating": { "bsonType": "double" }
+    }
+  }
+}
+
+matches
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["stage", "team1_id", "team2_id", "score", "type"],
+    "properties": {
+      "stage": { "enum": ["quarterfinal", "semifinal", "final"] },
+      "team1_id": { "bsonType": "objectId" },
+      "team2_id": { "bsonType": "objectId" },
+      "score": {
+        "bsonType": "object",
+        "required": ["team1", "team2"],
+        "properties": {
+          "team1": { "bsonType": "int", "minimum": 0 },
+          "team2": { "bsonType": "int", "minimum": 0 }
+        }
+      },
+      "goal_scorers": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "required": ["player_name", "minute", "team"],
+          "properties": {
+            "player_name": { "bsonType": "string" },
+            "minute": { "bsonType": "int", "minimum": 1, "maximum": 120 },
+            "team": { "enum": ["team1", "team2"] }
+          }
+        }
+      },
+      "type": { "enum": ["played", "simulated"] },
+      "commentary": { "bsonType": "string" }
+    }
+  }
+}
+
+tournaments
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["status", "teams", "bracket"],
+    "properties": {
+      "status": { "enum": ["quarterfinals", "semifinals", "final", "completed"] },
+      "teams": {
+        "bsonType": "array",
+        "items": { "bsonType": "objectId" }
+      },
+      "bracket": {
+        "bsonType": "object",
+        "properties": {
+          "quarterfinals": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "object",
+              "required": ["match_id", "team1_id", "team2_id"],
+              "properties": {
+                "match_id": { "bsonType": "objectId" },
+                "team1_id": { "bsonType": "objectId" },
+                "team2_id": { "bsonType": "objectId" }
+              }
+            }
+          },
+          "semifinals": { "bsonType": "array", "items": { "bsonType": "object" } },
+          "final": { "bsonType": "array", "items": { "bsonType": "object" } }
+        }
+      }
+    }
+  }
+}
+
+---Cluster0(AWS)
+superuser_db_user
+MwmbpSJkxASfvwNf
+ammarcanani@gmail.com
+AJ9d9y8DXPkVMeIP
+elsje.scott@uct.ac.za
+xFAipO3wkjCgZlSK
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://superuser_db_user:MwmbpSJkxASfvwNf@cluster0.6yy73qx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
+
+
+------------------------------------
+FrontEnd
+user view (view only, maybe add comments)
+Federation portal and view(create the account, add player)
+Admin control include all
+

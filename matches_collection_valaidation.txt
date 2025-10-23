@@ -1,0 +1,112 @@
+matches
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["stage", "team1_id", "team2_id", "score", "type"],
+    "properties": {
+      "stage": { "enum": ["quarterfinal", "semifinal", "final"] },
+      "team1_id": { "bsonType": "objectId" },
+      "team2_id": { "bsonType": "objectId" },
+      "score": {
+        "bsonType": "object",
+        "required": ["team1", "team2"],
+        "properties": {
+          "team1": { "bsonType": "int", "minimum": 0 },
+          "team2": { "bsonType": "int", "minimum": 0 }
+        }
+      },
+      "goal_scorers": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "required": ["player_name", "minute", "team"],
+          "properties": {
+            "player_name": { "bsonType": "string" },
+            "minute": { "bsonType": "int", "minimum": 1, "maximum": 120 },
+            "team": { "enum": ["team1", "team2"] }
+          }
+        }
+      },
+      "type": { "enum": ["played", "simulated"] },
+      "commentary": { "bsonType": "string" }
+    }
+  }
+}
+
+[
+  {
+    name: 'matches',
+    type: 'collection',
+    options: {},
+    info: {
+      readOnly: false,
+      uuid: UUID('86cb115c-6595-4869-8fce-2c6a0662643e')
+    },
+    idIndex: { v: 2, key: { _id: 1 }, name: '_id_' }
+  }
+]
+
+validation
+db.runCommand({
+  collMod: "matches",
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["stage", "team1_id", "team2_id", "score", "type"],
+      properties: {
+        stage: {
+          enum: ["quarterfinal", "semifinal", "final"]
+        },
+        team1_id: {
+          bsonType: "objectId"
+        },
+        team2_id: {
+          bsonType: "objectId"
+        },
+        score: {
+          bsonType: "object",
+          required: ["team1", "team2"],
+          properties: {
+            team1: {
+              bsonType: "int",
+              minimum: 0
+            },
+            team2: {
+              bsonType: "int",
+              minimum: 0
+            }
+          }
+        },
+        goal_scorers: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            required: ["player_name", "minute", "team"],
+            properties: {
+              player_name: {
+                bsonType: "string"
+              },
+              minute: {
+                bsonType: "int",
+                minimum: 1,
+                maximum: 120
+              },
+              team: {
+                enum: ["team1", "team2"]
+              }
+            }
+          }
+        },
+        type: {
+          enum: ["played", "simulated"]
+        },
+        commentary: {
+          bsonType: "string",
+          maxLength: 1000
+        }
+      }
+    }
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+});

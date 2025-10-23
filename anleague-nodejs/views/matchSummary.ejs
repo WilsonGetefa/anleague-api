@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Match Summary</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/bracket">Bracket</a>
+    <a href="/rankings">Rankings</a>
+    <a href="/auth/login">Login</a>
+  </nav>
+  <h1>Match Summary</h1>
+  <% if (match) { %>
+    <h2><%= match.team1_id.country %> <%= match.score.team1 %> - <%= match.score.team2 %> <%= match.team2_id.country %></h2>
+    <p>Stage: <%= match.stage %></p>
+    <h3>Goal Scorers</h3>
+    <ul>
+      <% match.goal_scorers.forEach(goal => { %>
+        <li><%= goal.player_name %> (<%= goal.minute %>')</li>
+      <% }) %>
+    </ul>
+    <% if (match.type === 'played') { %>
+      <h3>Commentary</h3>
+      <p><%= match.commentary %></p>
+    <% } else { %>
+      <p>Match was simulated.</p>
+    <% } %>
+  <% } else { %>
+    <p>Match not found.</p>
+  <% } %>
+</body>
+</html>

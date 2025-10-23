@@ -1,0 +1,118 @@
+collMod: Modifies the collection’s settings.
+validator: Applies the provided $jsonSchema.
+validationLevel: "strict": Enforces the schema on all inserts and updates.
+validationAction: "error": Rejects any operations that violate the schema (use "warn" for logging violations without rejecting).
+
+users
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["username", "password", "role", "email"],
+    "properties": {
+      "username": { "bsonType": "string" },
+      "password": { "bsonType": "string" },
+      "role": { "enum": ["representative", "admin"] },
+      "email": { "bsonType": "string" },
+      "country": { "bsonType": "string" }
+    }
+  }
+}
+
+[
+  {
+    name: 'users',
+    type: 'collection',
+    options: {},
+    info: {
+      readOnly: false,
+      uuid: UUID('3c13f227-ff19-4ceb-9910-f8fb99b09a8f')
+    },
+    idIndex: { v: 2, key: { _id: 1 }, name: '_id_' }
+  }
+]
+
+Validation
+db.runCommand({
+  collMod: "users",
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: [
+        "username", 
+        "password",
+        "role",
+        "email"
+      ],
+      properties: {
+        username: { bsonType: "string" },
+        password: { bsonType: "string" },
+        role: { enum: ["representative", "admin"] },
+        email: { bsonType: "string" },
+        country: { bsonType: "string" }
+      }
+    }
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+});
+
+Test
+const bcrypt = require('bcryptjs');
+bcrypt.hash('admin123', 10).then(hash => console.log(hash));
+Admin
+{
+  "username": "admin",
+  "password": "$2a$10$your_hashed_password", // Generate via bcrypt (see below)
+  "role": "admin",
+  "email": "admin@example.com"
+}
+representative
+{
+  "username": "rep_nigeria",
+  "password": "$2a$10$another_hashed_password",
+  "role": "representative",
+  "email": "rep_nigeria@nigeria.caf",
+  "country": "Nigeria"
+}
+{
+  "username": "rep_angola",
+  "password": "$2a$10$another_hashed_password",
+  "role": "representative",
+  "email": "rep_angola@Angola.caf",
+  "country": "Angola"
+}
+{
+  "username": "rep_cape_verde",
+  "password": "$2a$10$another_hashed_password",
+  "role": "representative",
+  "email": "rep_cape_verde@cape_verde.caf",
+  "country": "Cape Verde"
+}
+{
+  "username": "rep_south_africa",
+  "password": "$2a$10$another_hashed_password",
+  "role": "representative",
+  "email": "rep_south_africa@south_africa.caf",
+  "country": "South Africa"
+}
+{
+  "username": "rep_mali",
+  "password": "$2a$10$another_hashed_password",
+  "role": "representative",
+  "email": "rep_mali@mali.caf",
+  "country": "Mali"
+}
+{
+  "username": "rep_cote_d_ivoire",
+  "password": "$2a$10$another_hashed_password",
+  "role": "representative",
+  "email": "rep_cote_d_ivoire@cote_d_ivoire.caf",
+  "country": "Côte d'Ivoire"
+}
+{
+  "username": "rep_dr_congo",
+  "password": "$2a$10$another_hashed_password",
+  "role": "representative",
+  "email": "rep_dr_congo@dr_congo.caf",
+  "country": "DR Congo"
+}
