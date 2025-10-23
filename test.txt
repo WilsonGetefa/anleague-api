@@ -41,6 +41,7 @@ db.teams.find().limit(10).pretty()
 db.getCollectionInfos({ name: "users" })[0].options.validator
 db.getCollectionInfos({ name: "users" })[0].options
 db.runCommand({ listCollections: 1, filter: { name: "users" } })
+db.teams.find({}, { _id: 0, country: 1, manager: 1 }).pretty()
 db.getCollectionInfos({name: "teams"})
 db.teams.findOne({ country: "Spain" })
 db.teams.find({ country: "Spain" })
