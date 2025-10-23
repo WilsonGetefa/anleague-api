@@ -1,6 +1,6 @@
 const Match = require('../models/match');
 const Team = require('../models/team');
-const User = require('../models/user');
+const Tournament = require('../models/tournament');
 const { OpenAI } = require('openai');
 const nodemailer = require('nodemailer');
 
@@ -32,6 +32,7 @@ exports.simulateMatch = async (req, res) => {
     match.type = 'simulated';
     await match.save();
 
+    // Email representatives
     const [rep1, rep2] = await Promise.all([
       User.findById(match.team1_id.representative_id),
       User.findById(match.team2_id.representative_id)
@@ -61,9 +62,10 @@ exports.playMatch = async (req, res) => {
       messages: [{ role: 'user', content: prompt }]
     });
 
+    // Parse AI response for score and goals (simplified)
     const commentary = response.choices[0].message.content;
-    const score = { team1: Math.floor(Math.random() * 5), team2: Math.floor(Math.random() * 5) };
-    const goal_scorers = [];
+    const score = { team1: Math.floor(Math.random() * 5), team2: Math.floor(Math.random() * 5) }; // Mock parsing
+    const goal_scorers = []; // Parse from commentary or mock as above
 
     match.score = score;
     match.goal_scorers = goal_scorers;
@@ -71,6 +73,7 @@ exports.playMatch = async (req, res) => {
     match.commentary = commentary;
     await match.save();
 
+    // Email representatives
     const [rep1, rep2] = await Promise.all([
       User.findById(match.team1_id.representative_id),
       User.findById(match.team2_id.representative_id)

@@ -8,15 +8,7 @@ const mockSquads = {
     { name: 'Ahmed Musa', position: 'AT' },
     // ... 21 more (simplified)
   ],
-  Egypt: [
-    { name: 'Mohamed Salah', position: 'AT' },
-    // ... 22 more
-  ],
-  Ghana: [], // Add more
-  Algeria: [],
-  Morocco: [],
-  Senegal: [],
-  Cameroon: []
+  // Add other countries
 };
 
 function generateRatings(naturalPosition) {
