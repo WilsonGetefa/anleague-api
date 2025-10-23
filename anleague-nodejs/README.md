@@ -19,7 +19,7 @@ Setup Locally
   - `POST /admin/start`, `/admin/simulate`, `/admin/play`: Tournament management
 - **Demo**:
   1. View home, bracket, rankings at `/`, `/bracket`, `/rankings`.
-  2. Sign up 8th team (Egypt) at `/signup`, then `/teams/autofill`.
+  2. Sign up 8th team (Egypt) at `/signup`, login at `/login`, then use `/teams/autofill`.
   3. Start tournament with `/admin/start`.
   4. Simulate matches with `/admin/simulate`.
   5. View match details at `/match/:id`.
