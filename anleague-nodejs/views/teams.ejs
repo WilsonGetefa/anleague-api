@@ -1,77 +1,217 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %></title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" href="images/caf.png">
-  <style>
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Teams</h1>
-  </header>
-  <nav>
-    <a href="/">Home</a> |
-    <a href="/bracket">Bracket</a> |
-    <a href="/rankings">Rankings</a> |
-    <a href="/teams">Teams</a> |
-    <% if (user) { %>
-      <% if (user.role === 'admin') { %>
-        <a href="/admin/dashboard">Admin Dashboard</a> |
-      <% } else { %>
-        <a href="/dashboard">Dashboard</a> |
-      <% } %>
-      <a href="/logout">Logout</a>
+<!-- FILE: views/teams.ejs -->
+<%- include('partials/head') %>
+<section class="teams-page">
+  <div class="page-header">
+    <h2>Registered Teams</h2>
+    <p class="muted">Browse federations, managers and full 23-player squads.</p>
+  </div>
+
+  <div class="teams-grid">
+    <% if (!teams || teams.length === 0) { %>
+      <div class="card form-box">No teams have registered yet.</div>
     <% } else { %>
-      <a href="/login">Login</a>
+      <% teams.forEach(team => { %>
+        <article class="team-card">
+          <div class="team-top">
+            <div class="team-info">
+              <h3 class="team-name"><%= team.name || team.country || 'Unnamed' %></h3>
+              <div class="team-meta">Manager: <strong><%= team.manager || 'N/A' %></strong></div>
+              <div class="team-meta">Representative: <strong><%= (team.representative && team.representative.name) || (team.user && team.user.username) || 'N/A' %></strong></div>
+            </div>
+            <div class="team-rating">Rating <span class="rating-value"><%= (team.teamRating || team.rating || 0).toFixed ? (team.teamRating || team.rating).toFixed(2) : team.teamRating || team.rating %></span></div>
+          </div>
+
+          <div class="squad">
+            <div class="squad-column">
+              <h5>Goalkeepers</h5>
+              <ul>
+                <% team.squad.filter(p => p.naturalPos === 'GK' || p.natural_position === 'GK').forEach(p => { %>
+                  <li>
+                    <strong><%= p.name %></strong>
+                    <% if (p.isCaptain || p.is_captain) { %> <span class="badge">Captain</span> <% } %>
+                    <div class="player-stats">GK: <%= p.ratings?.GK ?? p.ratings?.gk ?? p.ratings?.gK ?? 0 %></div>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
+
+            <div class="squad-column">
+              <h5>Defenders</h5>
+              <ul>
+                <% team.squad.filter(p => p.naturalPos === 'DF' || p.natural_position === 'DF').forEach(p => { %>
+                  <li>
+                    <strong><%= p.name %></strong>
+                    <% if (p.isCaptain || p.is_captain) { %> <span class="badge">Captain</span> <% } %>
+                    <div class="player-stats">DF: <%= p.ratings?.DF ?? p.ratings?.df ?? 0 %></div>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
+
+            <div class="squad-column">
+              <h5>Midfielders</h5>
+              <ul>
+                <% team.squad.filter(p => p.naturalPos === 'MD' || p.natural_position === 'MD').forEach(p => { %>
+                  <li>
+                    <strong><%= p.name %></strong>
+                    <% if (p.isCaptain || p.is_captain) { %> <span class="badge">Captain</span> <% } %>
+                    <div class="player-stats">MD: <%= p.ratings?.MD ?? p.ratings?.md ?? 0 %></div>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
+
+            <div class="squad-column">
+              <h5>Attackers</h5>
+              <ul>
+                <% team.squad.filter(p => p.naturalPos === 'AT' || p.natural_position === 'AT').forEach(p => { %>
+                  <li>
+                    <strong><%= p.name %></strong>
+                    <% if (p.isCaptain || p.is_captain) { %> <span class="badge">Captain</span> <% } %>
+                    <div class="player-stats">AT: <%= p.ratings?.AT ?? p.ratings?.at ?? 0 %></div>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
+          </div>
+
+          <div class="team-actions">
+            <a href="/teams/<%= team._id %>" class="btn btn-outline">View Team</a>
+            <% if (user && (user.role === 'admin' || user.federationId === team.federationId)) { %>
+              <a href="/teams/<%= team._id %>/edit" class="btn">Edit</a>
+            <% } %>
+          </div>
+        </article>
+      <% }) %>
     <% } %>
-  </nav>
-  <main class="container">
-    <h2>All Teams</h2>
-    <% if (teams.length === 0) { %>
-      <p>No teams available.</p>
-    <% } else { %>
-      <table>
-        <thead>
-          <tr>
-            <th>Country</th>
-            <th>Manager</th>
-            <th>User</th>
-            <th>Rating</th>
-            <th>Squad</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% teams.forEach(team => { %>
-            <tr>
-              <td><%= team.country %></td>
-              <td><%= team.manager || 'N/A' %></td>
-              <td><%= team.userId ? team.userId.username : 'N/A' %></td>
-              <td><%= team.rating.toFixed(2) %></td>
-              <td>
-                <ul>
-                  <% team.squad.forEach(player => { %>
-                    <li>
-                      <%= player.name %> (<%= player.natural_position %>)
-                      <% if (player.is_captain) { %>[Captain]<% } %>
-                      - Ratings: GK: <%= player.ratings.GK %>, DF: <%= player.ratings.DF %>, MD: <%= player.ratings.MD %>, AT: <%= player.ratings.AT %>
-                      - Goals: <%= player.goals %>
-                    </li>
-                  <% }) %>
-                </ul>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    <% } %>
-  </main>
-</body>
-</html>
+  </div>
+</section>
+<%- include('partials/footer') %>
+
+
+<!-- NOTE -->
+<!-- This teams.ejs uses the existing partials/head and footer so it inherits the main styles.css. -->
+<!-- Place this file into views/teams.ejs and ensure your team objects use one of the field name variations (the template checks several common names). -->
+/* === styles.css === */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px 0;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+nav {
+  margin-top: 10px;
+}
+
+nav a {
+  color: #ffcc00;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #ffffff;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+
+button, .btn {
+  background: #ffcc00;
+  color: #000;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background: #ffd633;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  background: rgba(0,0,0,0.4);
+  font-size: 0.9rem;
+}
+
+/* === PAGE VARIANTS === */
+.index-page h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.form-box {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 400px;
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+  border: 2px solid #ffcc00;
+}
+
+.rank-table {
+  border-collapse: collapse;
+  width: 80%;
+  margin-top: 30px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.rank-table th, .rank-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.rank-table th {
+  background: #ffcc00;
+  color: #000;
+}
+
+.rank-table tr:hover {
+  background: rgba(255,255,255,0.1);
+}
