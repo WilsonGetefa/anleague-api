@@ -12,27 +12,51 @@ router.post('/autofill', async (req, res) => {
     // Validate userId
     if (!mongoose.Types.ObjectId.isValid(user.id)) {
       console.log('Invalid userId:', user.id);
-      return res.render('error', { title: 'Error', error: 'Invalid user ID' });
+      return res.render('dashboard', {
+        title: 'Dashboard',
+        username: user.username,
+        country: user.country,
+        role: user.role,
+        error: 'Invalid user ID'
+      });
     }
 
     // Check if user exists
     const userExists = await mongoose.model('User').findById(user.id);
     if (!userExists) {
       console.log('User not found:', user.id);
-      return res.render('error', { title: 'Error', error: 'User not found' });
+      return res.render('dashboard', {
+        title: 'Dashboard',
+        username: user.username,
+        country: user.country,
+        role: user.role,
+        error: 'User not found'
+      });
     }
 
     // Check country match
     if (user.country !== country) {
       console.log('Country mismatch:', { userCountry: user.country, requestedCountry: country });
-      return res.render('error', { title: 'Error', error: 'Can only create team for your country' });
+      return res.render('dashboard', {
+        title: 'Dashboard',
+        username: user.username,
+        country: user.country,
+        role: user.role,
+        error: 'Can only create team for your country'
+      });
     }
 
     // Check for existing team
     const existingTeam = await Team.findOne({ country });
     if (existingTeam) {
       console.log('Team already exists:', country);
-      return res.render('error', { title: 'Error', error: `Team for ${country} already exists` });
+      return res.render('dashboard', {
+        title: 'Dashboard',
+        username: user.username,
+        country: user.country,
+        role: user.role,
+        error: `Team for ${country} already exists`
+      });
     }
 
     const squad = generateDefaultPlayers(country);
@@ -50,11 +74,16 @@ router.post('/autofill', async (req, res) => {
     res.redirect('/dashboard');
   } catch (err) {
     console.error('Team creation error:', err.message, err.stack);
-    if (err.code === 11000) {
-      console.log('Duplicate key error for country:', country);
-      return res.render('error', { title: 'Error', error: `Team for ${country} already exists` });
-    }
-    res.render('error', { title: 'Error', error: `Error creating team: ${err.message}` });
+    const errorMessage = err.code === 11000
+      ? `Team for ${country} already exists`
+      : `Error creating team: ${err.message}`;
+    return res.render('dashboard', {
+      title: 'Dashboard',
+      username: user.username,
+      country: user.country,
+      role: user.role,
+      error: errorMessage
+    });
   }
 });
 

@@ -84,7 +84,7 @@ app.get('/signup', (req, res) => {
 // Dashboard route
 app.get('/dashboard', authMiddleware, (req, res) => {
   const { username, country, role } = req.user;
-  res.render('dashboard', { title: 'Dashboard', username, country, role });
+  res.render('dashboard', { title: 'Dashboard', username, country, role, error: null });
 });
 
 // Admin dashboard route
