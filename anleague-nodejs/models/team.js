@@ -10,21 +10,20 @@ const playerSchema = new mongoose.Schema({
     AT: { type: Number, min: 0, max: 100, default: 50 }
   },
   is_captain: { type: Boolean, default: false },
-  goals: { type: Number, default: 0 } // Added for rankings
+  goals: { type: Number, default: 0 }
 });
 
 const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Changed from representative_id
-  squad: [playerSchema], // Changed from squad to match naming
-  rating: { type: Number, default: 0 } // Calculated on save
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  squad: [playerSchema],
+  rating: { type: Number, default: 0 }
 });
 
-// Calculate team rating as average of players' natural position ratings
 teamSchema.pre('save', function (next) {
   if (this.squad.length > 0) {
     const totalRating = this.squad.reduce((sum, player) => {
-      return sum + (player.ratings[player.natural_position] || 0);
+      return sum + (player.ratings[player.natural_position] || 50);
     }, 0);
     this.rating = totalRating / this.squad.length;
   }

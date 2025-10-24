@@ -2,7 +2,17 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const User = require('../models/user');
+
+// Configure nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 router.post('/signup', async (req, res) => {
   const { username, password, email, country, role } = req.body;
@@ -28,6 +38,15 @@ router.post('/signup', async (req, res) => {
     });
     await user.save();
     console.log(`User created successfully: ${username}, Email: ${email}, Country: ${country}, Role: ${role}`);
+
+    // Send confirmation email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Welcome to African Nations League',
+      text: `Hello ${username},\n\nYour account has been created successfully!\n\nLogin at: https://anleague-api.onrender.com/login`
+    });
+
     res.redirect('/login');
   } catch (err) {
     console.error('Signup error:', err.message);
@@ -57,9 +76,9 @@ router.post('/login', async (req, res) => {
     res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 3600000 });
     console.log(`Login successful: ${username}`);
     if (user.role === 'admin') {
-      res.redirect('/admin/dashboard'); // Admin-specific dashboard
+      res.redirect('/admin/dashboard');
     } else {
-      res.redirect('/dashboard'); // Representative dashboard
+      res.redirect('/dashboard');
     }
   } catch (err) {
     console.error('Login error:', err.message);
