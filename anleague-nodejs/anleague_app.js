@@ -25,9 +25,9 @@ app.use((req, res, next) => {
   if (token) {
     try {
       req.user = jwt.verify(token, process.env.JWT_SECRET);
-      console.log('JWT verified:', req.user.username);
+      console.log('JWT verified:', req.user.username, 'for path:', req.path);
     } catch (err) {
-      console.error('JWT verification error:', err.message);
+      console.error('JWT verification error:', err.message, 'for path:', req.path);
       req.user = null;
     }
   } else {

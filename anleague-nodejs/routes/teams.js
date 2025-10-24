@@ -51,6 +51,7 @@ router.post('/autofill', async (req, res) => {
   } catch (err) {
     console.error('Team creation error:', err.message, err.stack);
     if (err.code === 11000) {
+      console.log('Duplicate key error for country:', country);
       return res.render('error', { title: 'Error', error: `Team for ${country} already exists` });
     }
     res.render('error', { title: 'Error', error: `Error creating team: ${err.message}` });
