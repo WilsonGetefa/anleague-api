@@ -5,11 +5,11 @@ const Team = require('../models/team');
 const Match = require('../models/match');
 const matchController = require('../controllers/matchController');
 
-// Start tournament (admin-only, kept for reference)
+// Start tournament (admin-only)
 router.post('/start', async (req, res) => {
   try {
     const teams = await Team.find();
-    if (teams.length < 8) return res.status(400).json({ error: 'Need 8 teams' });
+    if (teams.length < 8) return res.status(400).json({ error: 'Need at least 8 teams' });
 
     const shuffled = teams.sort(() => 0.5 - Math.random()).slice(0, 8);
     const quarterfinals = [];
@@ -24,10 +24,11 @@ router.post('/start', async (req, res) => {
       quarterfinals.push({ match_id: match._id, team1_id: shuffled[i]._id, team2_id: shuffled[i + 1]._id });
     }
 
-    const tournament = new Tournament({ teams: shuffled.map(t => t._id), bracket: { quarterfinals } });
+    const tournament = new Tournament({ teams: shuffled.map(t => t._id), bracket: { quarterfinals, semifinals: [], final: [] }, status: 'active' });
     await tournament.save();
     res.json({ message: 'Tournament started' });
   } catch (err) {
+    console.error('Start tournament error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -45,6 +46,7 @@ router.post('/restart', async (req, res) => {
     await Match.deleteMany({});
     res.json({ message: 'Tournament reset' });
   } catch (err) {
+    console.error('Reset tournament error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -87,9 +89,15 @@ router.get('/bracket', async (req, res) => {
       return res.render('bracket', { title: 'Tournament Bracket', tournament: null, message: 'No active tournament' });
     }
 
+    // Ensure bracket fields are arrays
+    tournament.bracket.quarterfinals = tournament.bracket.quarterfinals || [];
+    tournament.bracket.semifinals = tournament.bracket.semifinals || [];
+    tournament.bracket.final = tournament.bracket.final || [];
+
     res.render('bracket', { title: 'Tournament Bracket', tournament });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Bracket route error:', err.message);
+    res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load bracket' });
   }
 });
 
@@ -100,7 +108,6 @@ router.get('/rankings', async (req, res) => {
       .populate('team1_id', 'country')
       .populate('team2_id', 'country');
 
-    // Aggregate goal scorers
     const goalScorers = {};
     matches.forEach(match => {
       match.goal_scorers.forEach(goal => {
@@ -113,7 +120,6 @@ router.get('/rankings', async (req, res) => {
       });
     });
 
-    // Convert to array and sort by goals
     const rankings = Object.values(goalScorers).sort((a, b) => b.goals - a.goals);
 
     if (req.query.format === 'json') {
@@ -122,7 +128,8 @@ router.get('/rankings', async (req, res) => {
 
     res.render('rankings', { title: 'Goal Scorers Rankings', rankings });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Rankings route error:', err.message);
+    res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load rankings' });
   }
 });
 
@@ -137,7 +144,8 @@ router.get('/match/:id', async (req, res) => {
     }
     res.render('match', { title: 'Match Details', match });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Match details error:', err.message);
+    res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load match details' });
   }
 });
 
