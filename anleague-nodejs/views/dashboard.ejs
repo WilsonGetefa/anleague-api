@@ -6,6 +6,7 @@
   <title><%= title %></title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/x-icon" href="images/caf.png"> 
 </head>
 <body>
   <header>
@@ -26,10 +27,7 @@
       <p><a href="/admin/start">Start Tournament</a></p>
       <p><a href="/admin/simulate">Simulate Matches</a></p>
     <% } else { %>
-      <form action="/teams/autofill" method="POST">
-        <input type="hidden" name="country" value="<%= country %>">
-        <button type="submit">Create Your Team</button>
-      </form>
+      <p><a href="/teams/autofill">Create Your Team</a></p>
     <% } %>
   </main>
 </body>
