@@ -7,10 +7,7 @@ const User = require('../models/user');
 router.post('/signup', async (req, res) => {
   const { username, password, email, country, role } = req.body;
   try {
-    // Log request data for debugging
     console.log('Signup attempt:', { username, email, country, role });
-
-    // Check for existing username or email
     const existingUsername = await User.findOne({ username });
     if (existingUsername) {
       console.log(`Signup failed: Username '${username}' already exists`);
@@ -21,8 +18,6 @@ router.post('/signup', async (req, res) => {
       console.log(`Signup failed: Email '${email}' already exists`);
       return res.render('signup', { title: 'Sign Up', error: 'Email already exists' });
     }
-
-    // Hash password and create user
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
       username,
@@ -33,8 +28,6 @@ router.post('/signup', async (req, res) => {
     });
     await user.save();
     console.log(`User created successfully: ${username}, Email: ${email}, Country: ${country}, Role: ${role}`);
-
-    // Redirect to login on success
     res.redirect('/login');
   } catch (err) {
     console.error('Signup error:', err.message);
@@ -56,13 +49,15 @@ router.post('/login', async (req, res) => {
       console.log(`Login failed: Incorrect password for '${username}'`);
       return res.render('login', { title: 'Login', error: 'Invalid credentials' });
     }
-    if (isMatch) {
-    const token = jwt.sign({ id: user._id, role: user.role, country: user.country, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.redirect('/dashboard'); // Changed from '/'
-    }
-    const token = jwt.sign({ id: user._id, role: user.role, country: user.country }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT and store in cookie for client-side use
+    const token = jwt.sign(
+      { id: user._id, role: user.role, country: user.country, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // 1 hour
     console.log(`Login successful: ${username}`);
-    res.redirect('/'); // Lands on home page
+    res.redirect('/dashboard'); // Single redirect to dashboard
   } catch (err) {
     console.error('Login error:', err.message);
     res.render('login', { title: 'Login', error: `Error: ${err.message}` });

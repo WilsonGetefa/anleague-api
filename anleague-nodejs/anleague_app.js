@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-
+const cookieParser = require('cookie-parser');
 
 // Load environment variables
 dotenv.config();
@@ -14,19 +14,36 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // Add for cookie handling
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// JWT middleware for req.user
+app.use((req, res, next) => {
+  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+  if (token) {
+    try {
+      req.user = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('JWT verified:', req.user.username);
+    } catch (err) {
+      console.error('JWT verification error:', err.message);
+      req.user = null; // Ensure req.user is null if token is invalid
+    }
+  } else {
+    req.user = null; // No token provided
+  }
+  next();
+});
+
 // Connect to MongoDB
-//mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 mongoose.connect(process.env.MONGO_URI, { dbName: 'anleague' })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Authentication middleware
 const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'No token provided' });
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -38,7 +55,9 @@ const authMiddleware = (req, res, next) => {
 };
 
 const adminMiddleware = (req, res, next) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required' });
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
   next();
 };
 
@@ -53,23 +72,24 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'African Nations League' });
 });
 
-// Adding Login
+// Login route
 app.get('/login', (req, res) => {
   res.render('login', { title: 'Login', error: null });
 });
 
-//Adding Signup
+// Signup route
 app.get('/signup', (req, res) => {
   res.render('signup', { title: 'Sign Up', error: null });
 });
 
-//Addind Dashboard
+// Dashboard route
 app.get('/dashboard', (req, res) => {
-  // Assuming JWT middleware sets req.user
-  const { username, country, role } = req.user || { username: 'Guest', country: 'N/A', role: 'N/A' };
+  if (!req.user) {
+    return res.redirect('/login'); // Redirect to login if not authenticated
+  }
+  const { username, country, role } = req.user;
   res.render('dashboard', { title: 'Dashboard', username, country, role });
 });
-
 
 // Start server
 const PORT = process.env.PORT || 3000;

@@ -6,29 +6,32 @@ Setup Locally
 - **Deployed URL**: https://anleague-api.onrender.com
 - **Admin Login**: Username: admin, Password: admin123
 - **Database**: MongoDB Atlas, `anleague` database
-  - **User Data**: Stored in `anleague.users` via `/auth/signup`. Fields: `username`, `password` (hashed), `email`, `country`, `role`.
-  - **Note**: Removed unintended `test` collection created during development.
+  - **User Data**: Stored in `anleague.users` via `/auth/signup`.
+  - **Note**: Fixed duplicate index warnings in `models/user.js` by removing redundant `schema.index()`.
+  - **Note**: Set `MONGO_URI` with `/anleague` to avoid `test` collection creation.
   - Collaborators (`ammarcanani@gmail.com`, `elsje.scott@uct.ac.za`) invited (pending as of 10/23/25).
 - **Frontend Pages**:
-  - `GET /`: Home page (default landing after login)
+  - `GET /`: Home page
   - `GET /bracket`: Tournament bracket
   - `GET /rankings`: Goal scorers leaderboard
   - `GET /login`: Login form
   - `GET /signup`: Signup form
   - `GET /match/:id`: Match details
+  - `GET /dashboard`: Landing page after login
 - **Backend Endpoints**:
   - `POST /auth/signup`, `POST /auth/login`: User authentication
   - `POST /teams/autofill`, `POST /teams/create`: Team creation
   - `POST /admin/start`, `/admin/simulate`, `/admin/play`: Tournament management
 - **Demo**:
-  1. Sign up (e.g., `rep_egypt3`) at `/signup` (saves to `anleague.users`).
-  2. Login at `/login` (lands on `/`).
+  1. Sign up (e.g., `rep_egypt4`) at `/signup` (saves to `anleague.users`).
+  2. Login at `/login` (lands on `/dashboard`).
   3. Create team via `/teams/autofill`.
   4. Start tournament with `/admin/start`.
   5. View bracket at `/bracket`.
 - **Troubleshooting**:
-  - If `test` collection reappears: Check codebase for `Test` model or `db.test` inserts; drop via `db.test.drop()`.
-  - If signup fails with “Username or email already exists”: Verify `anleague.users` for duplicates; use unique credentials.
+  - If `[MONGOOSE] Warning: Duplicate schema index`: Ensure `models/user.js` uses only `unique: true`.
+  - If signup fails: Check `anleague.users` for duplicates; use unique credentials.
+  - If `test` collection appears: Verify `MONGO_URI` includes `/anleague`.
 
 Clone the repo: git clone <your-repo-url>
 Install dependencies: npm install

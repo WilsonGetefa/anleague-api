@@ -8,8 +8,4 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['representative', 'admin'], default: 'representative' }
 });
 
-// Ensure unique indexes
-userSchema.index({ username: 1 }, { unique: true });
-userSchema.index({ email: 1 }, { unique: true });
-
 module.exports = mongoose.model('User', userSchema);
