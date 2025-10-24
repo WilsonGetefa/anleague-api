@@ -21,9 +21,6 @@ const teamSchema = new mongoose.Schema({
   manager: { type: String, required: false }
 }, { strict: 'throw' });
 
-// Ensure unique index
-teamSchema.index({ country: 1 }, { unique: true });
-
 teamSchema.pre('save', function (next) {
   if (this.squad.length > 0) {
     const totalRating = this.squad.reduce((sum, player) => {
