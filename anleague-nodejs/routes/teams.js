@@ -77,11 +77,12 @@ router.post('/autofill', async (req, res) => {
     // Log document before saving
     console.log('Team document to save:', JSON.stringify(team.toObject(), null, 2));
 
+    await team.validate(); // Explicit validation
     await team.save();
     console.log(`Team created: ${country} by ${user.username}`);
     res.redirect('/dashboard');
   } catch (err) {
-    console.error('Team creation error:', err.message, err.stack);
+    console.error('Team creation error:', err.message, err.stack, 'Details:', JSON.stringify(err, null, 2));
     const errorMessage = err.code === 11000
       ? `Team for ${country} already exists`
       : `Validation failed: ${err.message}`;

@@ -17,7 +17,8 @@ const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   squad: [playerSchema],
-  rating: { type: Number, default: 0 }
+  rating: { type: Number, default: 0 },
+  manager: { type: String, required: false }
 });
 
 teamSchema.pre('save', function (next) {

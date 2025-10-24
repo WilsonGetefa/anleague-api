@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // JWT middleware to set req.user
 app.use((req, res, next) => {
   if (req.path.startsWith('/public') || req.path.includes('images') || req.path === '/favicon.ico') {
-    return next(); // Skip JWT for static files
+    return next();
   }
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
   if (token) {
