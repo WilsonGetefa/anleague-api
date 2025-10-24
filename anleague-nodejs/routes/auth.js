@@ -49,15 +49,18 @@ router.post('/login', async (req, res) => {
       console.log(`Login failed: Incorrect password for '${username}'`);
       return res.render('login', { title: 'Login', error: 'Invalid credentials' });
     }
-    // Generate JWT and store in cookie for client-side use
     const token = jwt.sign(
       { id: user._id, role: user.role, country: user.country, username: user.username },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
-    res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // 1 hour
+    res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 3600000 });
     console.log(`Login successful: ${username}`);
-    res.redirect('/dashboard'); // Single redirect to dashboard
+    if (user.role === 'admin') {
+      res.redirect('/admin/dashboard'); // Admin-specific dashboard
+    } else {
+      res.redirect('/dashboard'); // Representative dashboard
+    }
   } catch (err) {
     console.error('Login error:', err.message);
     res.render('login', { title: 'Login', error: `Error: ${err.message}` });

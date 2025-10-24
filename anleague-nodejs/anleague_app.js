@@ -31,6 +31,7 @@ app.use((req, res, next) => {
       req.user = null; // Ensure req.user is null if token is invalid
     }
   } else {
+    console.log('No token provided');
     req.user = null; // No token provided
   }
   next();
@@ -89,6 +90,12 @@ app.get('/dashboard', (req, res) => {
   }
   const { username, country, role } = req.user;
   res.render('dashboard', { title: 'Dashboard', username, country, role });
+});
+
+// Admin dashboard route
+app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
+  const { username } = req.user;
+  res.render('admin_dashboard', { title: 'Admin Dashboard', username, role: 'admin' });
 });
 
 // Start server

@@ -6,11 +6,10 @@
   <title><%= title %></title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" href="images/caf.png">
 </head>
 <body>
   <header>
-    <h1><%= title %></h1>
+    <h1>Tournament Bracket</h1>
   </header>
   <nav>
     <a href="/">Home</a> |
@@ -20,67 +19,52 @@
     <a href="/signup">Sign Up</a>
   </nav>
   <main class="container">
-    <% if (message || !tournament || !tournament.bracket || !tournament.bracket.quarterfinals) { %>
-      <p class="message"><%= message || 'No bracket data available' %></p>
-    <% } else { %>
-      <div class="bracket-container">
-        <!-- Quarterfinals -->
-        <div class="stage">
-          <h2>Quarterfinals</h2>
-          <div class="matches">
-            <% tournament.bracket.quarterfinals.forEach(match => { %>
-              <div class="match">
-                <a href="/match/<%= match.match_id._id %>" class="team">
-                  <%= match.match_id.team1_id.country %> vs <%= match.match_id.team2_id.country %>
-                  <% if (match.match_id.score) { %>
-                    <span class="score">(<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)</span>
-                  <% } %>
-                </a>
-              </div>
-            <% }); %>
-          </div>
-        </div>
-        <!-- Semifinals -->
-        <div class="stage">
-          <h2>Semifinals</h2>
-          <div class="matches">
-            <% if (tournament.bracket.semifinals && tournament.bracket.semifinals.length > 0) { %>
-              <% tournament.bracket.semifinals.forEach(match => { %>
-                <div class="match">
-                  <a href="/match/<%= match.match_id._id %>" class="team">
-                    <%= match.match_id.team1_id.country %> vs <%= match.match_id.team2_id.country %>
-                    <% if (match.match_id.score) { %>
-                      <span class="score">(<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)</span>
-                    <% } %>
-                  </a>
-                </div>
-              <% }); %>
-            <% } else { %>
-              <p class="message">Semifinals not yet set</p>
-            <% } %>
-          </div>
-        </div>
-        <!-- Final -->
-        <div class="stage">
-          <h2>Final</h2>
-          <div class="matches">
-            <% if (tournament.bracket.final && tournament.bracket.final.length > 0) { %>
-              <% tournament.bracket.final.forEach(match => { %>
-                <div class="match">
-                  <a href="/match/<%= match.match_id._id %>" class="team">
-                    <%= match.match_id.team1_id.country %> vs <%= match.match_id.team2_id.country %>
-                    <% if (match.match_id.score) { %>
-                      <span class="score">(<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)</span>
-                    <% } %>
-                  </a>
-                </div>
-              <% }); %>
-            <% } else { %>
-              <p class="message">Final not yet set</p>
-            <% } %>
-          </div>
-        </div>
-      </div>
+    <% if (message) { %>
+      <p><%= message %></p>
+    <% } else if (tournament) { %>
+      <h2>Quarterfinals</h2>
+      <ul>
+        <% tournament.bracket.quarterfinals.forEach(match => { %>
+          <li>
+            <a href="/match/<%= match.match_id._id %>">
+              <%= match.match_id.team1_id.country %> vs <%= match.match_id.team2_id.country %>
+              <% if (match.match_id.score) { %>
+                (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
+              <% } %>
+            </a>
+          </li>
+        <% }) %>
+      </ul>
+      <% if (tournament.bracket.semifinals && tournament.bracket.semifinals.length > 0) { %>
+        <h2>Semifinals</h2>
+        <ul>
+          <% tournament.bracket.semifinals.forEach(match => { %>
+            <li>
+              <a href="/match/<%= match.match_id._id %>">
+                <%= match.match_id.team1_id.country %> vs <%= match.match_id.team2_id.country %>
+                <% if (match.match_id.score) { %>
+                  (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
+                <% } %>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+      <% if (tournament.bracket.final && tournament.bracket.final.length > 0) { %>
+        <h2>Final</h2>
+        <ul>
+          <% tournament.bracket.final.forEach(match => { %>
+            <li>
+              <a href="/match/<%= match.match_id._id %>">
+                <%= match.match_id.team1_id.country %> vs <%= match.match_id.team2_id.country %>
+                <% if (match.match_id.score) { %>
+                  (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
+                <% } %>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
     <% } %>
   </main>
 </body>
