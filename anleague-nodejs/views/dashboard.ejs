@@ -3,32 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %></title>
+  <title>Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" href="images/caf.png"> 
+  <link rel="icon" type="image/x-icon" href="images/caf.png">
 </head>
 <body>
   <header>
-    <h1><%= title %></h1>
+    <h1>Dashboard</h1>
   </header>
   <nav>
     <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
-    <a href="/login">Login</a> |
-    <a href="/signup">Sign Up</a>
+    <a href="/logout">Logout</a>
   </nav>
   <main class="container">
     <h2>Welcome, <%= username %>!</h2>
     <p>Country: <%= country %></p>
-    <p>Role: <%= role %></p>
-    <% if (role === 'admin') { %>
-      <p><a href="/admin/start">Start Tournament</a></p>
-      <p><a href="/admin/simulate">Simulate Matches</a></p>
-    <% } else { %>
-      <p><a href="/teams/autofill">Create Your Team</a></p>
-    <% } %>
+    <form action="/teams/autofill" method="POST">
+      <input type="hidden" name="country" value="<%= country %>">
+      <button type="submit">Create Your Team</button>
+    </form>
   </main>
 </body>
 </html>
