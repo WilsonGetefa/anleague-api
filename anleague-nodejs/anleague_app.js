@@ -4,18 +4,6 @@ const dotenv = require('dotenv');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 
-//Add middleware for req.user
-app.use((req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (token) {
-    try {
-      req.user = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-      console.error('JWT verification error:', err.message);
-    }
-  }
-  next();
-});
 
 // Load environment variables
 dotenv.config();
