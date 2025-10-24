@@ -2,7 +2,7 @@
   "name": "anleague-nodejs",
   "version": "1.0.0",
   "description": "African Nations League Simulator",
-  "main": "node anleague_app.js",
+  "main": "anleague_app.js",
   "scripts": {
     "start": "node anleague_app.js",
     "dev": "nodemon anleague_app.js"
