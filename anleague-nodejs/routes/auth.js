@@ -56,6 +56,10 @@ router.post('/login', async (req, res) => {
       console.log(`Login failed: Incorrect password for '${username}'`);
       return res.render('login', { title: 'Login', error: 'Invalid credentials' });
     }
+    if (isMatch) {
+    const token = jwt.sign({ id: user._id, role: user.role, country: user.country, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.redirect('/dashboard'); // Changed from '/'
+    }
     const token = jwt.sign({ id: user._id, role: user.role, country: user.country }, process.env.JWT_SECRET, { expiresIn: '1h' });
     console.log(`Login successful: ${username}`);
     res.redirect('/'); // Lands on home page

@@ -5,10 +5,13 @@ Setup Locally
 # African Nations League
 - **Deployed URL**: https://anleague-api.onrender.com
 - **Admin Login**: Username: admin, Password: admin123
-- **Database**: MongoDB Atlas, `anleague` database. Collaborators (`ammarcanani@gmail.com`, `elsje.scott@uct.ac.za`) invited (pending as of 10/23/25).
+- **Database**: MongoDB Atlas, `anleague` database
+  - **User Data**: Stored in `anleague.users` via `/auth/signup`. Fields: `username`, `password` (hashed), `email`, `country`, `role`.
+  - **Note**: Removed unintended `test` collection created during development.
+  - Collaborators (`ammarcanani@gmail.com`, `elsje.scott@uct.ac.za`) invited (pending as of 10/23/25).
 - **Frontend Pages**:
-  - `GET /`: Home page
-  - `GET /bracket`: Tournament bracket (quarterfinals, semifinals, final with clickable match links)
+  - `GET /`: Home page (default landing after login)
+  - `GET /bracket`: Tournament bracket
   - `GET /rankings`: Goal scorers leaderboard
   - `GET /login`: Login form
   - `GET /signup`: Signup form
@@ -18,11 +21,14 @@ Setup Locally
   - `POST /teams/autofill`, `POST /teams/create`: Team creation
   - `POST /admin/start`, `/admin/simulate`, `/admin/play`: Tournament management
 - **Demo**:
-  1. View home, bracket, rankings at `/`, `/bracket`, `/rankings`.
-  2. Sign up 8th team (Egypt) at `/signup`, login at `/login`, then use `/teams/autofill`.
-  3. Start tournament with `/admin/start`.
-  4. Simulate matches with `/admin/simulate`.
-  5. View match details at `/match/:id`.
+  1. Sign up (e.g., `rep_egypt3`) at `/signup` (saves to `anleague.users`).
+  2. Login at `/login` (lands on `/`).
+  3. Create team via `/teams/autofill`.
+  4. Start tournament with `/admin/start`.
+  5. View bracket at `/bracket`.
+- **Troubleshooting**:
+  - If `test` collection reappears: Check codebase for `Test` model or `db.test` inserts; drop via `db.test.drop()`.
+  - If signup fails with “Username or email already exists”: Verify `anleague.users` for duplicates; use unique credentials.
 
 Clone the repo: git clone <your-repo-url>
 Install dependencies: npm install

@@ -4,6 +4,19 @@ const dotenv = require('dotenv');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 
+//Add middleware for req.user
+app.use((req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (token) {
+    try {
+      req.user = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      console.error('JWT verification error:', err.message);
+    }
+  }
+  next();
+});
+
 // Load environment variables
 dotenv.config();
 
@@ -61,6 +74,14 @@ app.get('/login', (req, res) => {
 app.get('/signup', (req, res) => {
   res.render('signup', { title: 'Sign Up', error: null });
 });
+
+//Addind Dashboard
+app.get('/dashboard', (req, res) => {
+  // Assuming JWT middleware sets req.user
+  const { username, country, role } = req.user || { username: 'Guest', country: 'N/A', role: 'N/A' };
+  res.render('dashboard', { title: 'Dashboard', username, country, role });
+});
+
 
 // Start server
 const PORT = process.env.PORT || 3000;
