@@ -89,7 +89,6 @@ router.get('/bracket', async (req, res) => {
     }
 
     if (!tournament) {
-      console.log('No active tournament found');
       return res.render('bracket', { title: 'Tournament Bracket', tournament: null, message: 'No active tournament' });
     }
 
@@ -99,7 +98,7 @@ router.get('/bracket', async (req, res) => {
     tournament.bracket.semifinals = (tournament.bracket.semifinals || []).filter(match => match.match_id && match.match_id._id);
     tournament.bracket.final = (tournament.bracket.final || []).filter(match => match.match_id && match.match_id._id);
 
-    res.render('bracket', { title: 'Tournament Bracket', tournament });
+    res.render('bracket', { title: 'Tournament Bracket', tournament, message: null });
   } catch (err) {
     console.error('Bracket route error:', err.message, err.stack);
     res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load bracket' });

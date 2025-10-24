@@ -20,7 +20,7 @@
     <a href="/signup">Sign Up</a>
   </nav>
   <main class="container">
-    <% if (message) { %>
+    <% if (typeof message !== 'undefined' && message) { %>
       <p><%= message %></p>
     <% } else if (tournament) { %>
       <h2>Quarterfinals</h2>
