@@ -44,14 +44,19 @@ mongoose.connect(process.env.MONGO_URI, { dbName: 'anleague' })
 
 // Authentication middleware
 const authMiddleware = (req, res, next) => {
-  const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ error: 'No token provided' });
+  const token = req.cookies.token;
+  if (!token) {
+    console.log('No token provided');
+    return res.redirect('/login');
+  }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
+    console.log(`JWT verified: ${decoded.username}`);
     next();
   } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
+    console.error('JWT verification error:', err.message);
+    res.redirect('/login');
   }
 };
 

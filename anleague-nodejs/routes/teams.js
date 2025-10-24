@@ -1,24 +1,45 @@
 const express = require('express');
 const router = express.Router();
 const Team = require('../models/team');
+const mongoose = require('mongoose');
 
 router.post('/autofill', async (req, res) => {
   const { country } = req.body;
   const { user } = req;
   try {
-    console.log('Team autofill attempt:', { user: user.username, country });
+    console.log('Team autofill attempt:', { user: user.username, country, userId: user.id });
+
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(user.id)) {
+      return res.render('error', { title: 'Error', error: 'Invalid user ID' });
+    }
+
+    // Check if user exists
+    const userExists = await mongoose.model('User').findById(user.id);
+    if (!userExists) {
+      return res.render('error', { title: 'Error', error: 'User not found' });
+    }
+
+    // Check country match
     if (user.country !== country) {
       return res.render('error', { title: 'Error', error: 'Can only create team for your country' });
     }
+
+    // Check for existing team
     const existingTeam = await Team.findOne({ country });
     if (existingTeam) {
       return res.render('error', { title: 'Error', error: `Team for ${country} already exists` });
     }
+
+    const squad = generateDefaultPlayers(country);
+    console.log('Generated squad:', JSON.stringify(squad, null, 2));
+
     const team = new Team({
       country,
       userId: user.id,
-      squad: generateDefaultPlayers(country),
+      squad
     });
+
     await team.save();
     console.log(`Team created: ${country} by ${user.username}`);
     res.redirect('/dashboard');

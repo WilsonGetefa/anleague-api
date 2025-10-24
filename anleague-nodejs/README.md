@@ -6,33 +6,34 @@ Setup Locally
 - **Deployed URL**: https://anleague-api.onrender.com
 - **Admin Login**: Username: admin, Password: admin123
 - **Database**: MongoDB Atlas, `anleague` database
-  - **User Data**: Stored in `anleague.users` via `/auth/signup`.
-  - **Team Data**: Stored in `anleague.teams` via `/teams/autofill` with ratings and captain.
-  - **Note**: Fixed duplicate index warnings in `models/user.js`.
-  - **Note**: `MONGO_URI` includes `/anleague` to avoid `test` collection.
-  - Collaborators (`ammarcanani@gmail.com`, `elsje.scott@uct.ac.za`) invited (pending as of 10/23/25).
+  - **User Data**: Stored in `anleague.users`.
+  - **Team Data**: Stored in `anleague.teams`.
+  - **Note**: Fixed `Document failed validation` in team creation.
+  - **Note**: Fixed `No token provided` by selective middleware.
+  - **Note**: Fixed duplicate index warnings.
 - **Frontend Pages**:
   - `GET /`: Home page
-  - `GET /bracket`: Tournament bracket (view tournament for teams)
+  - `GET /bracket`: Tournament bracket
   - `GET /rankings`: Goal scorers leaderboard
   - `GET /login`: Login form
   - `GET /signup`: Signup form
   - `GET /match/:id`: Match details
-  - `GET /dashboard`: Landing page after login (admin and representatives)
+  - `GET /dashboard`: Representative landing page
+  - `GET /admin/dashboard`: Admin landing page
 - **Backend Endpoints**:
-  - `POST /auth/signup`, `POST /auth/login`: User authentication
-  - `POST /teams/autofill`: Create team with default players
-  - `POST /admin/start`, `/admin/simulate`, `/admin/play`: Tournament management
+  - `POST /auth/signup`, `POST /auth/login`: Authentication
+  - `POST /teams/autofill`: Create team
+  - `POST /admin/start`, `/admin/simulate`, `/admin/play`, `/admin/restart`: Tournament management
 - **Demo**:
-  1. Sign up (e.g., `rep_egypt4`) at `/signup`.
-  2. Login at `/login` (lands on `/dashboard`).
-  3. Create team via `/teams/autofill` from dashboard.
-  4. Admin logs in, starts tournament with `/admin/start`.
+  1. Sign up at `/signup`.
+  2. Login at `/login` (representatives to `/dashboard`, admins to `/admin/dashboard`).
+  3. Create team via `/teams/autofill`.
+  4. Admin starts tournament with `/admin/start`.
   5. View bracket at `/bracket`.
 - **Troubleshooting**:
-  - If `[MONGOOSE] Warning: Duplicate schema index`: Drop indexes with `db.users.dropIndexes()`.
-  - If dashboard shows `Guest`: Check `token` cookie and `JWT_SECRET`.
-  - If `test` collection appears: Verify `MONGO_URI` includes `/anleague`.
+  - If `Document failed validation`: Check `anleague.teams` for duplicates; clear `db.teams.deleteMany({})`.
+  - If `No token provided`: Verify `token` cookie in browser.
+  - If duplicate index warnings: Run `db.users.dropIndexes()`.
 
 Clone the repo: git clone <your-repo-url>
 Install dependencies: npm install
