@@ -17,7 +17,8 @@ router.post('/autofill', async (req, res) => {
         username: user.username,
         country: user.country,
         role: user.role,
-        error: 'Invalid user ID'
+        error: 'Invalid user ID',
+        hasTeam: false
       });
     }
 
@@ -30,7 +31,8 @@ router.post('/autofill', async (req, res) => {
         username: user.username,
         country: user.country,
         role: user.role,
-        error: 'User not found'
+        error: 'User not found',
+        hasTeam: false
       });
     }
 
@@ -42,7 +44,8 @@ router.post('/autofill', async (req, res) => {
         username: user.username,
         country: user.country,
         role: user.role,
-        error: 'Can only create team for your country'
+        error: 'Can only create team for your country',
+        hasTeam: false
       });
     }
 
@@ -55,7 +58,8 @@ router.post('/autofill', async (req, res) => {
         username: user.username,
         country: user.country,
         role: user.role,
-        error: `Team for ${country} already exists`
+        error: `Team for ${country} already exists`,
+        hasTeam: true
       });
     }
 
@@ -66,8 +70,12 @@ router.post('/autofill', async (req, res) => {
       country,
       userId: user.id,
       squad,
-      rating: calculateTeamRating(squad)
+      rating: calculateTeamRating(squad),
+      manager: `${user.username} Manager`
     });
+
+    // Log document before saving
+    console.log('Team document to save:', JSON.stringify(team.toObject(), null, 2));
 
     await team.save();
     console.log(`Team created: ${country} by ${user.username}`);
@@ -76,13 +84,14 @@ router.post('/autofill', async (req, res) => {
     console.error('Team creation error:', err.message, err.stack);
     const errorMessage = err.code === 11000
       ? `Team for ${country} already exists`
-      : `Error creating team: ${err.message}`;
+      : `Validation failed: ${err.message}`;
     return res.render('dashboard', {
       title: 'Dashboard',
       username: user.username,
       country: user.country,
       role: user.role,
-      error: errorMessage
+      error: errorMessage,
+      hasTeam: await Team.findOne({ country }).then(t => !!t)
     });
   }
 });

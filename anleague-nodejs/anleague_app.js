@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const Team = require('./models/team');
 
 // Load environment variables
 dotenv.config();
@@ -21,6 +22,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // JWT middleware to set req.user
 app.use((req, res, next) => {
+  if (req.path.startsWith('/public') || req.path.includes('images') || req.path === '/favicon.ico') {
+    return next(); // Skip JWT for static files
+  }
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
   if (token) {
     try {
@@ -82,9 +86,29 @@ app.get('/signup', (req, res) => {
 });
 
 // Dashboard route
-app.get('/dashboard', authMiddleware, (req, res) => {
+app.get('/dashboard', authMiddleware, async (req, res) => {
   const { username, country, role } = req.user;
-  res.render('dashboard', { title: 'Dashboard', username, country, role, error: null });
+  try {
+    const hasTeam = await Team.findOne({ country });
+    res.render('dashboard', {
+      title: 'Dashboard',
+      username,
+      country,
+      role,
+      error: null,
+      hasTeam: !!hasTeam
+    });
+  } catch (err) {
+    console.error('Dashboard error:', err.message);
+    res.render('dashboard', {
+      title: 'Dashboard',
+      username,
+      country,
+      role,
+      error: 'Error checking team status',
+      hasTeam: false
+    });
+  }
 });
 
 // Admin dashboard route
