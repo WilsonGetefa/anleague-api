@@ -11,23 +11,27 @@ router.post('/autofill', async (req, res) => {
 
     // Validate userId
     if (!mongoose.Types.ObjectId.isValid(user.id)) {
+      console.log('Invalid userId:', user.id);
       return res.render('error', { title: 'Error', error: 'Invalid user ID' });
     }
 
     // Check if user exists
     const userExists = await mongoose.model('User').findById(user.id);
     if (!userExists) {
+      console.log('User not found:', user.id);
       return res.render('error', { title: 'Error', error: 'User not found' });
     }
 
     // Check country match
     if (user.country !== country) {
+      console.log('Country mismatch:', { userCountry: user.country, requestedCountry: country });
       return res.render('error', { title: 'Error', error: 'Can only create team for your country' });
     }
 
     // Check for existing team
     const existingTeam = await Team.findOne({ country });
     if (existingTeam) {
+      console.log('Team already exists:', country);
       return res.render('error', { title: 'Error', error: `Team for ${country} already exists` });
     }
 
@@ -37,7 +41,8 @@ router.post('/autofill', async (req, res) => {
     const team = new Team({
       country,
       userId: user.id,
-      squad
+      squad,
+      rating: calculateTeamRating(squad)
     });
 
     await team.save();
@@ -45,6 +50,9 @@ router.post('/autofill', async (req, res) => {
     res.redirect('/dashboard');
   } catch (err) {
     console.error('Team creation error:', err.message, err.stack);
+    if (err.code === 11000) {
+      return res.render('error', { title: 'Error', error: `Team for ${country} already exists` });
+    }
     res.render('error', { title: 'Error', error: `Error creating team: ${err.message}` });
   }
 });
@@ -64,6 +72,14 @@ function generateDefaultPlayers(country) {
     goals: 0
   }));
   return players;
+}
+
+function calculateTeamRating(squad) {
+  if (!squad.length) return 0;
+  const totalRating = squad.reduce((sum, player) => {
+    return sum + (player.ratings[player.natural_position] || 50);
+  }, 0);
+  return totalRating / squad.length;
 }
 
 module.exports = router;

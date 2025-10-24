@@ -14,12 +14,12 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser()); // Add for cookie handling
+app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// JWT middleware for req.user
+// JWT middleware to set req.user
 app.use((req, res, next) => {
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
   if (token) {
@@ -28,41 +28,28 @@ app.use((req, res, next) => {
       console.log('JWT verified:', req.user.username);
     } catch (err) {
       console.error('JWT verification error:', err.message);
-      req.user = null; // Ensure req.user is null if token is invalid
+      req.user = null;
     }
   } else {
-    console.log('No token provided');
-    req.user = null; // No token provided
+    console.log('No token provided for path:', req.path);
+    req.user = null;
   }
   next();
 });
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, { dbName: 'anleague' })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-// Authentication middleware
+// Authentication middleware for protected routes
 const authMiddleware = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) {
-    console.log('No token provided');
+  if (!req.user) {
+    console.log('Authentication failed for path:', req.path);
     return res.redirect('/login');
   }
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    console.log(`JWT verified: ${decoded.username}`);
-    next();
-  } catch (err) {
-    console.error('JWT verification error:', err.message);
-    res.redirect('/login');
-  }
+  next();
 };
 
+// Admin middleware
 const adminMiddleware = (req, res, next) => {
   if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
+    return res.render('error', { title: 'Error', error: 'Admin access required' });
   }
   next();
 };
@@ -75,24 +62,27 @@ app.use('/', require('./routes/public'));
 
 // Home route
 app.get('/', (req, res) => {
-  res.render('index', { title: 'African Nations League' });
+  res.render('index', { title: 'African Nations League', user: req.user });
 });
 
 // Login route
 app.get('/login', (req, res) => {
+  if (req.user) {
+    return res.redirect(req.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+  }
   res.render('login', { title: 'Login', error: null });
 });
 
 // Signup route
 app.get('/signup', (req, res) => {
+  if (req.user) {
+    return res.redirect(req.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+  }
   res.render('signup', { title: 'Sign Up', error: null });
 });
 
 // Dashboard route
-app.get('/dashboard', (req, res) => {
-  if (!req.user) {
-    return res.redirect('/login'); // Redirect to login if not authenticated
-  }
+app.get('/dashboard', authMiddleware, (req, res) => {
   const { username, country, role } = req.user;
   res.render('dashboard', { title: 'Dashboard', username, country, role });
 });
@@ -106,3 +96,8 @@ app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, { dbName: 'anleague' })
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
