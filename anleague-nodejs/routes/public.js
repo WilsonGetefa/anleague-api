@@ -54,6 +54,7 @@ router.post('/restart', async (req, res) => {
 // Get tournament bracket (public)
 router.get('/bracket', async (req, res) => {
   try {
+    console.log('Fetching tournament for /bracket');
     const tournament = await Tournament.findOne({ status: { $ne: 'completed' } })
       .populate({
         path: 'teams',
@@ -81,22 +82,26 @@ router.get('/bracket', async (req, res) => {
         ]
       });
 
+    console.log('Tournament data:', JSON.stringify(tournament, null, 2));
+
     if (req.query.format === 'json') {
       return res.json({ tournament });
     }
 
     if (!tournament) {
+      console.log('No active tournament found');
       return res.render('bracket', { title: 'Tournament Bracket', tournament: null, message: 'No active tournament' });
     }
 
-    // Ensure bracket fields are arrays
-    tournament.bracket.quarterfinals = tournament.bracket.quarterfinals || [];
-    tournament.bracket.semifinals = tournament.bracket.semifinals || [];
-    tournament.bracket.final = tournament.bracket.final || [];
+    // Ensure bracket fields are arrays and matches are valid
+    tournament.bracket = tournament.bracket || {};
+    tournament.bracket.quarterfinals = (tournament.bracket.quarterfinals || []).filter(match => match.match_id && match.match_id._id);
+    tournament.bracket.semifinals = (tournament.bracket.semifinals || []).filter(match => match.match_id && match.match_id._id);
+    tournament.bracket.final = (tournament.bracket.final || []).filter(match => match.match_id && match.match_id._id);
 
     res.render('bracket', { title: 'Tournament Bracket', tournament });
   } catch (err) {
-    console.error('Bracket route error:', err.message);
+    console.error('Bracket route error:', err.message, err.stack);
     res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load bracket' });
   }
 });
@@ -128,7 +133,7 @@ router.get('/rankings', async (req, res) => {
 
     res.render('rankings', { title: 'Goal Scorers Rankings', rankings });
   } catch (err) {
-    console.error('Rankings route error:', err.message);
+    console.error('Rankings route error:', err.message, err.stack);
     res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load rankings' });
   }
 });
@@ -144,7 +149,7 @@ router.get('/match/:id', async (req, res) => {
     }
     res.render('match', { title: 'Match Details', match });
   } catch (err) {
-    console.error('Match details error:', err.message);
+    console.error('Match details error:', err.message, err.stack);
     res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load match details' });
   }
 });
