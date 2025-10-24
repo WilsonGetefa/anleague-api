@@ -19,7 +19,10 @@ const teamSchema = new mongoose.Schema({
   squad: [playerSchema],
   rating: { type: Number, default: 0 },
   manager: { type: String, required: false }
-}, { strict: 'throw', validateBeforeSave: false }); // Disable validation for testing
+}, { strict: 'throw' });
+
+// Ensure unique index
+teamSchema.index({ country: 1 }, { unique: true });
 
 teamSchema.pre('save', function (next) {
   if (this.squad.length > 0) {

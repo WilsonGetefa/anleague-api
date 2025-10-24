@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Team = require('../models/team');
+const User = require('../models/user');
 const mongoose = require('mongoose');
 
 router.post('/autofill', async (req, res) => {
@@ -23,7 +24,7 @@ router.post('/autofill', async (req, res) => {
     }
 
     // Check if user exists
-    const userExists = await mongoose.model('User').findById(user.id);
+    const userExists = await User.findById(user.id);
     if (!userExists) {
       console.log('User not found:', user.id);
       return res.render('dashboard', {
@@ -99,7 +100,9 @@ router.post('/autofill', async (req, res) => {
 // View all teams
 router.get('/', async (req, res) => {
   try {
-    const teams = await Team.find().select('country manager rating squad');
+    const teams = await Team.find()
+      .select('country manager rating squad')
+      .populate('userId', 'username');
     console.log('Fetched teams:', teams.length);
     res.render('teams', { title: 'Teams', teams, user: req.user });
   } catch (err) {

@@ -7,6 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/x-icon" href="images/caf.png">
+  <style>
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
 </head>
 <body>
   <header>
@@ -37,6 +42,7 @@
           <tr>
             <th>Country</th>
             <th>Manager</th>
+            <th>User</th>
             <th>Rating</th>
             <th>Squad</th>
           </tr>
@@ -46,6 +52,7 @@
             <tr>
               <td><%= team.country %></td>
               <td><%= team.manager || 'N/A' %></td>
+              <td><%= team.userId ? team.userId.username : 'N/A' %></td>
               <td><%= team.rating.toFixed(2) %></td>
               <td>
                 <ul>
