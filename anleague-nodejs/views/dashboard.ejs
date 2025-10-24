@@ -24,10 +24,14 @@
     <% if (error) { %>
       <p style="color: red;"><%= error %></p>
     <% } %>
-    <form action="/teams/autofill" method="POST">
-      <input type="hidden" name="country" value="<%= country %>">
-      <button type="submit">Create Your Team</button>
-    </form>
+    <% if (hasTeam) { %>
+      <p>Team for <%= country %> already created.</p>
+    <% } else { %>
+      <form action="/teams/autofill" method="POST">
+        <input type="hidden" name="country" value="<%= country %>">
+        <button type="submit">Create Your Team</button>
+      </form>
+    <% } %>
   </main>
 </body>
 </html>
