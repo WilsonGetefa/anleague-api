@@ -74,10 +74,9 @@ router.post('/autofill', async (req, res) => {
       manager: `${user.username} Manager`
     });
 
-    // Log document before saving
     console.log('Team document to save:', JSON.stringify(team.toObject(), null, 2));
 
-    await team.validate(); // Explicit validation
+    await team.validate();
     await team.save();
     console.log(`Team created: ${country} by ${user.username}`);
     res.redirect('/dashboard');
@@ -94,6 +93,18 @@ router.post('/autofill', async (req, res) => {
       error: errorMessage,
       hasTeam: await Team.findOne({ country }).then(t => !!t)
     });
+  }
+});
+
+// View all teams
+router.get('/', async (req, res) => {
+  try {
+    const teams = await Team.find().select('country manager rating squad');
+    console.log('Fetched teams:', teams.length);
+    res.render('teams', { title: 'Teams', teams, user: req.user });
+  } catch (err) {
+    console.error('Teams fetch error:', err.message);
+    res.render('error', { title: 'Error', error: 'Unable to fetch teams' });
   }
 });
 

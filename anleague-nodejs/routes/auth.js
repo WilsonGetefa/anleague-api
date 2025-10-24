@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Signup route
 router.post('/signup', async (req, res) => {
   const { username, password, email, country, role } = req.body;
   try {
@@ -54,6 +55,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// Login route
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -84,6 +86,13 @@ router.post('/login', async (req, res) => {
     console.error('Login error:', err.message);
     res.render('login', { title: 'Login', error: `Error: ${err.message}` });
   }
+});
+
+// Logout route
+router.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  console.log('User logged out');
+  res.redirect('/login');
 });
 
 module.exports = router;

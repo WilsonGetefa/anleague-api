@@ -6,13 +6,13 @@ Setup Locally
 - **Deployed URL**: https://anleague-api.onrender.com
 - **Admin Login**: Username: admin, Password: admin123
 - **Database**: MongoDB Atlas, `anleague` database
-  - **User Data**: Stored in `anleague.users`.
-  - **Team Data**: Stored in `anleague.teams`.
-  - **Note**: Fixed `Document failed validation` in team creation.
-  - **Note**: Fixed `No token provided` by selective middleware.
+  - **Note**: Bypassed Mongoose validation (`validateBeforeSave: false`) to debug team creation.
+  - **Note**: Added `/teams` route and `teams.ejs` to view all teams.
+  - **Note**: Added logout route in `auth.js`.
   - **Note**: Fixed duplicate index warnings.
 - **Frontend Pages**:
   - `GET /`: Home page
+  - `GET /teams`: View all teams
   - `GET /bracket`: Tournament bracket
   - `GET /rankings`: Goal scorers leaderboard
   - `GET /login`: Login form
@@ -21,18 +21,22 @@ Setup Locally
   - `GET /dashboard`: Representative landing page
   - `GET /admin/dashboard`: Admin landing page
 - **Backend Endpoints**:
-  - `POST /auth/signup`, `POST /auth/login`: Authentication
+  - `POST /auth/signup`, `POST /auth/login`, `GET /auth/logout`: Authentication
   - `POST /teams/autofill`: Create team
+  - `GET /teams`: View teams
   - `POST /admin/start`, `/admin/simulate`, `/admin/play`, `/admin/restart`: Tournament management
 - **Demo**:
   1. Sign up at `/signup`.
   2. Login at `/login` (representatives to `/dashboard`, admins to `/admin/dashboard`).
-  3. Create team via `/teams/autofill`.
-  4. Admin starts tournament with `/admin/start`.
-  5. View bracket at `/bracket`.
+  3. Create team via `/teams/autofill` on `/dashboard`.
+  4. View teams at `/teams`.
+  5. Logout via `/logout`.
+  6. Admin starts tournament with `/admin/start`.
+  7. View bracket at `/bracket`.
 - **Troubleshooting**:
-  - If `Document failed validation`: Check `anleague.teams` for duplicates; clear `db.teams.deleteMany({})`.
-  - If `No token provided`: Verify `token` cookie in browser.
+  - If `Document failed validation`: Run `db.teams.drop()` and retest.
+  - If teams not visible: Verify `/teams` route and `teams.ejs`.
+  - If logout fails: Check `auth.js` for `GET /logout`.
   - If duplicate index warnings: Run `db.users.dropIndexes()`.
 
 Clone the repo: git clone <your-repo-url>

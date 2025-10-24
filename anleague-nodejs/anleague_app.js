@@ -60,7 +60,7 @@ const adminMiddleware = (req, res, next) => {
 
 // Routes
 app.use('/auth', require('./routes/auth'));
-app.use('/teams', authMiddleware, require('./routes/teams'));
+app.use('/teams', require('./routes/teams')); // No authMiddleware for public /teams
 app.use('/admin', authMiddleware, adminMiddleware, require('./routes/admin'));
 app.use('/', require('./routes/public'));
 

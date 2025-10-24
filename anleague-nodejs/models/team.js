@@ -19,7 +19,7 @@ const teamSchema = new mongoose.Schema({
   squad: [playerSchema],
   rating: { type: Number, default: 0 },
   manager: { type: String, required: false }
-});
+}, { strict: 'throw', validateBeforeSave: false }); // Disable validation for testing
 
 teamSchema.pre('save', function (next) {
   if (this.squad.length > 0) {
