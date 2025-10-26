@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 exports.simulateMatch = async (req, res) => {
   try {
     const matches = await Match.find({ stage: 'quarterfinal', score: { $exists: false } }).populate('team1_id team2_id');
-    if (!matches.length) return res.render('admin', {
+    if (!matches.length) return res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'No unsimulated quarterfinal matches found'
@@ -56,14 +56,14 @@ exports.simulateMatch = async (req, res) => {
       }
     }
 
-    res.render('admin', {
+    res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       message: 'All quarterfinal matches simulated'
     });
   } catch (err) {
     console.error('Simulate match error:', err.message);
-    res.render('admin', {
+    res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'Failed to simulate matches'
@@ -74,7 +74,7 @@ exports.simulateMatch = async (req, res) => {
 exports.playMatch = async (req, res) => {
   try {
     const matches = await Match.find({ stage: 'quarterfinal', score: { $exists: false } }).populate('team1_id team2_id');
-    if (!matches.length) return res.render('admin', {
+    if (!matches.length) return res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'No unplayed quarterfinal matches found'
@@ -125,14 +125,14 @@ exports.playMatch = async (req, res) => {
       });
     }
 
-    res.render('admin', {
+    res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       message: `Match played: ${match.team1_id.country} ${score.team1} - ${score.team2} ${match.team2_id.country}`
     });
   } catch (err) {
     console.error('Play match error:', err.message);
-    res.render('admin', {
+    res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'Failed to play match'
