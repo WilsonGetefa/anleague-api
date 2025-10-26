@@ -2,16 +2,12 @@ const mongoose = require('mongoose');
 
 const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  natural_position: {
-    type: String,
-    enum: ['GK', 'DF', 'MD', 'AT'],
-    required: true
-  },
+  natural_position: { type: String, enum: ['GK', 'DF', 'MD', 'AT'], required: true },
   ratings: {
-    GK: { type: Number, min: 0, max: 100, default: 50 },
-    DF: { type: Number, min: 0, max: 100, default: 50 },
-    MD: { type: Number, min: 0, max: 100, default: 50 },
-    AT: { type: Number, min: 0, max: 100, default: 50 }
+    GK: { type: Number, min: 0, max: 100, default: 50.0 },
+    DF: { type: Number, min: 0, max: 100, default: 50.0 },
+    MD: { type: Number, min: 0, max: 100, default: 50.0 },
+    AT: { type: Number, min: 0, max: 100, default: 50.0 }
   },
   is_captain: { type: Boolean, default: false },
   goals: { type: Number, default: 0 }
@@ -34,13 +30,17 @@ const teamSchema = new mongoose.Schema({
 }, { strict: 'throw' });
 
 teamSchema.pre('save', function (next) {
-  if (this.squad && this.squad.length === 23) {
-    const total = this.squad.reduce((sum, p) => sum + (p.ratings[p.natural_position] || 50), 0);
-    this.rating = parseFloat((total / 23).toFixed(2));
-
-    const captain = this.squad.find(p => p.is_captain);
-    this.captain_name = captain ? captain.name : this.squad[0].name;
+  if (!this.squad || this.squad.length !== 23) {
+    return next(new Error('Squad must contain exactly 23 players'));
   }
+  // Calculate team rating
+  const totalRating = this.squad.reduce((sum, player) => {
+    return sum + (player.ratings[player.natural_position] || 50.0);
+  }, 0);
+  this.rating = parseFloat((totalRating / this.squad.length).toFixed(2));
+  // Set captain_name
+  const captain = this.squad.find(player => player.is_captain);
+  this.captain_name = captain ? captain.name : this.squad[0].name;
   next();
 });
 

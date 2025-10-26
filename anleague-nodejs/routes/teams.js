@@ -74,7 +74,7 @@ router.post('/autofill', authMiddleware, async (req, res) => {
       representative_id: user.id,
       squad,
       manager: `${user.username} Manager`
-      // rating and captain_name are set by pre-save hook
+      // rating and captain_name set by pre('save') hook
     });
 
     console.log('Team document to save:', JSON.stringify(team.toObject(), null, 2));
