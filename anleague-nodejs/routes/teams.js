@@ -15,7 +15,6 @@ router.post('/autofill', authMiddleware, async (req, res) => {
     }
     console.log('Team autofill attempt:', { user: user.username, country, userId: user.id });
 
-    // Validate userId
     if (!mongoose.Types.ObjectId.isValid(user.id)) {
       console.log('Invalid userId:', user.id);
       return res.render('dashboard', {
@@ -28,7 +27,6 @@ router.post('/autofill', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if user exists
     const userExists = await User.findById(user.id);
     if (!userExists) {
       console.log('User not found:', user.id);
@@ -42,7 +40,6 @@ router.post('/autofill', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check country match
     if (!country || user.country !== country) {
       console.log('Country mismatch or missing:', { userCountry: user.country, requestedCountry: country });
       return res.render('dashboard', {
@@ -55,7 +52,6 @@ router.post('/autofill', authMiddleware, async (req, res) => {
       });
     }
 
-    // Check for existing team
     const existingTeam = await Team.findOne({ country });
     if (existingTeam) {
       console.log('Team already exists:', country);
@@ -75,18 +71,17 @@ router.post('/autofill', authMiddleware, async (req, res) => {
     const team = new Team({
       country,
       userId: user.id,
-      representative_id: user.id, // Matches userId
+      representative_id: user.id,
       squad,
-      rating: calculateTeamRating(squad),
-      manager: `${user.username} Manager`,
-      captain_name: squad.find(player => player.is_captain)?.name || squad[0].name // Set captain_name
+      manager: `${user.username} Manager`
+      // rating and captain_name are set by pre-save hook
     });
 
     console.log('Team document to save:', JSON.stringify(team.toObject(), null, 2));
 
     await team.validate();
     await team.save();
-    console.log(`Team created: ${country} by ${user.username}`);
+    console.log(`Team created: ${country} by ${user.username} with 23 players`);
     res.redirect('/dashboard');
   } catch (err) {
     console.error('Team creation error:', err.message, err.stack, 'Details:', JSON.stringify(err, null, 2));
@@ -117,33 +112,38 @@ router.get('/', async (req, res) => {
       .populate('representative_id', 'username')
       .sort({ rating: -1 });
     console.log('Fetched teams:', teams.length);
-    res.render('teams', { 
-      title: 'Teams', 
-      teams, 
+    res.render('teams', {
+      title: 'Teams',
+      teams,
       user: req.user,
-      error: null 
+      error: null
     });
   } catch (err) {
     console.error('Teams fetch error:', err.message);
-    res.render('teams', { 
-      title: 'Teams', 
-      teams: [], 
-      user: req.user, 
-      error: 'Unable to fetch teams' 
+    res.render('teams', {
+      title: 'Teams',
+      teams: [],
+      user: req.user,
+      error: 'Unable to fetch teams'
     });
   }
 });
 
 function generateDefaultPlayers(country) {
-  const positions = ['GK', 'DF', 'DF', 'DF', 'DF', 'MD', 'MD', 'MD', 'AT', 'AT', 'AT'];
+  const positions = [
+    'GK', 'GK', 'GK', // 3 goalkeepers
+    'DF', 'DF', 'DF', 'DF', 'DF', 'DF', 'DF', // 7 defenders
+    'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD', // 8 midfielders
+    'AT', 'AT', 'AT', 'AT', 'AT' // 5 attackers
+  ];
   const players = positions.map((position, index) => ({
     name: `${country} Player ${index + 1}`,
     natural_position: position,
     ratings: {
-      GK: position === 'GK' ? 80 : 50,
-      DF: position === 'DF' ? 80 : 50,
-      MD: position === 'MD' ? 80 : 50,
-      AT: position === 'AT' ? 80 : 50
+      GK: position === 'GK' ? 80.0 : 50.0,
+      DF: position === 'DF' ? 80.0 : 50.0,
+      MD: position === 'MD' ? 80.0 : 50.0,
+      AT: position === 'AT' ? 80.0 : 50.0
     },
     is_captain: index === 0,
     goals: 0
@@ -154,7 +154,7 @@ function generateDefaultPlayers(country) {
 function calculateTeamRating(squad) {
   if (!squad.length) return 0.0;
   const totalRating = squad.reduce((sum, player) => {
-    return sum + (player.ratings[player.natural_position] || 50);
+    return sum + (player.ratings[player.natural_position] || 50.0);
   }, 0);
   return parseFloat((totalRating / squad.length).toFixed(2));
 }
