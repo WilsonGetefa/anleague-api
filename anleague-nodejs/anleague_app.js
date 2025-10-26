@@ -44,7 +44,7 @@ app.use((req, res, next) => {
       req.user = null;
     }
   } else {
-    console.log('No token provided for path:', req.path);
+    console.log('No token provided for path:', req.path, 'Cookies:', req.cookies);
     req.user = null;
   }
   next();
@@ -53,9 +53,10 @@ app.use((req, res, next) => {
 // Authentication middleware for protected routes
 const authMiddleware = (req, res, next) => {
   if (!req.user) {
-    console.log('Authentication failed for path:', req.path);
+    console.log('Authentication failed for path:', req.path, 'req.user:', req.user, 'Cookies:', req.cookies);
     return res.redirect('/login');
   }
+  console.log('Authentication successful for path:', req.path, 'User:', req.user.username);
   next();
 };
 
@@ -69,12 +70,13 @@ const adminMiddleware = (req, res, next) => {
 
 // Routes
 app.use('/auth', require('./routes/auth'));
-app.use('/teams', require('./routes/teams')); // No authMiddleware for public /teams
+app.use('/teams', require('./routes/teams'));
 app.use('/admin', authMiddleware, adminMiddleware, require('./routes/admin'));
 app.use('/', require('./routes/public'));
 
 // Home route
 app.get('/', (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.render('index', { title: 'African Nations League', user: req.user });
 });
 
@@ -92,6 +94,7 @@ app.get('/signup', (req, res) => {
   if (req.user) {
     return res.redirect(req.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
   }
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.render('signup', { title: 'Sign Up', error: null });
 });
 

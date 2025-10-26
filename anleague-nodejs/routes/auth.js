@@ -31,7 +31,13 @@ router.post('/login', async (req, res) => {
       return res.render('login', { title: 'Login', error: 'Invalid credentials' });
     }
     const token = jwt.sign({ id: user._id, username, country: user.country, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie('token', token, {
+      httpOnly: true,
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+    console.log('Login successful, token set for user:', username);
     res.redirect(user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
   } catch (err) {
     console.error('Login error:', err.message);
