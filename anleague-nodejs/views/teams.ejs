@@ -6,10 +6,8 @@
   <title><%= title %></title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-    <link rel="icon" type="image/x-icon" href="images/caf.png">
+  <link rel="icon" type="image/x-icon" href="/images/caf.png">
   <style>
-    /* Match header color and enhance table */
-
     table {
       width: 100%;
       border-collapse: collapse;
@@ -18,7 +16,7 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     th {
-      background-color: #2e6b5b; /* Match header color */
+      background-color: #2e6b5b;
       color: white;
       padding: 12px;
       text-align: left;
@@ -39,7 +37,6 @@
       margin-bottom: 8px;
       font-size: 0.95em;
     }
-    /* Responsive design */
     @media (max-width: 600px) {
       table {
         display: block;
@@ -68,11 +65,10 @@
       <a href="/auth/logout">Logout</a>
     <% } else { %>
       <a href="/login">Login</a>
-      <a href="/signup">Sign Up</a>
     <% } %>
   </nav>
   <main class="container">
-    <h2>All Teams</h2>
+    <h2>All Teams (<%= teams.length %>)</h2>
     <% if (error) { %>
       <p style="color: red;"><%= error %></p>
     <% } %>
