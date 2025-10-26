@@ -12,7 +12,8 @@ router.post('/start', async (req, res) => {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
-        error: 'Need 8 teams to start the tournament'
+        error: 'Need 8 teams to start the tournament',
+        message: null
       });
     }
     
@@ -34,14 +35,16 @@ router.post('/start', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      message: 'Tournament started successfully'
+      message: 'Tournament started successfully',
+      error: null
     });
   } catch (err) {
     console.error('Start tournament error:', err.message);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      error: 'Failed to start tournament'
+      error: 'Failed to start tournament',
+      message: null
     });
   }
 });
@@ -56,14 +59,16 @@ router.post('/restart', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      message: 'Tournament reset successfully'
+      message: 'Tournament reset successfully',
+      error: null
     });
   } catch (err) {
     console.error('Restart tournament error:', err.message);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      error: 'Failed to reset tournament'
+      error: 'Failed to reset tournament',
+      message: null
     });
   }
 });

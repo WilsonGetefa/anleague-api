@@ -121,7 +121,13 @@ app.get('/dashboard', authMiddleware, async (req, res) => {
 app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
   const { username } = req.user;
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-  res.render('admin_dashboard', { title: 'Admin Dashboard', username, role: 'admin' });
+  res.render('admin_dashboard', {
+    title: 'Admin Dashboard',
+    username: username,
+    role: 'admin',
+    message: null,
+    error: null
+  });
 });
 
 // Start server
