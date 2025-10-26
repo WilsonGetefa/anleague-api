@@ -5,6 +5,7 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const Team = require('./models/team');
+const { authMiddleware } = require('./middleware/auth'); // Import authMiddleware
 
 // Load environment variables
 dotenv.config();
@@ -49,16 +50,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-// Authentication middleware for protected routes
-const authMiddleware = (req, res, next) => {
-  if (!req.user) {
-    console.log('Authentication failed for path:', req.path, 'req.user:', req.user, 'Cookies:', req.cookies);
-    return res.redirect('/login');
-  }
-  console.log('Authentication successful for path:', req.path, 'User:', req.user.username);
-  next();
-};
 
 // Admin middleware
 const adminMiddleware = (req, res, next) => {
@@ -141,6 +132,3 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 mongoose.connect(process.env.MONGO_URI, { dbName: 'anleague' })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
-
-// Export authMiddleware
-module.exports = { authMiddleware };

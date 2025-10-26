@@ -3,7 +3,7 @@ const router = express.Router();
 const Team = require('../models/team');
 const User = require('../models/user');
 const mongoose = require('mongoose');
-const { authMiddleware } = require('../anleague_app');
+const { authMiddleware } = require('../middleware/auth');
 
 router.post('/autofill', authMiddleware, async (req, res) => {
   const { country } = req.body;
