@@ -11,9 +11,16 @@ router.post('/start', async (req, res) => {
     const teams = await Team.find();
     if (teams.length < 8) return res.status(400).json({ error: 'Need at least 8 teams' });
 
-    const shuffled = teams.sort(() => 0.5 - Math.random()).slice(0, 8);
+    const shuffled = teams.sort(() => 0.5 - Math.random());
+    if (shuffled.length < 8) {
+      return res.status(400).json({ error: 'Not enough teams to pair for quarterfinals' });
+    }
     const quarterfinals = [];
     for (let i = 0; i < 8; i += 2) {
+      if (!shuffled[i + 1]) {
+        console.error('Insufficient teams at index', i + 1, 'Teams:', shuffled.map(t => t.country));
+        return res.status(400).json({ error: 'Insufficient teams to complete quarterfinal pairs' });
+      }
       const match = new Match({
         stage: 'quarterfinal',
         team1_id: shuffled[i]._id,
@@ -24,7 +31,7 @@ router.post('/start', async (req, res) => {
       quarterfinals.push({ match_id: match._id, team1_id: shuffled[i]._id, team2_id: shuffled[i + 1]._id });
     }
 
-    const tournament = new Tournament({ teams: shuffled.map(t => t._id), bracket: { quarterfinals, semifinals: [], final: [] }, status: 'active' });
+    const tournament = new Tournament({ teams: shuffled.slice(0, 8).map(t => t._id), bracket: { quarterfinals, semifinals: [], final: [] }, status: 'active' });
     await tournament.save();
     res.json({ message: 'Tournament started' });
   } catch (err) {
@@ -89,7 +96,7 @@ router.get('/bracket', async (req, res) => {
     }
 
     if (!tournament) {
-      return res.render('bracket', { title: 'Tournament Bracket', tournament: null, message: 'No active tournament' });
+      return res.render('bracket', { title: 'Tournament Bracket', tournament: null, message: 'No active tournament', user: req.user });
     }
 
     // Ensure bracket fields are arrays and matches are valid
@@ -98,7 +105,7 @@ router.get('/bracket', async (req, res) => {
     tournament.bracket.semifinals = (tournament.bracket.semifinals || []).filter(match => match.match_id && match.match_id._id);
     tournament.bracket.final = (tournament.bracket.final || []).filter(match => match.match_id && match.match_id._id);
 
-    res.render('bracket', { title: 'Tournament Bracket', tournament, message: null });
+    res.render('bracket', { title: 'Tournament Bracket', tournament, message: null, user: req.user });
   } catch (err) {
     console.error('Bracket route error:', err.message, err.stack);
     res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load bracket' });
@@ -144,9 +151,9 @@ router.get('/match/:id', async (req, res) => {
       .populate('team1_id', 'country')
       .populate('team2_id', 'country');
     if (!match) {
-      return res.render('match', { title: 'Match Details', match: null, message: 'Match not found' });
+      return res.render('match', { title: 'Match Details', match: null, message: 'Match not found', user: req.user });
     }
-    res.render('match', { title: 'Match Details', match });
+    res.render('match', { title: 'Match Details', match, user: req.user });
   } catch (err) {
     console.error('Match details error:', err.message, err.stack);
     res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load match details' });
