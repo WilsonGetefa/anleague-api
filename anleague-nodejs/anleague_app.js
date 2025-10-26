@@ -100,6 +100,7 @@ app.get('/dashboard', authMiddleware, async (req, res) => {
   const { username, country, role } = req.user;
   try {
     const hasTeam = await Team.findOne({ country });
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.render('dashboard', {
       title: 'Dashboard',
       username,
@@ -110,6 +111,7 @@ app.get('/dashboard', authMiddleware, async (req, res) => {
     });
   } catch (err) {
     console.error('Dashboard error:', err.message);
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.render('dashboard', {
       title: 'Dashboard',
       username,
@@ -124,6 +126,7 @@ app.get('/dashboard', authMiddleware, async (req, res) => {
 // Admin dashboard route
 app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
   const { username } = req.user;
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.render('admin_dashboard', { title: 'Admin Dashboard', username, role: 'admin' });
 });
 

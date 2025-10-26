@@ -6,7 +6,7 @@
   <title><%= title %></title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" href="images/caf.png">
+  <link rel="icon" type="image/x-icon" href="/images/caf.png">
 </head>
 <body>
   <header>
@@ -34,5 +34,14 @@
       </form>
     <% } %>
   </main>
+  <script>
+    // Check if token cookie exists on page load
+    window.addEventListener('load', () => {
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+      if (!token) {
+        window.location.href = '/login';
+      }
+    });
+  </script>
 </body>
 </html>
