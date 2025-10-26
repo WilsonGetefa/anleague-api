@@ -62,7 +62,7 @@ const teamSchema = new mongoose.Schema({
   },
   rating: { type: Number, default: 0.0 },
   manager: { type: String, required: true },
-  captain_name: { type: String, required: true, default: 'Unknown Captain' } // Fallback default
+  captain_name: { type: String, required: true, default: 'Unknown Captain' }
 }, { strict: 'throw' });
 
 teamSchema.pre('save', function (next) {
@@ -86,8 +86,8 @@ teamSchema.pre('save', function (next) {
       console.log(`Player ${player.name}: ${player.natural_position} rating = ${rating}`);
       return sum + rating;
     }, 0);
-    this.rating = parseFloat((totalRating / this.squad.length).toFixed(2));
-    console.log(`Calculated rating: ${this.rating}`);
+    this.rating = Number((totalRating / this.squad.length).toFixed(2)); // Ensure double
+    console.log(`Calculated rating: ${this.rating}, type: ${typeof this.rating}`);
 
     // Set captain_name
     const captain = this.squad.find(player => player.is_captain);

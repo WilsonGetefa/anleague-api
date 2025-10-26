@@ -168,7 +168,7 @@ function calculateTeamRating(squad) {
   const totalRating = squad.reduce((sum, player) => {
     return sum + (player.ratings[player.natural_position] || 50);
   }, 0);
-  return parseFloat((totalRating / squad.length).toFixed(2));
+  return Number((totalRating / squad.length).toFixed(2));
 }
 
 module.exports = router;
