@@ -7,45 +7,46 @@ const matchController = require('../controllers/matchController');
 
 router.post('/start', async (req, res) => {
   try {
-    const teams = await Team.find();
+    const teams = await Team.find().lean();
     if (teams.length < 8) {
-      return res.render('admin_dashboard', {
-        title: 'Admin Dashboard',
-        username: req.user.username,
-        error: 'Need 8 teams to start the tournament',
-        message: null
-      });
-    }
-    
-    const shuffled = teams.sort(() => 0.5 - Math.random()).slice(0, 8);
-    const quarterfinals = [];
-    for (let i = 0; i < 8; i += 2) {
-      const match = new Match({
-        stage: 'quarterfinal',
-        team1_id: shuffled[i]._id,
-        team2_id: shuffled[i + 1]._id,
-        type: 'simulated'
-      });
-      await match.save();
-      quarterfinals.push({ match_id: match._id, team1_id: shuffled[i]._id, team2_id: shuffled[i + 1]._id });
+      return res.status(400).json({ error: 'Need at least 8 teams' });
     }
 
-    const tournament = new Tournament({ teams: shuffled.map(t => t._id), bracket: { quarterfinals } });
-    await tournament.save();
-    res.render('admin_dashboard', {
-      title: 'Admin Dashboard',
-      username: req.user.username,
-      message: 'Tournament started successfully',
-      error: null
+    const shuffled = [...teams].sort(() => 0.5 - Math.random());
+    const validTeams = shuffled.slice(0, 8).filter(team => team._id); // Ensure valid _id
+    if (validTeams.length < 8) {
+      return res.status(400).json({ error: 'Not enough valid teams to pair for quarterfinals' });
+    }
+
+    const quarterfinals = [];
+    for (let i = 0; i < 8; i += 2) {
+      const team1 = validTeams[i];
+      const team2 = validTeams[i + 1];
+      if (!team1._id || !team2._id) {
+        console.error('Invalid team IDs at index', i, 'or', i + 1, 'Teams:', validTeams.map(t => t.country));
+        return res.status(400).json({ error: 'Invalid team data detected' });
+      }
+      const match = new Match({
+        stage: 'quarterfinal',
+        team1_id: team1._id,
+        team2_id: team2._id,
+        type: 'simulated',
+        status: 'pending'
+      });
+      await match.save();
+      quarterfinals.push({ match_id: match._id, team1_id: team1._id, team2_id: team2._id });
+    }
+
+    const tournament = new Tournament({
+      teams: validTeams.map(t => t._id),
+      bracket: { quarterfinals, semifinals: [], final: [] },
+      status: 'active'
     });
+    await tournament.save();
+    res.json({ message: 'Tournament started' });
   } catch (err) {
     console.error('Start tournament error:', err.message);
-    res.render('admin_dashboard', {
-      title: 'Admin Dashboard',
-      username: req.user.username,
-      error: 'Failed to start tournament',
-      message: null
-    });
+    res.status(500).json({ error: err.message });
   }
 });
 
