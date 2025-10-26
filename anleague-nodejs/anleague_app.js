@@ -38,7 +38,7 @@ app.use((req, res, next) => {
   if (token) {
     try {
       req.user = jwt.verify(token, process.env.JWT_SECRET);
-      console.log('JWT verified:', req.user.username, 'for path:', req.path);
+      console.log('JWT verified:', req.user.username, 'for path:', req.path, 'user.id:', req.user.id);
     } catch (err) {
       console.error('JWT verification error:', err.message, 'for path:', req.path);
       req.user = null;
@@ -49,8 +49,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-module.exports = { authMiddleware }; // Export authMiddleware
 
 // Authentication middleware for protected routes
 const authMiddleware = (req, res, next) => {
@@ -143,3 +141,6 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 mongoose.connect(process.env.MONGO_URI, { dbName: 'anleague' })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
+
+// Export authMiddleware
+module.exports = { authMiddleware };
