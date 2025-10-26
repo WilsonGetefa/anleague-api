@@ -9,13 +9,23 @@ router.post('/start', async (req, res) => {
   try {
     const teams = await Team.find().lean();
     if (teams.length < 8) {
-      return res.status(400).json({ error: 'Need at least 8 teams' });
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'Need at least 8 teams',
+        message: null
+      });
     }
 
     const shuffled = [...teams].sort(() => 0.5 - Math.random());
-    const validTeams = shuffled.slice(0, 8).filter(team => team._id); // Ensure valid _id
+    const validTeams = shuffled.slice(0, 8).filter(team => team._id && team._id.toString().length === 24); // Ensure valid ObjectId
     if (validTeams.length < 8) {
-      return res.status(400).json({ error: 'Not enough valid teams to pair for quarterfinals' });
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'Not enough valid teams to pair for quarterfinals',
+        message: null
+      });
     }
 
     const quarterfinals = [];
@@ -24,7 +34,12 @@ router.post('/start', async (req, res) => {
       const team2 = validTeams[i + 1];
       if (!team1._id || !team2._id) {
         console.error('Invalid team IDs at index', i, 'or', i + 1, 'Teams:', validTeams.map(t => t.country));
-        return res.status(400).json({ error: 'Invalid team data detected' });
+        return res.render('admin_dashboard', {
+          title: 'Admin Dashboard',
+          username: req.user.username,
+          error: 'Invalid team data detected',
+          message: null
+        });
       }
       const match = new Match({
         stage: 'quarterfinal',
@@ -40,13 +55,23 @@ router.post('/start', async (req, res) => {
     const tournament = new Tournament({
       teams: validTeams.map(t => t._id),
       bracket: { quarterfinals, semifinals: [], final: [] },
-      status: 'quarterfinals' // Updated to match the schema enum
+      status: 'quarterfinals'
     });
     await tournament.save();
-    res.json({ message: 'Tournament started' });
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      message: 'Tournament started successfully',
+      error: null
+    });
   } catch (err) {
     console.error('Start tournament error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      error: 'Failed to start tournament',
+      message: null
+    });
   }
 });
 
