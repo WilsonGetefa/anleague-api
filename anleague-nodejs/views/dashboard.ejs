@@ -34,14 +34,5 @@
       </form>
     <% } %>
   </main>
-  <script>
-    // Check if token cookie exists on page load
-    window.addEventListener('load', () => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='));
-      if (!token) {
-        window.location.href = '/login';
-      }
-    });
-  </script>
 </body>
 </html>
