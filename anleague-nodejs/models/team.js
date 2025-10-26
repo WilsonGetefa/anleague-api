@@ -86,8 +86,9 @@ teamSchema.pre('save', function (next) {
       console.log(`Player ${player.name}: ${player.natural_position} rating = ${rating}`);
       return sum + rating;
     }, 0);
-    this.rating = Number((totalRating / this.squad.length).toFixed(2)); // Ensure double
-    console.log(`Calculated rating: ${this.rating}, type: ${typeof this.rating}`);
+    // Ensure rating is a double by adding a small decimal
+    this.rating = Number((totalRating / this.squad.length).toFixed(2)) + 0.000001;
+    console.log(`Calculated rating: ${this.rating}, type: ${typeof this.rating}, isInteger: ${Number.isInteger(this.rating)}`);
 
     // Set captain_name
     const captain = this.squad.find(player => player.is_captain);
