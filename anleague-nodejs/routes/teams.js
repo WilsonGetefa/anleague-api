@@ -66,6 +66,10 @@ router.post('/autofill', authMiddleware, async (req, res) => {
     }
 
     const squad = generateDefaultPlayers(country);
+    if (squad.length !== 23) {
+      console.error(`Generated squad has ${squad.length} players, expected 23`);
+      throw new Error(`Generated squad has ${squad.length} players, expected 23`);
+    }
     console.log('Generated squad:', JSON.stringify(squad, null, 2));
 
     const team = new Team({
@@ -136,25 +140,33 @@ function generateDefaultPlayers(country) {
     'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD', // 8 midfielders
     'AT', 'AT', 'AT', 'AT', 'AT' // 5 attackers
   ];
+  if (positions.length !== 23) {
+    console.error(`Positions array has ${positions.length} elements, expected 23`);
+    throw new Error(`Positions array has ${positions.length} elements, expected 23`);
+  }
   const players = positions.map((position, index) => ({
     name: `${country} Player ${index + 1}`,
     natural_position: position,
     ratings: {
-      GK: position === 'GK' ? 80.0 : 50.0,
-      DF: position === 'DF' ? 80.0 : 50.0,
-      MD: position === 'MD' ? 80.0 : 50.0,
-      AT: position === 'AT' ? 80.0 : 50.0
+      GK: position === 'GK' ? 80 : 50,
+      DF: position === 'DF' ? 80 : 50,
+      MD: position === 'MD' ? 80 : 50,
+      AT: position === 'AT' ? 80 : 50
     },
-    is_captain: index === 0,
+    is_captain: index === 0, // First player is captain
     goals: 0
   }));
+  console.log(`Generated ${players.length} players for ${country}`);
   return players;
 }
 
 function calculateTeamRating(squad) {
-  if (!squad.length) return 0.0;
+  if (!squad || squad.length === 0) {
+    console.error('Squad is empty or invalid');
+    return 0.0;
+  }
   const totalRating = squad.reduce((sum, player) => {
-    return sum + (player.ratings[player.natural_position] || 50.0);
+    return sum + (player.ratings[player.natural_position] || 50);
   }, 0);
   return parseFloat((totalRating / squad.length).toFixed(2));
 }

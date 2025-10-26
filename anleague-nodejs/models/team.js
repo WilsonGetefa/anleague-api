@@ -4,10 +4,46 @@ const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   natural_position: { type: String, enum: ['GK', 'DF', 'MD', 'AT'], required: true },
   ratings: {
-    GK: { type: Number, min: 0, max: 100, default: 50.0 },
-    DF: { type: Number, min: 0, max: 100, default: 50.0 },
-    MD: { type: Number, min: 0, max: 100, default: 50.0 },
-    AT: { type: Number, min: 0, max: 100, default: 50.0 }
+    GK: { 
+      type: Number, 
+      min: 0, 
+      max: 100, 
+      default: 50,
+      validate: {
+        validator: Number.isInteger,
+        message: '{VALUE} is not an integer for GK rating'
+      }
+    },
+    DF: { 
+      type: Number, 
+      min: 0, 
+      max: 100, 
+      default: 50,
+      validate: {
+        validator: Number.isInteger,
+        message: '{VALUE} is not an integer for DF rating'
+      }
+    },
+    MD: { 
+      type: Number, 
+      min: 0, 
+      max: 100, 
+      default: 50,
+      validate: {
+        validator: Number.isInteger,
+        message: '{VALUE} is not an integer for MD rating'
+      }
+    },
+    AT: { 
+      type: Number, 
+      min: 0, 
+      max: 100, 
+      default: 50,
+      validate: {
+        validator: Number.isInteger,
+        message: '{VALUE} is not an integer for AT rating'
+      }
+    }
   },
   is_captain: { type: Boolean, default: false },
   goals: { type: Number, default: 0 }
@@ -30,17 +66,23 @@ const teamSchema = new mongoose.Schema({
 }, { strict: 'throw' });
 
 teamSchema.pre('save', function (next) {
+  console.log(`Pre-save hook: squad length = ${this.squad ? this.squad.length : 0}`);
   if (!this.squad || this.squad.length !== 23) {
-    return next(new Error('Squad must contain exactly 23 players'));
+    console.error(`Squad validation failed: ${this.squad ? this.squad.length : 0} players, expected 23`);
+    return next(new Error(`Squad must contain exactly 23 players, got ${this.squad ? this.squad.length : 0}`));
   }
-  // Calculate team rating
+  // Calculate team rating as double
   const totalRating = this.squad.reduce((sum, player) => {
-    return sum + (player.ratings[player.natural_position] || 50.0);
+    const rating = player.ratings[player.natural_position] || 50;
+    console.log(`Player ${player.name}: ${player.natural_position} rating = ${rating}`);
+    return sum + rating;
   }, 0);
   this.rating = parseFloat((totalRating / this.squad.length).toFixed(2));
+  console.log(`Calculated rating: ${this.rating}`);
   // Set captain_name
   const captain = this.squad.find(player => player.is_captain);
-  this.captain_name = captain ? captain.name : this.squad[0].name;
+  this.captain_name = captain ? captain.name : this.squad[0].name || `${this.country} Captain`;
+  console.log(`Set captain_name: ${this.captain_name}`);
   next();
 });
 
