@@ -19,7 +19,7 @@ const tournamentSchema = new mongoose.Schema({
       team2_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
     }]
   },
-  status: { type: String, enum: ['pending', 'in_progress', 'completed', 'active'], required: true },
+  status: { type: String, enum: ['quarterfinals', 'semifinals', 'final', 'completed'], required: true },
   __v: Number
 });
 
