@@ -16,7 +16,9 @@ exports.simulateMatch = async (req, res) => {
     if (!matches.length) return res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      error: 'No unsimulated quarterfinal matches found'
+      role: 'admin',
+      error: 'No unsimulated quarterfinal matches found',
+      message: null
     });
 
     for (const match of matches) {
@@ -59,14 +61,18 @@ exports.simulateMatch = async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      message: 'All quarterfinal matches simulated'
+      role: 'admin',
+      message: 'All quarterfinal matches simulated',
+      error: null
     });
   } catch (err) {
     console.error('Simulate match error:', err.message);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      error: 'Failed to simulate matches'
+      role: 'admin',
+      error: 'Failed to simulate matches',
+      message: null
     });
   }
 };
@@ -77,10 +83,12 @@ exports.playMatch = async (req, res) => {
     if (!matches.length) return res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      error: 'No unplayed quarterfinal matches found'
+      role: 'admin',
+      error: 'No unplayed quarterfinal matches found',
+      message: null
     });
 
-    const match = matches[0]; // Play the first available match
+    const match = matches[0];
     const prompt = `Generate football match commentary for ${match.team1_id.country} vs ${match.team2_id.country}. Include key moments, goals, and determine the winner. Squads: ${JSON.stringify(match.team1_id.squad.map(p => ({ name: p.name, position: p.natural_position })))} vs ${JSON.stringify(match.team2_id.squad.map(p => ({ name: p.name, position: p.natural_position })))}.`;
     const response = await openai.chat.completions.create({
       model: 'gpt-4',
@@ -128,14 +136,18 @@ exports.playMatch = async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      message: `Match played: ${match.team1_id.country} ${score.team1} - ${score.team2} ${match.team2_id.country}`
+      role: 'admin',
+      message: `Match played: ${match.team1_id.country} ${score.team1} - ${score.team2} ${match.team2_id.country}`,
+      error: null
     });
   } catch (err) {
     console.error('Play match error:', err.message);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      error: 'Failed to play match'
+      role: 'admin',
+      error: 'Failed to play match',
+      message: null
     });
   }
 };
