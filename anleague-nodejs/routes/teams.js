@@ -78,12 +78,12 @@ router.post('/autofill', authMiddleware, async (req, res) => {
       representative_id: user.id,
       squad,
       manager: `${user.username} Manager`
-      // rating and captain_name set by pre('save') hook
     });
 
     console.log('Team document to save:', JSON.stringify(team.toObject(), null, 2));
 
     await team.validate();
+    console.log('Validation passed, saving team...');
     await team.save();
     console.log(`Team created: ${country} by ${user.username} with 23 players`);
     res.redirect('/dashboard');
@@ -153,7 +153,7 @@ function generateDefaultPlayers(country) {
       MD: position === 'MD' ? 80 : 50,
       AT: position === 'AT' ? 80 : 50
     },
-    is_captain: index === 0, // First player is captain
+    is_captain: index === 0,
     goals: 0
   }));
   console.log(`Generated ${players.length} players for ${country}`);

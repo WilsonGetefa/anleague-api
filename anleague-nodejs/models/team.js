@@ -62,28 +62,43 @@ const teamSchema = new mongoose.Schema({
   },
   rating: { type: Number, default: 0.0 },
   manager: { type: String, required: true },
-  captain_name: { type: String, required: true }
+  captain_name: { type: String, required: true, default: 'Unknown Captain' } // Fallback default
 }, { strict: 'throw' });
 
 teamSchema.pre('save', function (next) {
-  console.log(`Pre-save hook: squad length = ${this.squad ? this.squad.length : 0}`);
-  if (!this.squad || this.squad.length !== 23) {
-    console.error(`Squad validation failed: ${this.squad ? this.squad.length : 0} players, expected 23`);
-    return next(new Error(`Squad must contain exactly 23 players, got ${this.squad ? this.squad.length : 0}`));
+  try {
+    console.log(`Pre-save hook started for team: ${this.country}, squad length: ${this.squad ? this.squad.length : 0}`);
+    
+    // Validate squad
+    if (!this.squad || this.squad.length !== 23) {
+      const error = new Error(`Squad must contain exactly 23 players, got ${this.squad ? this.squad.length : 0}`);
+      console.error('Pre-save error:', error.message);
+      return next(error);
+    }
+
+    // Calculate team rating
+    const totalRating = this.squad.reduce((sum, player, index) => {
+      if (!player.ratings || !player.natural_position) {
+        console.error(`Invalid player at index ${index}:`, player);
+        throw new Error(`Invalid player data at index ${index}`);
+      }
+      const rating = player.ratings[player.natural_position] || 50;
+      console.log(`Player ${player.name}: ${player.natural_position} rating = ${rating}`);
+      return sum + rating;
+    }, 0);
+    this.rating = parseFloat((totalRating / this.squad.length).toFixed(2));
+    console.log(`Calculated rating: ${this.rating}`);
+
+    // Set captain_name
+    const captain = this.squad.find(player => player.is_captain);
+    this.captain_name = captain ? captain.name : this.squad[0].name || `${this.country} Captain`;
+    console.log(`Set captain_name: ${this.captain_name}`);
+
+    next();
+  } catch (error) {
+    console.error('Pre-save hook failed:', error.message);
+    next(error);
   }
-  // Calculate team rating as double
-  const totalRating = this.squad.reduce((sum, player) => {
-    const rating = player.ratings[player.natural_position] || 50;
-    console.log(`Player ${player.name}: ${player.natural_position} rating = ${rating}`);
-    return sum + rating;
-  }, 0);
-  this.rating = parseFloat((totalRating / this.squad.length).toFixed(2));
-  console.log(`Calculated rating: ${this.rating}`);
-  // Set captain_name
-  const captain = this.squad.find(player => player.is_captain);
-  this.captain_name = captain ? captain.name : this.squad[0].name || `${this.country} Captain`;
-  console.log(`Set captain_name: ${this.captain_name}`);
-  next();
 });
 
 module.exports = mongoose.model('Team', teamSchema);
