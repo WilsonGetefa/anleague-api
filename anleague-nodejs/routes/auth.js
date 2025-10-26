@@ -41,7 +41,7 @@ router.post('/login', async (req, res) => {
 
 // Logout route
 router.get('/logout', (req, res) => {
-  console.log('Logout route accessed');
+  console.log('Logout route accessed, clearing token');
   res.clearCookie('token', { httpOnly: true, path: '/', secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
   console.log('Token cookie cleared, redirecting to /login');
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');

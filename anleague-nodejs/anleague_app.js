@@ -22,7 +22,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // JWT middleware to set req.user
 app.use((req, res, next) => {
-  if (req.path.startsWith('/public') || req.path.includes('images') || req.path === '/favicon.ico') {
+  if (
+    req.path.startsWith('/public') ||
+    req.path.includes('images') ||
+    req.path === '/favicon.ico' ||
+    req.path === '/login' ||
+    req.path === '/signup' ||
+    req.path === '/'
+  ) {
+    console.log('Skipping JWT verification for path:', req.path);
+    req.user = null;
     return next();
   }
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
@@ -74,6 +83,7 @@ app.get('/login', (req, res) => {
   if (req.user) {
     return res.redirect(req.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
   }
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.render('login', { title: 'Login', error: null });
 });
 
