@@ -75,11 +75,11 @@ router.post('/autofill', authMiddleware, async (req, res) => {
     const team = new Team({
       country,
       userId: user.id,
-      representative_id: user.id,
+      representative_id: user.id, // Matches userId
       squad,
       rating: calculateTeamRating(squad),
       manager: `${user.username} Manager`,
-      captain_name: squad.find(player => player.is_captain)?.name || squad[0].name
+      captain_name: squad.find(player => player.is_captain)?.name || squad[0].name // Set captain_name
     });
 
     console.log('Team document to save:', JSON.stringify(team.toObject(), null, 2));
@@ -112,8 +112,9 @@ router.post('/autofill', authMiddleware, async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const teams = await Team.find()
-      .select('country manager rating squad')
+      .select('country manager rating squad captain_name representative_id')
       .populate('userId', 'username')
+      .populate('representative_id', 'username')
       .sort({ rating: -1 });
     console.log('Fetched teams:', teams.length);
     res.render('teams', { 
@@ -151,11 +152,11 @@ function generateDefaultPlayers(country) {
 }
 
 function calculateTeamRating(squad) {
-  if (!squad.length) return 0;
+  if (!squad.length) return 0.0;
   const totalRating = squad.reduce((sum, player) => {
     return sum + (player.ratings[player.natural_position] || 50);
   }, 0);
-  return totalRating / squad.length;
+  return parseFloat((totalRating / squad.length).toFixed(2));
 }
 
 module.exports = router;
