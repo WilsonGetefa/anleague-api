@@ -6,7 +6,24 @@
   <title><%= title %></title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" href="images/caf.png">
+  <link rel="icon" type="image/x-icon" href="/images/caf.png">
+  <style>
+    header { background-color: #333333; color: white; padding: 15px; text-align: center; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    nav { margin: 10px 0; background-color: #f8f8f8; padding: 10px; }
+    nav a { margin-right: 15px; color: #333333; text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin-bottom: 10px; font-size: 1.1em; }
+    a { color: #1DA1F2; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .message { color: #28a745; margin-top: 10px; }
+    .error { color: #dc3545; margin-top: 10px; }
+    @media (max-width: 600px) {
+      nav a { display: block; margin-bottom: 5px; }
+      li { font-size: 1em; }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -14,15 +31,26 @@
   </header>
   <nav>
     <a href="/">Home</a> |
+    <a href="/teams">Teams</a> |
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
-    <a href="/teams">Teams</a> |
-    <a href="/login">Login</a> |
-    <a href="/signup">Sign Up</a>
+    <% if (user) { %>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/dashboard">Admin Dashboard</a> |
+      <% } else { %>
+        <a href="/dashboard">Dashboard</a> |
+      <% } %>
+      <a href="/auth/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a> |
+      <a href="/signup">Sign Up</a>
+    <% } %>
   </nav>
   <main class="container">
-    <% if (typeof message !== 'undefined' && message) { %>
-      <p><%= message %></p>
+    <% if (message) { %>
+      <p class="message"><%= message %></p>
+    <% } else if (error) { %>
+      <p class="error"><%= error %></p>
     <% } else if (tournament) { %>
       <h2>Quarterfinals</h2>
       <ul>

@@ -6,10 +6,9 @@ Setup Locally
 - **Deployed URL**: https://anleague-api.onrender.com
 - **Admin Login**: Username: admin, Password: admin123
 - **Database**: MongoDB Atlas, `anleague` database
-  - **Note**: Bypassed Mongoose validation (`validateBeforeSave: false`) to debug team creation.
-  - **Note**: Added `/teams` route and `teams.ejs` to view all teams.
-  - **Note**: Added logout route in `auth.js`.
-  - **Note**: Fixed duplicate index warnings.
+  - **Note**: Team creation successful for Algeria.
+  - **Note**: Enhanced `/teams` page with styling matching header color (#333333).
+  - **Note**: Resolved duplicate index warning.
 - **Frontend Pages**:
   - `GET /`: Home page
   - `GET /teams`: View all teams
@@ -26,18 +25,17 @@ Setup Locally
   - `GET /teams`: View teams
   - `POST /admin/start`, `/admin/simulate`, `/admin/play`, `/admin/restart`: Tournament management
 - **Demo**:
-  1. Sign up at `/signup`.
-  2. Login at `/login` (representatives to `/dashboard`, admins to `/admin/dashboard`).
+  1. Sign up at `/signup` (e.g., `wilson_G`, `Algeria`, `representative`).
+  2. Login at `/login` (redirects to `/dashboard`).
   3. Create team via `/teams/autofill` on `/dashboard`.
-  4. View teams at `/teams`.
-  5. Logout via `/logout`.
-  6. Admin starts tournament with `/admin/start`.
-  7. View bracket at `/bracket`.
+  4. Create 7 more teams for other countries.
+  5. Login as admin, start tournament with `/admin/start`.
+  6. View teams at `/teams`, bracket at `/bracket`, rankings at `/rankings`.
+  7. Logout via `/auth/logout`.
 - **Troubleshooting**:
-  - If `Document failed validation`: Run `db.teams.drop()` and retest.
-  - If teams not visible: Verify `/teams` route and `teams.ejs`.
-  - If logout fails: Check `auth.js` for `GET /logout`.
-  - If duplicate index warnings: Run `db.users.dropIndexes()`.
+  - If tournament issues: Check `db.tournaments` and `db.matches`.
+  - If display issues: Share browser output.
+  - If errors: Share Render logs.
 
 Clone the repo: git clone <your-repo-url>
 Install dependencies: npm install

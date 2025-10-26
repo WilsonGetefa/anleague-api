@@ -94,7 +94,24 @@ curl -X POST https://anleague-api.onrender.com/teams/create \
     ]
   }'
 
-=**
+=**Simulate or Play Matches
+curl -X POST https://anleague-api.onrender.com/admin/play/68fbcd2f8eddf2d3a1373fe1 \
+  -H "Content-Type: application/json" \
+  -d '{"homeScore": 2, "awayScore": 1}' \
+  -b cookies.txt
 
-=**
+=**Start the Tournament
+curl -X POST https://anleague-api.onrender.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin123"}' \
+  -c cookies.txt
+curl -X POST https://anleague-api.onrender.com/admin/start \
+  -H "Content-Type: application/json" \
+  -b cookies.txt
+
+=**Manually Play a Match (if implemented)
+curl -X POST https://anleague-api.onrender.com/admin/play/68fbcd2f8eddf2d3a1373fe1 \
+  -H "Content-Type: application/json" \
+  -d '{"homeScore": 2, "awayScore": 1}' \
+  -b cookies.txt
 

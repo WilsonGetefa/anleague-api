@@ -1,4 +1,3 @@
-<!-- views/admin.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,51 +8,15 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
   <style>
-    /* small page-specific tweaks so buttons sit in the center */
-    .admin-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
-      padding: 30px 16px;
-    }
-
-    .admin-panel {
-      width: 100%;
-      max-width: 640px;
-      text-align: center;
-    }
-
-    .admin-panel h2 {
-      margin-bottom: 6px;
-    }
-
-    .admin-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    .admin-actions form {
-      margin: 0;
-    }
-
-    /* ensure the same .btn styles are used, but make them larger */
-    .admin-actions .btn {
-      padding: 14px 26px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 1rem;
-      min-width: 180px;
-    }
-
-    .helper {
-      margin-top: 14px;
-      color: #ddd;
-      font-size: 0.95rem;
-    }
+    .admin-container { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 30px 16px; }
+    .admin-panel { width: 100%; max-width: 640px; text-align: center; }
+    .admin-panel h2 { margin-bottom: 6px; }
+    .admin-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+    .admin-actions form { margin: 0; }
+    .admin-actions .btn { padding: 14px 26px; border-radius: 999px; font-weight: 700; font-size: 1rem; min-width: 180px; }
+    .helper { margin-top: 14px; color: #ddd; font-size: 0.95rem; }
+    .message { color: #28a745; margin-top: 10px; }
+    .error { color: #dc3545; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -74,9 +37,14 @@
       <h2>Welcome, <%= username %>!</h2>
       <p>Role: <strong>Admin</strong></p>
 
-      <!-- Centered big action buttons (modeled after 'Create Your Team') -->
+      <% if (message) { %>
+        <p class="message"><%= message %></p>
+      <% } %>
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
+
       <div class="admin-actions">
-        <!-- Use POST for actions that change state -->
         <form action="/admin/start" method="POST" onsubmit="return confirm('Start the tournament? Make sure there are 8 registered teams.');">
           <button type="submit" class="btn">Start Tournament</button>
         </form>
@@ -91,7 +59,7 @@
       </div>
 
       <div class="helper">
-        <p>Use these admin actions to manage the tournament lifecycle. <a href="/admin/reset" style="color:inherit; text-decoration:underline;">Reset to Quarter Finals</a></p>
+        <p>Use these admin actions to manage the tournament lifecycle. <a href="/admin/restart" style="color:inherit; text-decoration:underline;">Reset to Quarter Finals</a></p>
       </div>
     </section>
   </main>

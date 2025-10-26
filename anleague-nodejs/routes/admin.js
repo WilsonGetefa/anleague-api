@@ -8,7 +8,13 @@ const matchController = require('../controllers/matchController');
 router.post('/start', async (req, res) => {
   try {
     const teams = await Team.find();
-    if (teams.length < 8) return res.status(400).json({ error: 'Need 8 teams' });
+    if (teams.length < 8) {
+      return res.render('admin', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'Need 8 teams to start the tournament'
+      });
+    }
     
     const shuffled = teams.sort(() => 0.5 - Math.random()).slice(0, 8);
     const quarterfinals = [];
@@ -25,9 +31,18 @@ router.post('/start', async (req, res) => {
 
     const tournament = new Tournament({ teams: shuffled.map(t => t._id), bracket: { quarterfinals } });
     await tournament.save();
-    res.json({ message: 'Tournament started' });
+    res.render('admin', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      message: 'Tournament started successfully'
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Start tournament error:', err.message);
+    res.render('admin', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      error: 'Failed to start tournament'
+    });
   }
 });
 
@@ -38,9 +53,18 @@ router.post('/restart', async (req, res) => {
   try {
     await Tournament.deleteMany({});
     await Match.deleteMany({});
-    res.json({ message: 'Tournament reset' });
+    res.render('admin', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      message: 'Tournament reset successfully'
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Restart tournament error:', err.message);
+    res.render('admin', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      error: 'Failed to reset tournament'
+    });
   }
 });
 
