@@ -1,31 +1,100 @@
+<!-- views/admin.ejs -->
 <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="icon" type="image/x-icon" href="images/caf.png">
-  </head>
-  <body>
-    <header>
-      <h1>Admin Dashboard</h1>
-    </header>
-    <nav>
-      <a href="/">Home</a> |
-      <a href="/bracket">Bracket</a> |
-      <a href="/rankings">Rankings</a> |
-      <a href="/teams">Teams</a> |
-      <a href="/login">Login</a> |
-      <a href="/signup">Sign Up</a>
-    </nav>
-    <main class="container">
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/x-icon" href="/images/caf.png">
+  <style>
+    /* small page-specific tweaks so buttons sit in the center */
+    .admin-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 30px 16px;
+    }
+
+    .admin-panel {
+      width: 100%;
+      max-width: 640px;
+      text-align: center;
+    }
+
+    .admin-panel h2 {
+      margin-bottom: 6px;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .admin-actions form {
+      margin: 0;
+    }
+
+    /* ensure the same .btn styles are used, but make them larger */
+    .admin-actions .btn {
+      padding: 14px 26px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 1rem;
+      min-width: 180px;
+    }
+
+    .helper {
+      margin-top: 14px;
+      color: #ddd;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+  </header>
+
+  <nav>
+    <a href="/">Home</a> |
+    <a href="/bracket">Bracket</a> |
+    <a href="/rankings">Rankings</a> |
+    <a href="/teams">Teams</a> |
+    <a href="/login">Login</a> |
+    <a href="/signup">Sign Up</a>
+  </nav>
+
+  <main class="container admin-container">
+    <section class="admin-panel form-box">
       <h2>Welcome, <%= username %>!</h2>
-      <p>Role: Admin</p>
-      <p><a href="/admin/start">Start Tournament</a></p>
-      <p><a href="/admin/simulate">Simulate Matches</a></p>
-      <p><a href="/admin/play">Play Matches</a></p>
-    </main>
-  </body>
-  </html>
+      <p>Role: <strong>Admin</strong></p>
+
+      <!-- Centered big action buttons (modeled after 'Create Your Team') -->
+      <div class="admin-actions">
+        <!-- Use POST for actions that change state -->
+        <form action="/admin/start" method="POST" onsubmit="return confirm('Start the tournament? Make sure there are 8 registered teams.');">
+          <button type="submit" class="btn">Start Tournament</button>
+        </form>
+
+        <form action="/admin/simulate" method="POST" onsubmit="return confirm('Simulate all scheduled matches now?');">
+          <button type="submit" class="btn">Simulate Matches</button>
+        </form>
+
+        <form action="/admin/play" method="POST" onsubmit="return confirm('Play next match (simulate with commentary)?');">
+          <button type="submit" class="btn">Play Matches</button>
+        </form>
+      </div>
+
+      <div class="helper">
+        <p>Use these admin actions to manage the tournament lifecycle. <a href="/admin/reset" style="color:inherit; text-decoration:underline;">Reset to Quarter Finals</a></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
