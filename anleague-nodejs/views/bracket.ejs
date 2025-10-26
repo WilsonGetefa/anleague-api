@@ -8,7 +8,10 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
   <style>
+    a.message { color: #28a745; margin-top: 10px; }
     a.error { color: #dc3545; margin-top: 10px; }
+    a.in-progress { color: #FFA500; font-weight: bold; }
+    a.completed { color: #28a745; }
     @media (max-width: 600px) {
       nav a { display: block; margin-bottom: 5px; }
       li { font-size: 1em; }
@@ -49,11 +52,16 @@
             <li>
               <a href="/match/<%= match.match_id._id %>">
                 <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
-                <%= match.match_id.team2_id && match.match_id.team2_id.country ? match.match_id.team2_id.country : 'TBD' %>
+                <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
                 <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
                   (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
                 <% } %>
               </a>
+              <% if (match.match_id.status === 'in_progress') { %>
+                <span class="in-progress"> (In Progress)</span>
+              <% } else if (match.match_id.status === 'completed') { %>
+                <span class="completed"> (Completed)</span>
+              <% } %>
             </li>
           <% } %>
         <% }) %>
@@ -65,11 +73,16 @@
             <li>
               <a href="/match/<%= match.match_id._id %>">
                 <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
-                <%= match.match_id.team2_id && match.match_id.team2_id.country ? match.match_id.team2_id.country : 'TBD' %>
+                <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
                 <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
                   (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
                 <% } %>
               </a>
+              <% if (match.match_id.status === 'in_progress') { %>
+                <span class="in-progress"> (In Progress)</span>
+              <% } else if (match.match_id.status === 'completed') { %>
+                <span class="completed"> (Completed)</span>
+              <% } %>
             </li>
           <% } %>
         <% }) %>
@@ -81,11 +94,16 @@
             <li>
               <a href="/match/<%= match.match_id._id %>">
                 <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
-                <%= match.match_id.team2_id && match.match_id.team2_id.country ? match.match_id.team2_id.country : 'TBD' %>
+                <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
                 <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
                   (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
                 <% } %>
               </a>
+              <% if (match.match_id.status === 'in_progress') { %>
+                <span class="in-progress"> (In Progress)</span>
+              <% } else if (match.match_id.status === 'completed') { %>
+                <span class="completed"> (Completed)</span>
+              <% } %>
             </li>
           <% } %>
         <% }) %>

@@ -16,7 +16,8 @@ const matchSchema = new mongoose.Schema({
   },
   goal_scorers: [goalScorerSchema],
   type: { type: String, enum: ['played', 'simulated'], required: true },
-  commentary: { type: String } // For played matches
+  commentary: { type: String }, // For played matches
+  status: { type: String, enum: ['pending', 'in_progress', 'completed'], default: 'pending' }
 });
 
 module.exports = mongoose.model('Match', matchSchema);
