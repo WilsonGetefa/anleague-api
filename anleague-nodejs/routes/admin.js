@@ -40,7 +40,7 @@ router.post('/start', async (req, res) => {
     const tournament = new Tournament({
       teams: validTeams.map(t => t._id),
       bracket: { quarterfinals, semifinals: [], final: [] },
-      status: 'active'
+      status: 'active' // Or 'started' if you updated the schema to use that
     });
     await tournament.save();
     res.json({ message: 'Tournament started' });

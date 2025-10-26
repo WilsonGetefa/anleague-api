@@ -1,19 +1,26 @@
 const mongoose = require('mongoose');
 
-const matchRefSchema = new mongoose.Schema({
-  match_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Match' },
-  team1_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
-  team2_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
-});
-
 const tournamentSchema = new mongoose.Schema({
-  status: { type: String, enum: ['quarterfinals', 'semifinals', 'final', 'completed'], default: 'quarterfinals' },
-  teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }],
+  teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true }],
   bracket: {
-    quarterfinals: [matchRefSchema],
-    semifinals: [matchRefSchema],
-    final: [matchRefSchema]
-  }
+    quarterfinals: [{
+      match_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Match' },
+      team1_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+      team2_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
+    }],
+    semifinals: [{
+      match_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Match' },
+      team1_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+      team2_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
+    }],
+    final: [{
+      match_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Match' },
+      team1_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+      team2_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
+    }]
+  },
+  status: { type: String, enum: ['pending', 'in_progress', 'completed'], required: true }, // Current enum
+  __v: Number
 });
 
 module.exports = mongoose.model('Tournament', tournamentSchema);

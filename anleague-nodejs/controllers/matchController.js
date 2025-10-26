@@ -12,12 +12,12 @@ const transporter = nodemailer.createTransport({
 
 exports.simulateMatch = async (req, res) => {
   try {
-    const matches = await Match.find({ stage: 'quarterfinal', score: { $exists: false } }).populate('team1_id team2_id');
+    const matches = await Match.find({ stage: 'quarterfinal', status: 'pending' }).populate('team1_id team2_id');
     if (!matches.length) return res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: 'admin',
-      error: 'No unsimulated quarterfinal matches found',
+      error: 'No pending quarterfinal matches found',
       message: null
     });
 
@@ -38,6 +38,7 @@ exports.simulateMatch = async (req, res) => {
       match.score = score;
       match.goal_scorers = goal_scorers;
       match.type = 'simulated';
+      match.status = 'completed'; // Mark as completed after simulation
       await match.save();
 
       await Team.updateOne({ _id: match.team1_id._id }, { squad: match.team1_id.squad });
@@ -94,7 +95,7 @@ exports.playMatch = async (req, res) => {
 
     const prompt = `Generate football match commentary for ${match.team1_id.country} vs ${match.team2_id.country}. Include key moments, goals, and determine the winner. Squads: ${JSON.stringify(match.team1_id.squad.map(p => ({ name: p.name, position: p.natural_position })))} vs ${JSON.stringify(match.team2_id.squad.map(p => ({ name: p.name, position: p.natural_position })))}.`;
     const response = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 500
     });
