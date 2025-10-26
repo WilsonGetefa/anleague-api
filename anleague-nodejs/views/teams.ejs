@@ -73,6 +73,9 @@
   </nav>
   <main class="container">
     <h2>All Teams</h2>
+    <% if (error) { %>
+      <p style="color: red;"><%= error %></p>
+    <% } %>
     <% if (teams.length === 0) { %>
       <p>No teams available.</p>
     <% } else { %>

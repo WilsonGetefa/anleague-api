@@ -50,6 +50,8 @@ app.use((req, res, next) => {
   next();
 });
 
+module.exports = { authMiddleware }; // Export authMiddleware
+
 // Authentication middleware for protected routes
 const authMiddleware = (req, res, next) => {
   if (!req.user) {

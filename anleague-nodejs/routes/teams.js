@@ -3,11 +3,16 @@ const router = express.Router();
 const Team = require('../models/team');
 const User = require('../models/user');
 const mongoose = require('mongoose');
+const { authMiddleware } = require('../anleague_app');
 
-router.post('/autofill', async (req, res) => {
+router.post('/autofill', authMiddleware, async (req, res) => {
   const { country } = req.body;
   const { user } = req;
   try {
+    if (!user) {
+      console.log('No authenticated user');
+      return res.redirect('/login');
+    }
     console.log('Team autofill attempt:', { user: user.username, country, userId: user.id });
 
     // Validate userId
@@ -38,8 +43,8 @@ router.post('/autofill', async (req, res) => {
     }
 
     // Check country match
-    if (user.country !== country) {
-      console.log('Country mismatch:', { userCountry: user.country, requestedCountry: country });
+    if (!country || user.country !== country) {
+      console.log('Country mismatch or missing:', { userCountry: user.country, requestedCountry: country });
       return res.render('dashboard', {
         title: 'Dashboard',
         username: user.username,
@@ -83,9 +88,14 @@ router.post('/autofill', async (req, res) => {
     res.redirect('/dashboard');
   } catch (err) {
     console.error('Team creation error:', err.message, err.stack, 'Details:', JSON.stringify(err, null, 2));
-    const errorMessage = err.code === 11000
-      ? `Team for ${country} already exists`
-      : `Validation failed: ${err.message}`;
+    let errorMessage = 'Failed to create team';
+    if (err.code === 11000) {
+      errorMessage = `Team for ${country} already exists`;
+    } else if (err.name === 'ValidationError') {
+      errorMessage = `Validation failed: ${Object.values(err.errors).map(e => e.message).join(', ')}`;
+    } else {
+      errorMessage = `Error: ${err.message}`;
+    }
     return res.render('dashboard', {
       title: 'Dashboard',
       username: user.username,
@@ -97,17 +107,27 @@ router.post('/autofill', async (req, res) => {
   }
 });
 
-// View all teams
 router.get('/', async (req, res) => {
   try {
     const teams = await Team.find()
       .select('country manager rating squad')
-      .populate('userId', 'username');
+      .populate('userId', 'username')
+      .sort({ rating: -1 });
     console.log('Fetched teams:', teams.length);
-    res.render('teams', { title: 'Teams', teams, user: req.user });
+    res.render('teams', { 
+      title: 'Teams', 
+      teams, 
+      user: req.user,
+      error: null 
+    });
   } catch (err) {
     console.error('Teams fetch error:', err.message);
-    res.render('error', { title: 'Error', error: 'Unable to fetch teams' });
+    res.render('teams', { 
+      title: 'Teams', 
+      teams: [], 
+      user: req.user, 
+      error: 'Unable to fetch teams' 
+    });
   }
 });
 
