@@ -17,8 +17,9 @@ const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   squad: [playerSchema],
-  rating: { type: Number, default: 0 },
-  manager: { type: String, required: false }
+  rating: { type: Number, default: 0.0 },
+  manager: { type: String, required: false },
+  captain_name: { type: String, required: true }
 }, { strict: 'throw' });
 
 teamSchema.pre('save', function (next) {
@@ -26,7 +27,9 @@ teamSchema.pre('save', function (next) {
     const totalRating = this.squad.reduce((sum, player) => {
       return sum + (player.ratings[player.natural_position] || 50);
     }, 0);
-    this.rating = totalRating / this.squad.length;
+    this.rating = parseFloat((totalRating / this.squad.length).toFixed(2));
+    const captain = this.squad.find(player => player.is_captain);
+    this.captain_name = captain ? captain.name : this.squad[0].name;
   }
   next();
 });

@@ -81,6 +81,7 @@
             <th>Country</th>
             <th>Manager</th>
             <th>User</th>
+            <th>Captain</th>
             <th>Rating</th>
             <th>Squad</th>
           </tr>
@@ -90,7 +91,8 @@
             <tr>
               <td><%= team.country || 'N/A' %></td>
               <td><%= team.manager || 'N/A' %></td>
-              <td><%= team.userId ? team.userId.username : 'N/A' %></td>
+              <td><%= team.representative_id ? team.representative_id.username : 'N/A' %></td>
+              <td><%= team.captain_name || 'N/A' %></td>
               <td><%= team.rating ? team.rating.toFixed(2) : 'N/A' %></td>
               <td>
                 <ul>

@@ -75,9 +75,11 @@ router.post('/autofill', authMiddleware, async (req, res) => {
     const team = new Team({
       country,
       userId: user.id,
+      representative_id: user.id,
       squad,
       rating: calculateTeamRating(squad),
-      manager: `${user.username} Manager`
+      manager: `${user.username} Manager`,
+      captain_name: squad.find(player => player.is_captain)?.name || squad[0].name
     });
 
     console.log('Team document to save:', JSON.stringify(team.toObject(), null, 2));
