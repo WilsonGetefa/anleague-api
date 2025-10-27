@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Tournament = require('../models/tournament');
 const Match = require('../models/match');
+const PastTournament = require('../models/pastTournament'); // Ensure this line is present
 const Team = require('../models/team');
 
 router.get('/', async (req, res) => {
@@ -22,7 +23,8 @@ router.get('/', async (req, res) => {
       title: 'African Nations League',
       currentTournament,
       pastWinners,
-      totalGoals
+      totalGoals,
+      user: req.user // Ensure this is passed
     });
   } catch (err) {
     console.error('Index error:', err.message);
@@ -30,7 +32,8 @@ router.get('/', async (req, res) => {
       title: 'African Nations League',
       currentTournament: null,
       pastWinners: [],
-      totalGoals: 0
+      totalGoals: 0,
+      user: req.user // Ensure this is passed
     });
   }
 });

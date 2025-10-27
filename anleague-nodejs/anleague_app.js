@@ -28,8 +28,7 @@ app.use((req, res, next) => {
     req.path.includes('images') ||
     req.path === '/favicon.ico' ||
     req.path === '/login' ||
-    req.path === '/signup' ||
-    req.path === '/'
+    req.path === '/signup'
   ) {
     console.log('Skipping JWT verification for path:', req.path);
     req.user = null;
