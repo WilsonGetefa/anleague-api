@@ -49,6 +49,7 @@
     <% } else if (error) { %>
       <p class="error"><%= error %></p>
     <% } else if (tournament) { %>
+      <h2>ROAD TO THE FINAL</h2>
       <h2>Current Tournament Bracket</h2>
       <div class="bracket-round">
         <div>
@@ -125,6 +126,7 @@
         </div>
       </div>
     <% } else if (pastTournaments.length > 0) { %>
+      <h2>ROAD TO THE FINAL</h2>
       <h2>Past Tournaments</h2>
       <% pastTournaments.forEach(pt => { %>
         <h3>Year: <%= pt.year %></h3>
