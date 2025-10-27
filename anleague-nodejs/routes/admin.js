@@ -279,7 +279,7 @@ router.post('/play', async (req, res) => {
   }
 });
 
-router.post('/advance', async (req, res) => {
+router.post('/advance', async (req, res, next) => { // Explicitly include next parameter
   try {
     const tournament = await Tournament.findOne()
       .populate('bracket.quarterfinals.match_id')
@@ -488,11 +488,11 @@ router.post('/advance', async (req, res) => {
     });
   } catch (err) {
     console.error('Advance stage error:', err.message);
-    res.render('admin_dashboard', {
+    res.status(500).render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
-      error: 'Failed to advance stage',
+      error: 'Failed to advance stage: ' + err.message,
       message: null,
       tournament: null,
       user: req.user
