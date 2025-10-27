@@ -39,23 +39,24 @@
       <% if (error) { %>
         <p class="error"><%= error %></p>
       <% } %>
+      <!-- Always show admin controls, even without a tournament -->
+      <form action="/admin/start" method="post">
+        <button type="submit">Start New Tournament</button>
+      </form>
+      <form action="/admin/simulate" method="post">
+        <button type="submit">Simulate Matches</button>
+      </form>
+      <form action="/admin/play" method="post">
+        <button type="submit">Play Matches</button>
+      </form>
+      <form action="/admin/advance" method="post">
+        <button type="submit">Advance Stage</button>
+      </form>
+      <form action="/admin/restart" method="post">
+        <button type="submit">Restart Tournament</button>
+      </form>
       <% if (tournament) { %>
         <h3>Current Tournament Status: <%= tournament.status %></h3>
-        <form action="/admin/start" method="post">
-          <button type="submit">Start New Tournament</button>
-        </form>
-        <form action="/admin/simulate" method="post">
-          <button type="submit">Simulate Matches</button>
-        </form>
-        <form action="/admin/play" method="post">
-          <button type="submit">Play Matches</button>
-        </form>
-        <form action="/admin/advance" method="post">
-          <button type="submit">Advance Stage</button>
-        </form>
-        <form action="/admin/restart" method="post">
-          <button type="submit">Restart Tournament</button>
-        </form>
         <% if (tournament.bracket && tournament.bracket.quarterfinals && tournament.bracket.quarterfinals.length > 0) { %>
           <h4>Quarterfinals</h4>
           <% tournament.bracket.quarterfinals.forEach(qf => { %>

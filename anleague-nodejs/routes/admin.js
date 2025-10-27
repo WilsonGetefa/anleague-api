@@ -535,20 +535,23 @@ router.post('/restart', async (req, res) => {
       });
       await pastTournament.save();
       console.log('Archived tournament:', pastTournament._id);
-      await Tournament.deleteMany({}); // Clear all tournaments
-      await Match.deleteMany({}); // Clear all matches
     }
+    const deleteTournamentResult = await Tournament.deleteMany({});
+    const deleteMatchResult = await Match.deleteMany({});
+    console.log('Deleted tournaments:', deleteTournamentResult.deletedCount);
+    console.log('Deleted matches:', deleteMatchResult.deletedCount);
+
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
       message: 'Tournament reset and archived successfully',
       error: null,
-      tournament: null,
+      tournament: null, // Explicitly set to null to indicate no active tournament
       user: req.user
     });
   } catch (err) {
-    console.error('Restart tournament error:', err.message);
+    console.error('Restart tournament error:', err.message, err.stack);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
