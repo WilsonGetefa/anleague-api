@@ -101,6 +101,7 @@ router.post('/start', async (req, res) => {
       quarterfinals.push({ match_id: match._id, team1_id: team1._id, team2_id: team2._id });
     }
 
+    await Tournament.deleteMany({}); // Clear existing tournaments before creating a new one
     const tournament = new Tournament({
       teams: validTeams.map(t => t._id),
       bracket: { quarterfinals, semifinals: [], final: [] },
@@ -501,7 +502,7 @@ router.post('/advance', async (req, res) => {
 
 router.post('/restart', async (req, res) => {
   try {
-    const tournament = await Tournament.findOne();
+    const tournament = await Tournament.findOne().sort({ createdAt: -1 }); // Get the most recent tournament
     if (tournament) {
       tournament.status = 'completed';
       const pastTournament = new PastTournament({
@@ -509,8 +510,9 @@ router.post('/restart', async (req, res) => {
         year: new Date().getFullYear()
       });
       await pastTournament.save();
-      await Tournament.deleteMany({});
-      await Match.deleteMany({});
+      console.log('Archived tournament:', pastTournament._id);
+      await Tournament.deleteMany({}); // Clear all tournaments
+      await Match.deleteMany({}); // Clear all matches
     }
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
@@ -527,7 +529,7 @@ router.post('/restart', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
-      error: 'Failed to reset tournament',
+      error: 'Failed to reset tournament: ' + err.message,
       message: null,
       tournament: null,
       user: req.user
