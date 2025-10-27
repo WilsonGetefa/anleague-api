@@ -195,7 +195,7 @@ router.get('/rankings', async (req, res) => {
     const currentTournament = await Tournament.findOne({ status: { $ne: 'completed' } });
     const matches = await Match.find({
       type: { $in: ['simulated', 'played'] },
-      ...(currentTournament && { tournament_id: currentTournament._id }) // Optional: Filter by current tournament if implemented
+      ...(currentTournament && { tournament_id: currentTournament._id })
     })
       .populate('team1_id', 'country')
       .populate('team2_id', 'country');
@@ -203,10 +203,10 @@ router.get('/rankings', async (req, res) => {
     const goalScorers = {};
     matches.forEach(match => {
       match.goal_scorers.forEach(goal => {
-        const player = goal.player_name || `Player_${match._id.toString().slice(-4)}`; // Fallback if no player name
-        const team = goal.team === 'team1' ? match.team1_id.country : match.team2_id.country;
+        const player = goal.player_name;
+        const team = goal.team === 'team1' ? (match.team1_id ? match.team1_id.country : 'Unknown') : (match.team2_id ? match.team2_id.country : 'Unknown');
         if (!goalScorers[player]) {
-          goalScorers[player] = { name: player, team: team || 'Unknown', goals: 0 };
+          goalScorers[player] = { name: player, team: team, goals: 0 };
         }
         goalScorers[player].goals += 1;
       });

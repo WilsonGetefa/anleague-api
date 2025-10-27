@@ -211,46 +211,41 @@ router.post('/simulate', async (req, res) => {
     }
 
     for (const match of pendingMatches) {
-      // Simulate scores
-      match.score.team1 = Math.floor(Math.random() * 4); // 0 to 3 goals
+      match.score.team1 = Math.floor(Math.random() * 4);
       match.score.team2 = Math.floor(Math.random() * 4);
       match.type = 'simulated';
       match.status = 'completed';
 
-      // Simulate goal scorers
       const maxGoals = Math.max(match.score.team1, match.score.team2);
       match.goal_scorers = [];
       for (let i = 0; i < maxGoals; i++) {
         if (i < match.score.team1) {
           match.goal_scorers.push({
-            player_name: `Player${i + 1}_T1_${match._id.toString().slice(-4)}`,
+            player_name: `Player${i + 1}_${match._id.toString().slice(-4)}`,
             minute: Math.floor(Math.random() * 90) + 1,
             team: 'team1'
           });
         }
         if (i < match.score.team2) {
           match.goal_scorers.push({
-            player_name: `Player${i + 1}_T2_${match._id.toString().slice(-4)}`,
+            player_name: `Player${i + 1}_${match._id.toString().slice(-4)}`,
             minute: Math.floor(Math.random() * 90) + 1,
             team: 'team2'
           });
         }
       }
 
-      // Add commentary
       const team1Name = match.team1_id ? match.team1_id.country || 'Unknown' : 'Unknown';
       const team2Name = match.team2_id ? match.team2_id.country || 'Unknown' : 'Unknown';
-      match.commentary = `Match simulated: ${team1Name} ${match.score.team1}-${match.score.team2} ${team2Name}`;
+      match.commentary = `Match simulated: ${team1Name} ${match.score.team1}-${match.score.team2} ${team2Name} with ${match.goal_scorers.length} goals`;
 
-      // Set tournament_id if implemented
       if (!match.tournament_id) {
-        match.tournament_id = tournament._id; // Add if schema includes tournament_id
+        match.tournament_id = tournament._id;
       }
 
       await match.save();
     }
 
-    // Re-fetch tournament with updated data
     const updatedTournament = await Tournament.findOne(tournament._id)
       .populate('bracket.quarterfinals.match_id')
       .populate('bracket.quarterfinals.team1_id', 'country')
@@ -439,7 +434,7 @@ router.post('/advance', async (req, res) => {
           score: { team1: 0, team2: 0 },
           goal_scorers: [],
           commentary: '',
-          tournament_id: tournament._id
+          tournament_id: tournament._id // Added to satisfy validation
         });
         await match.save();
         semifinalMatches.push({ match_id: match._id, team1_id: winner1._id, team2_id: winner2._id });
@@ -447,7 +442,7 @@ router.post('/advance', async (req, res) => {
       tournament.bracket.semifinals = semifinalMatches;
       tournament.status = 'semifinals';
       await tournament.save();
-      const updatedTournament = await Tournament.findOne()
+      const updatedTournament = await Tournament.findOne(tournament._id)
         .populate('bracket.quarterfinals.match_id')
         .populate('bracket.quarterfinals.team1_id', 'country')
         .populate('bracket.quarterfinals.team2_id', 'country')
@@ -523,7 +518,8 @@ router.post('/advance', async (req, res) => {
           status: 'pending',
           score: { team1: 0, team2: 0 },
           goal_scorers: [],
-          commentary: ''
+          commentary: '',
+          tournament_id: tournament._id // Added to satisfy validation
         });
         await match.save();
         finalMatches.push({ match_id: match._id, team1_id: winner1._id, team2_id: winner2._id });
@@ -531,7 +527,7 @@ router.post('/advance', async (req, res) => {
       tournament.bracket.final = finalMatches;
       tournament.status = 'final';
       await tournament.save();
-      const updatedTournament = await Tournament.findOne()
+      const updatedTournament = await Tournament.findOne(tournament._id)
         .populate('bracket.quarterfinals.match_id')
         .populate('bracket.quarterfinals.team1_id', 'country')
         .populate('bracket.quarterfinals.team2_id', 'country')
