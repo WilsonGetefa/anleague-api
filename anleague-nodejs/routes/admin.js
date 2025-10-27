@@ -279,7 +279,7 @@ router.post('/play', async (req, res) => {
   }
 });
 
-router.post('/advance', async (req, res, next) => { // Explicitly include next parameter
+router.post('/advance', async (req, res) => { // Removed next parameter since it's not needed with proper error handling
   try {
     const tournament = await Tournament.findOne()
       .populate('bracket.quarterfinals.match_id')
@@ -291,6 +291,7 @@ router.post('/advance', async (req, res, next) => { // Explicitly include next p
       .populate('bracket.final.match_id')
       .populate('bracket.final.team1_id', 'country')
       .populate('bracket.final.team2_id', 'country');
+
     if (!tournament) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
@@ -302,6 +303,9 @@ router.post('/advance', async (req, res, next) => { // Explicitly include next p
         user: req.user
       });
     }
+
+    console.log('Tournament status:', tournament.status);
+    console.log('Bracket data:', JSON.stringify(tournament.bracket, null, 2));
 
     if (tournament.status === 'quarterfinals') {
       const allQuarterfinalsCompleted = tournament.bracket.quarterfinals.every(qf => {
@@ -331,11 +335,11 @@ router.post('/advance', async (req, res, next) => { // Explicitly include next p
           const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner1 = Math.random() < 0.5 ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
-            match1.commentary += `; Extra time goal decided winner: ${winner1.country}`;
+            match1.commentary += `; Extra time goal decided winner: ${winner1.country || 'Unknown'}`;
           } else {
             const penaltyWin = Math.random() < 0.5;
             winner1 = penaltyWin ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
-            match1.commentary += `; Penalty shootout won by: ${winner1.country}`;
+            match1.commentary += `; Penalty shootout won by: ${winner1.country || 'Unknown'}`;
           }
           await match1.save();
         }
@@ -343,11 +347,11 @@ router.post('/advance', async (req, res, next) => { // Explicitly include next p
           const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner2 = Math.random() < 0.5 ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
-            match2.commentary += `; Extra time goal decided winner: ${winner2.country}`;
+            match2.commentary += `; Extra time goal decided winner: ${winner2.country || 'Unknown'}`;
           } else {
             const penaltyWin = Math.random() < 0.5;
             winner2 = penaltyWin ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
-            match2.commentary += `; Penalty shootout won by: ${winner2.country}`;
+            match2.commentary += `; Penalty shootout won by: ${winner2.country || 'Unknown'}`;
           }
           await match2.save();
         }
@@ -405,11 +409,11 @@ router.post('/advance', async (req, res, next) => { // Explicitly include next p
           const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner1 = Math.random() < 0.5 ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
-            match1.commentary += `; Extra time goal decided winner: ${winner1.country}`;
+            match1.commentary += `; Extra time goal decided winner: ${winner1.country || 'Unknown'}`;
           } else {
             const penaltyWin = Math.random() < 0.5;
             winner1 = penaltyWin ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
-            match1.commentary += `; Penalty shootout won by: ${winner1.country}`;
+            match1.commentary += `; Penalty shootout won by: ${winner1.country || 'Unknown'}`;
           }
           await match1.save();
         }
@@ -417,11 +421,11 @@ router.post('/advance', async (req, res, next) => { // Explicitly include next p
           const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner2 = Math.random() < 0.5 ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
-            match2.commentary += `; Extra time goal decided winner: ${winner2.country}`;
+            match2.commentary += `; Extra time goal decided winner: ${winner2.country || 'Unknown'}`;
           } else {
             const penaltyWin = Math.random() < 0.5;
             winner2 = penaltyWin ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
-            match2.commentary += `; Penalty shootout won by: ${winner2.country}`;
+            match2.commentary += `; Penalty shootout won by: ${winner2.country || 'Unknown'}`;
           }
           await match2.save();
         }
@@ -487,7 +491,7 @@ router.post('/advance', async (req, res, next) => { // Explicitly include next p
       user: req.user
     });
   } catch (err) {
-    console.error('Advance stage error:', err.message);
+    console.error('Advance stage error:', err.message, err.stack);
     res.status(500).render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
