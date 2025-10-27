@@ -71,6 +71,15 @@ router.post('/start', async (req, res) => {
       });
     }
 
+    // Create and save tournament first to get _id
+    const tournamentData = {
+      teams: validTeams.map(t => t._id),
+      bracket: { quarterfinals: [], semifinals: [], final: [] },
+      status: 'quarterfinals'
+    };
+    await Tournament.deleteMany({}); // Clear existing tournaments
+    const tournament = await Tournament.create(tournamentData); // Save to get _id
+
     const quarterfinals = [];
     for (let i = 0; i < 8; i += 2) {
       const team1 = validTeams[i];
@@ -95,29 +104,16 @@ router.post('/start', async (req, res) => {
         status: 'pending',
         score: { team1: 0, team2: 0 },
         goal_scorers: [],
-        commentary: ''
-        // tournament_id will be set below if applicable
+        commentary: '',
+        tournament_id: tournament._id // Set tournament_id here
       });
       await match.save();
       quarterfinals.push({ match_id: match._id, team1_id: team1._id, team2_id: team2._id });
     }
 
-    // Create and save tournament after matches are created
-    const tournamentData = {
-      teams: validTeams.map(t => t._id),
-      bracket: { quarterfinals, semifinals: [], final: [] },
-      status: 'quarterfinals'
-    };
-    await Tournament.deleteMany({}); // Clear existing tournaments
-    const tournament = await Tournament.create(tournamentData); // Ensure _id is available
-
-    // Update matches with tournament_id if the schema includes it
-    if ('tournament_id' in Match.schema.paths) {
-      await Match.updateMany(
-        { _id: { $in: quarterfinals.map(qf => qf.match_id) } },
-        { $set: { tournament_id: tournament._id } }
-      );
-    }
+    // Update tournament with quarterfinals
+    tournament.bracket.quarterfinals = quarterfinals;
+    await tournament.save();
 
     const populatedTournament = await Tournament.findOne(tournament._id)
       .populate('teams', 'country')
