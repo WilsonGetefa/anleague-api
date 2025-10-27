@@ -17,7 +17,7 @@
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
     <a href="/teams">Teams</a> |
-    <% if (typeof user !== 'undefined' && user) { %> 
+    <% if (typeof user !== 'undefined' && user) { %>
       <% if (user.role === 'admin') { %>
         <a href="/admin/dashboard">Admin Dashboard</a> |
       <% } else { %>
@@ -30,9 +30,7 @@
     <% } %>
   </nav>
   <main class="container">
-    <% if (rankings.length === 0 && pastTournaments.length === 0) { %>
-      <p class="message">No rankings or past tournaments available yet</p>
-    <% } else { %>
+    <section class="rankings-panel">
       <h2>Top Goal Scorers</h2>
       <% if (rankings.length > 0) { %>
         <table>
@@ -44,11 +42,11 @@
             </tr>
           </thead>
           <tbody>
-            <% rankings.forEach(player => { %>
+            <% rankings.forEach(ranking => { %>
               <tr>
-                <td><%= player.name %></td>
-                <td><%= player.team %></td>
-                <td><%= player.goals %></td>
+                <td><%= ranking.name %></td>
+                <td><%= ranking.team %></td>
+                <td><%= ranking.goals %></td>
               </tr>
             <% }); %>
           </tbody>
@@ -56,7 +54,6 @@
       <% } else { %>
         <p>No goal scorers recorded yet.</p>
       <% } %>
-
       <h2>Past Tournaments</h2>
       <% if (pastTournaments.length > 0) { %>
         <table>
@@ -76,9 +73,9 @@
                 <% const loser = match.score.team1 > match.score.team2 ? tournament.bracket.final[0].team2_id : tournament.bracket.final[0].team1_id; %>
                 <tr>
                   <td><%= tournament.year %></td>
-                  <td><%= winner.country %></td>
-                  <td><%= loser.country %></td>
-                  <td><%= match.score.team1 %>-<%= match.score.team2 %></td>
+                  <td><%= winner ? winner.country || 'Unknown' : 'Unknown' %></td>
+                  <td><%= loser ? loser.country || 'Unknown' : 'Unknown' %></td>
+                  <td><%= match.score.team1 || 0 %>-<%= match.score.team2 || 0 %></td>
                 </tr>
               <% } %>
             <% }); %>
@@ -87,7 +84,7 @@
       <% } else { %>
         <p>No past tournaments recorded yet.</p>
       <% } %>
-    <% } %>
+    </section>
   </main>
 </body>
 </html>

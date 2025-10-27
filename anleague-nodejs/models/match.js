@@ -25,7 +25,8 @@ const matchSchema = new mongoose.Schema({
   goal_scorers: [goalScorerSchema],
   type: { type: String, enum: ['played', 'simulated'], required: true },
   commentary: { type: String },
-  status: { type: String, enum: ['pending', 'in_progress', 'completed'], default: 'pending' }
-});
+  status: { type: String, enum: ['pending', 'in_progress', 'completed'], default: 'pending' },
+  tournament_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tournament', required: true } // New field
+}, { timestamps: true }); // Add timestamps for createdAt and updatedAt
 
 module.exports = mongoose.model('Match', matchSchema);

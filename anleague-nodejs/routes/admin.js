@@ -95,8 +95,8 @@ router.post('/start', async (req, res) => {
         status: 'pending',
         score: { team1: 0, team2: 0 },
         goal_scorers: [],
-        commentary: '',
-        // tournament_id: tournament._id // Moved below to avoid TDZ
+        commentary: ''
+        // tournament_id will be set below if applicable
       });
       await match.save();
       quarterfinals.push({ match_id: match._id, team1_id: team1._id, team2_id: team2._id });
@@ -109,10 +109,10 @@ router.post('/start', async (req, res) => {
       status: 'quarterfinals'
     };
     await Tournament.deleteMany({}); // Clear existing tournaments
-    const tournament = await Tournament.create(tournamentData); // Use create to ensure _id is available
+    const tournament = await Tournament.create(tournamentData); // Ensure _id is available
 
-    // Update matches with tournament_id if schema includes it
-    if ('tournament_id' in match.schema.paths) {
+    // Update matches with tournament_id if the schema includes it
+    if ('tournament_id' in Match.schema.paths) {
       await Match.updateMany(
         { _id: { $in: quarterfinals.map(qf => qf.match_id) } },
         { $set: { tournament_id: tournament._id } }
