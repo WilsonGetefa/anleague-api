@@ -3,6 +3,7 @@ const router = express.Router();
 const Tournament = require('../models/tournament');
 const Team = require('../models/team');
 const Match = require('../models/match');
+const PastTournament = require('../models/pastTournament'); // New model for archiving
 
 router.post('/start', async (req, res) => {
   try {
@@ -12,7 +13,8 @@ router.post('/start', async (req, res) => {
         title: 'Admin Dashboard',
         username: req.user.username,
         error: 'Need at least 8 teams',
-        message: null
+        message: null,
+        tournament: null
       });
     }
 
@@ -23,7 +25,8 @@ router.post('/start', async (req, res) => {
         title: 'Admin Dashboard',
         username: req.user.username,
         error: 'Not enough valid teams to pair for quarterfinals',
-        message: null
+        message: null,
+        tournament: null
       });
     }
 
@@ -37,7 +40,8 @@ router.post('/start', async (req, res) => {
           title: 'Admin Dashboard',
           username: req.user.username,
           error: 'Invalid team data detected',
-          message: null
+          message: null,
+          tournament: null
         });
       }
       const match = new Match({
@@ -64,7 +68,8 @@ router.post('/start', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       message: 'Tournament started successfully',
-      error: null
+      error: null,
+      tournament
     });
   } catch (err) {
     console.error('Start tournament error:', err.message);
@@ -72,7 +77,8 @@ router.post('/start', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'Failed to start tournament',
-      message: null
+      message: null,
+      tournament: null
     });
   }
 });
@@ -85,7 +91,8 @@ router.post('/simulate', async (req, res) => {
         title: 'Admin Dashboard',
         username: req.user.username,
         error: 'Tournament not found',
-        message: null
+        message: null,
+        tournament: null
       });
     }
 
@@ -104,7 +111,8 @@ router.post('/simulate', async (req, res) => {
         title: 'Admin Dashboard',
         username: req.user.username,
         error: 'No pending matches to simulate',
-        message: null
+        message: null,
+        tournament
       });
     }
 
@@ -121,7 +129,8 @@ router.post('/simulate', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       message: 'Matches simulated successfully',
-      error: null
+      error: null,
+      tournament
     });
   } catch (err) {
     console.error('Simulate matches error:', err.message);
@@ -129,7 +138,8 @@ router.post('/simulate', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'Failed to simulate matches',
-      message: null
+      message: null,
+      tournament: null
     });
   }
 });
@@ -142,7 +152,8 @@ router.post('/play', async (req, res) => {
         title: 'Admin Dashboard',
         username: req.user.username,
         error: 'Tournament not found',
-        message: null
+        message: null,
+        tournament: null
       });
     }
 
@@ -161,7 +172,8 @@ router.post('/play', async (req, res) => {
         title: 'Admin Dashboard',
         username: req.user.username,
         error: 'No pending matches to play',
-        message: null
+        message: null,
+        tournament
       });
     }
 
@@ -178,7 +190,8 @@ router.post('/play', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       message: 'Matches played successfully',
-      error: null
+      error: null,
+      tournament
     });
   } catch (err) {
     console.error('Play matches error:', err.message);
@@ -186,7 +199,8 @@ router.post('/play', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'Failed to play matches',
-      message: null
+      message: null,
+      tournament: null
     });
   }
 });
@@ -199,7 +213,8 @@ router.post('/advance', async (req, res) => {
         title: 'Admin Dashboard',
         username: req.user.username,
         error: 'Tournament not found',
-        message: null
+        message: null,
+        tournament: null
       });
     }
 
@@ -213,7 +228,8 @@ router.post('/advance', async (req, res) => {
           title: 'Admin Dashboard',
           username: req.user.username,
           error: 'All quarterfinal matches must be completed',
-          message: null
+          message: null,
+          tournament
         });
       }
 
@@ -224,14 +240,13 @@ router.post('/advance', async (req, res) => {
         let winner1 = match1.score.team1 > match1.score.team2 ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
         let winner2 = match2.score.team1 > match2.score.team2 ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
 
-        // Handle draws with extra time and penalties
         if (match1.score.team1 === match1.score.team2) {
-          const extraTimeGoal = Math.random() < 0.5 ? 1 : 0; // Simulate extra time goal
+          const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner1 = Math.random() < 0.5 ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
             match1.commentary += `; Extra time goal decided winner: ${winner1}`;
           } else {
-            const penaltyWin = Math.random() < 0.5; // Simulate penalty shootout
+            const penaltyWin = Math.random() < 0.5;
             winner1 = penaltyWin ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
             match1.commentary += `; Penalty shootout won by: ${winner1}`;
           }
@@ -266,11 +281,12 @@ router.post('/advance', async (req, res) => {
       tournament.bracket.semifinals = semifinalMatches;
       tournament.status = 'semifinals';
       await tournament.save();
-      return res.render('admin_dashboard', {
+      res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
         message: 'Semifinals set up successfully',
-        error: null
+        error: null,
+        tournament
       });
     } else if (tournament.status === 'semifinals') {
       const allSemifinalsCompleted = tournament.bracket.semifinals.every(sf => {
@@ -282,7 +298,8 @@ router.post('/advance', async (req, res) => {
           title: 'Admin Dashboard',
           username: req.user.username,
           error: 'All semifinal matches must be completed',
-          message: null
+          message: null,
+          tournament
         });
       }
 
@@ -334,11 +351,12 @@ router.post('/advance', async (req, res) => {
       tournament.bracket.final = finalMatches;
       tournament.status = 'final';
       await tournament.save();
-      return res.render('admin_dashboard', {
+      res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
         message: 'Final set up successfully',
-        error: null
+        error: null,
+        tournament
       });
     } else if (tournament.status === 'final') {
       const finalMatch = tournament.bracket.final[0].match_id;
@@ -347,16 +365,18 @@ router.post('/advance', async (req, res) => {
           title: 'Admin Dashboard',
           username: req.user.username,
           error: 'Final match must be completed',
-          message: null
+          message: null,
+          tournament
         });
       }
       tournament.status = 'completed';
       await tournament.save();
-      return res.render('admin_dashboard', {
+      res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
         message: 'Tournament completed successfully',
-        error: null
+        error: null,
+        tournament
       });
     }
 
@@ -364,7 +384,8 @@ router.post('/advance', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'No further stages to advance',
-      message: null
+      message: null,
+      tournament
     });
   } catch (err) {
     console.error('Advance stage error:', err.message);
@@ -372,20 +393,31 @@ router.post('/advance', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'Failed to advance stage',
-      message: null
+      message: null,
+      tournament: null
     });
   }
 });
 
 router.post('/restart', async (req, res) => {
   try {
-    await Tournament.deleteMany({});
-    await Match.deleteMany({});
+    const tournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
+    if (tournament) {
+      // Archive the old tournament
+      const pastTournament = new PastTournament({
+        ...tournament.toObject(),
+        year: new Date().getFullYear() // Use current year as a placeholder
+      });
+      await pastTournament.save();
+      await Tournament.deleteMany({});
+      await Match.deleteMany({});
+    }
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      message: 'Tournament reset successfully',
-      error: null
+      message: 'Tournament reset and archived successfully',
+      error: null,
+      tournament: null
     });
   } catch (err) {
     console.error('Restart tournament error:', err.message);
@@ -393,7 +425,48 @@ router.post('/restart', async (req, res) => {
       title: 'Admin Dashboard',
       username: req.user.username,
       error: 'Failed to reset tournament',
-      message: null
+      message: null,
+      tournament: null
+    });
+  }
+});
+
+// Append to routes/admin.js
+router.post('/edit-match', async (req, res) => {
+  try {
+    const { matchId, team1Score, team2Score } = req.body;
+    const match = await Match.findById(matchId);
+    if (!match) {
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'Match not found',
+        message: null,
+        tournament: await Tournament.findOne()
+      });
+    }
+
+    match.score.team1 = parseInt(team1Score);
+    match.score.team2 = parseInt(team2Score);
+    match.status = 'completed';
+    match.commentary = `Score updated manually: ${team1Score}-${team2Score}`;
+    await match.save();
+
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      message: 'Match score updated successfully',
+      error: null,
+      tournament: await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id')
+    });
+  } catch (err) {
+    console.error('Edit match error:', err.message);
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      error: 'Failed to update match score',
+      message: null,
+      tournament: null
     });
   }
 });

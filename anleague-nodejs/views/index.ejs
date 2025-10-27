@@ -17,11 +17,34 @@
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
     <a href="/teams">Teams</a> |
-    <a href="/login">Login</a> |
-    <a href="/signup">Sign Up</a>
+    <% if (user) { %>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/dashboard">Admin Dashboard</a> |
+      <% } else { %>
+        <a href="/dashboard">Dashboard</a> |
+      <% } %>
+      <a href="/auth/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a> |
+      <a href="/signup">Sign Up</a>
+    <% } %>
   </nav>
   <main class="container">
     <p>Welcome to the African Nations League! Explore the tournament bracket, check top goal scorers, or sign up to join the competition.</p>
+    <% if (currentTournament) { %>
+      <p>Current Stage: <%= currentTournament.status %></p>
+      <a href="/bracket">View Bracket</a>
+    <% } else { %>
+      <p>No active tournament. <a href="/admin/dashboard">Start one as admin</a> (if logged in).</p>
+    <% } %>
+    <h3>Past Champions</h3>
+    <ul>
+      <% pastWinners.forEach(winner => { %>
+        <li><%= winner.year %> - <%= winner.country %></li>
+      <% }); %>
+    </ul>
+    <p>Total Goals Scored: <%= totalGoals %></p>
+    <a href="/rankings">See Full Rankings</a>
   </main>
 </body>
 </html>

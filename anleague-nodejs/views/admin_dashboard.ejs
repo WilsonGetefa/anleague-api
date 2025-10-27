@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard</title>
+  <title><%= title %></title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
@@ -17,6 +17,8 @@
     .helper { margin-top: 14px; color: #ddd; font-size: 0.95rem; }
     .message { color: #28a745; margin-top: 10px; }
     .error { color: #dc3545; margin-top: 10px; }
+    .bracket-overview { margin-top: 20px; }
+    .match-edit { margin-top: 20px; }
   </style>
 </head>
 <body>
@@ -35,7 +37,7 @@
   <main class="container admin-container">
     <section class="admin-panel form-box">
       <h2>Welcome, <%= username %>!</h2>
-      <p>Role: <strong>Admin</strong></p>
+      <p>Role: <strong><%= role %></strong></p>
 
       <% if (message) { %>
         <p class="message"><%= message %></p>
@@ -63,8 +65,52 @@
       </div>
 
       <div class="helper">
-        <p>Use these admin actions to manage the tournament lifecycle. <a href="/admin/restart" style="color:inherit; text-decoration:underline;">Reset to Quarter Finals</a></p>
+        <p>Use these admin actions to manage the tournament lifecycle. <a href="/admin/restart" style="color:inherit; text-decoration:underline;" onclick="return confirm('Archive current tournament and reset? This cannot be undone.');">Reset and Archive Tournament</a></p>
       </div>
+
+      <% if (tournament) { %>
+        <div class="bracket-overview">
+          <h3>Current Bracket Overview</h3>
+          <% if (tournament.bracket.quarterfinals.length > 0) { %>
+            <h4>Quarterfinals</h4>
+            <% tournament.bracket.quarterfinals.forEach(qf => { %>
+              <p><%= Team.findById(qf.team1_id).country %> vs <%= Team.findById(qf.team2_id).country %> - <%= qf.match_id.score.team1 %>-<%= qf.match_id.score.team2 %> (<%= qf.match_id.status %>)</p>
+            <% }); %>
+          <% } %>
+          <% if (tournament.bracket.semifinals.length > 0) { %>
+            <h4>Semifinals</h4>
+            <% tournament.bracket.semifinals.forEach(sf => { %>
+              <p><%= Team.findById(sf.team1_id).country %> vs <%= Team.findById(sf.team2_id).country %> - <%= sf.match_id.score.team1 %>-<%= sf.match_id.score.team2 %> (<%= sf.match_id.status %>)</p>
+            <% }); %>
+          <% } %>
+          <% if (tournament.bracket.final.length > 0) { %>
+            <h4>Final</h4>
+            <% tournament.bracket.final.forEach(f => { %>
+              <p><%= Team.findById(f.team1_id).country %> vs <%= Team.findById(f.team2_id).country %> - <%= f.match_id.score.team1 %>-<%= f.match_id.score.team2 %> (<%= f.match_id.status %>)</p>
+            <% }); %>
+          <% } %>
+        </div>
+
+        <div class="match-edit">
+          <h3>Edit Match Score</h3>
+          <form action="/admin/edit-match" method="POST">
+            <select name="matchId">
+              <% tournament.bracket.quarterfinals.forEach(qf => { %>
+                <option value="<%= qf.match_id._id %>"><%= Team.findById(qf.team1_id).country %> vs <%= Team.findById(qf.team2_id).country %></option>
+              <% }); %>
+              <% tournament.bracket.semifinals.forEach(sf => { %>
+                <option value="<%= sf.match_id._id %>"><%= Team.findById(sf.team1_id).country %> vs <%= Team.findById(sf.team2_id).country %></option>
+              <% }); %>
+              <% tournament.bracket.final.forEach(f => { %>
+                <option value="<%= f.match_id._id %>"><%= Team.findById(f.team1_id).country %> vs <%= Team.findById(f.team2_id).country %></option>
+              <% }); %>
+            </select>
+            <input type="number" name="team1Score" placeholder="Team 1 Score" required>
+            <input type="number" name="team2Score" placeholder="Team 2 Score" required>
+            <button type="submit" class="btn">Update Score</button>
+          </form>
+        </div>
+      <% } %>
     </section>
   </main>
 </body>

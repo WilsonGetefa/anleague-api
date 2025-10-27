@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
   <style>
+    .bracket-container { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px; }
+    .bracket-round { display: flex; gap: 40px; }
+    .match { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
     a.message { color: #28a745; margin-top: 10px; }
     a.error { color: #dc3545; margin-top: 10px; }
     a.in-progress { color: #FFA500; font-weight: bold; }
@@ -40,75 +43,127 @@
       <a href="/signup">Sign Up</a>
     <% } %>
   </nav>
-  <main class="container">
+  <main class="container bracket-container">
     <% if (message) { %>
       <p class="message"><%= message %></p>
     <% } else if (error) { %>
       <p class="error"><%= error %></p>
     <% } else if (tournament) { %>
-      <h2>Quarterfinals</h2>
-      <ul>
-        <% (tournament.bracket.quarterfinals || []).forEach(match => { %>
-          <% if (match.match_id && match.match_id._id) { %>
-            <li>
-              <a href="/match/<%= match.match_id._id %>">
-                <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
-                <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
-                <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
-                  (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
-                <% } %>
-              </a>
-              <% if (match.match_id.status === 'in_progress') { %>
-                <span class="in-progress"> (In Progress)</span>
-              <% } else if (match.match_id.status === 'completed') { %>
-                <span class="completed"> (Completed)</span>
+      <h2>Current Tournament Bracket</h2>
+      <div class="bracket-round">
+        <div>
+          <h3>Quarterfinals</h3>
+          <ul>
+            <% (tournament.bracket.quarterfinals || []).forEach(match => { %>
+              <% if (match.match_id && match.match_id._id) { %>
+                <li class="match">
+                  <a href="/match/<%= match.match_id._id %>">
+                    <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
+                    <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
+                    <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
+                      (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
+                    <% } %>
+                  </a>
+                  <% if (match.match_id.status === 'in_progress') { %>
+                    <span class="in-progress"> (In Progress)</span>
+                  <% } else if (match.match_id.status === 'completed') { %>
+                    <span class="completed"> (Completed)</span>
+                  <% } %>
+                  <% if (match.match_id.commentary) { %> <p><%= match.match_id.commentary %></p> <% } %>
+                </li>
               <% } %>
-            </li>
-          <% } %>
-        <% }) %>
-      </ul>
-      <h2>Semifinals</h2>
-      <ul>
-        <% (tournament.bracket.semifinals || []).forEach(match => { %>
-          <% if (match.match_id && match.match_id._id) { %>
-            <li>
-              <a href="/match/<%= match.match_id._id %>">
-                <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
-                <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
-                <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
-                  (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
-                <% } %>
-              </a>
-              <% if (match.match_id.status === 'in_progress') { %>
-                <span class="in-progress"> (In Progress)</span>
-              <% } else if (match.match_id.status === 'completed') { %>
-                <span class="completed"> (Completed)</span>
+            <% }) %>
+          </ul>
+        </div>
+        <div>
+          <h3>Semifinals</h3>
+          <ul>
+            <% (tournament.bracket.semifinals || []).forEach(match => { %>
+              <% if (match.match_id && match.match_id._id) { %>
+                <li class="match">
+                  <a href="/match/<%= match.match_id._id %>">
+                    <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
+                    <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
+                    <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
+                      (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
+                    <% } %>
+                  </a>
+                  <% if (match.match_id.status === 'in_progress') { %>
+                    <span class="in-progress"> (In Progress)</span>
+                  <% } else if (match.match_id.status === 'completed') { %>
+                    <span class="completed"> (Completed)</span>
+                  <% } %>
+                  <% if (match.match_id.commentary) { %> <p><%= match.match_id.commentary %></p> <% } %>
+                </li>
               <% } %>
-            </li>
-          <% } %>
-        <% }) %>
-      </ul>
-      <h2>Final</h2>
-      <ul>
-        <% (tournament.bracket.final || []).forEach(match => { %>
-          <% if (match.match_id && match.match_id._id) { %>
-            <li>
-              <a href="/match/<%= match.match_id._id %>">
-                <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
-                <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
-                <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
-                  (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
-                <% } %>
-              </a>
-              <% if (match.match_id.status === 'in_progress') { %>
-                <span class="in-progress"> (In Progress)</span>
-              <% } else if (match.match_id.status === 'completed') { %>
-                <span class="completed"> (Completed)</span>
+            <% }) %>
+          </ul>
+        </div>
+        <div>
+          <h3>Final</h3>
+          <ul>
+            <% (tournament.bracket.final || []).forEach(match => { %>
+              <% if (match.match_id && match.match_id._id) { %>
+                <li class="match">
+                  <a href="/match/<%= match.match_id._id %>">
+                    <%= match.match_id.team1_id && match.match_id.team1_id.country ? match.match_id.team1_id.country : 'TBD' %> vs
+                    <%= match.match_id.team2_id && match.match_id.team2_id ? match.match_id.team2_id.country || 'TBD' : 'TBD' %>
+                    <% if (match.match_id.score && match.match_id.score.team1 != null && match.match_id.score.team2 != null) { %>
+                      (<%= match.match_id.score.team1 %> - <%= match.match_id.score.team2 %>)
+                    <% } %>
+                  </a>
+                  <% if (match.match_id.status === 'in_progress') { %>
+                    <span class="in-progress"> (In Progress)</span>
+                  <% } else if (match.match_id.status === 'completed') { %>
+                    <span class="completed"> (Completed)</span>
+                  <% } %>
+                  <% if (match.match_id.commentary) { %> <p><%= match.match_id.commentary %></p> <% } %>
+                </li>
               <% } %>
-            </li>
-          <% } %>
-        <% }) %>
-      </ul>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    <% } else if (pastTournaments.length > 0) { %>
+      <h2>Past Tournaments</h2>
+      <% pastTournaments.forEach(pt => { %>
+        <h3>Year: <%= pt.year %></h3>
+        <div class="bracket-round">
+          <div>
+            <h4>Quarterfinals</h4>
+            <ul>
+              <% pt.bracket.quarterfinals.forEach(qf => { %>
+                <li class="match">
+                  <%= qf.team1_id.country %> vs <%= qf.team2_id.country %> - <%= qf.match_id.score.team1 %>-<%= qf.match_id.score.team2 %>
+                  <% if (qf.match_id.commentary) { %> <p><%= qf.match_id.commentary %></p> <% } %>
+                </li>
+              <% }); %>
+            </ul>
+          </div>
+          <div>
+            <h4>Semifinals</h4>
+            <ul>
+              <% pt.bracket.semifinals.forEach(sf => { %>
+                <li class="match">
+                  <%= sf.team1_id.country %> vs <%= sf.team2_id.country %> - <%= sf.match_id.score.team1 %>-<%= sf.match_id.score.team2 %>
+                  <% if (sf.match_id.commentary) { %> <p><%= sf.match_id.commentary %></p> <% } %>
+                </li>
+              <% }); %>
+            </ul>
+          </div>
+          <div>
+            <h4>Final</h4>
+            <ul>
+              <% pt.bracket.final.forEach(f => { %>
+                <li class="match">
+                  <%= f.team1_id.country %> vs <%= f.team2_id.country %> - <%= f.match_id.score.team1 %>-<%= f.match_id.score.team2 %>
+                  <% if (f.match_id.commentary) { %> <p><%= f.match_id.commentary %></p> <% } %>
+                </li>
+              <% }); %>
+            </ul>
+          </div>
+        </div>
+      <% }); %>
     <% } else { %>
       <p>No tournament data available</p>
     <% } %>

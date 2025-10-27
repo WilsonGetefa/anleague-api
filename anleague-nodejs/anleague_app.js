@@ -5,7 +5,7 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const Team = require('./models/team');
-const { authMiddleware } = require('./middleware/auth'); // Import authMiddleware
+const { authMiddleware } = require('./middleware/auth');
 
 // Load environment variables
 dotenv.config();
@@ -63,9 +63,10 @@ const adminMiddleware = (req, res, next) => {
 app.use('/auth', require('./routes/auth'));
 app.use('/teams', require('./routes/teams'));
 app.use('/admin', authMiddleware, adminMiddleware, require('./routes/admin'));
-app.use('/', require('./routes/public'));
+app.use('/', require('./routes/public')); // Already includes rankings, bracket, match
+app.use('/', require('./routes/index')); // New index route
 
-// Home route
+// Home route (redirect to index.js handling)
 app.get('/', (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.render('index', { title: 'African Nations League', user: req.user });
@@ -126,7 +127,8 @@ app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
     username: username,
     role: 'admin',
     message: null,
-    error: null
+    error: null,
+    tournament: null // Will be populated by admin routes if started
   });
 });
 

@@ -17,31 +17,76 @@
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
     <a href="/teams">Teams</a> |
-    <a href="/login">Login</a> |
-    <a href="/signup">Sign Up</a>
+    <% if (user) { %>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/dashboard">Admin Dashboard</a> |
+      <% } else { %>
+        <a href="/dashboard">Dashboard</a> |
+      <% } %>
+      <a href="/auth/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a> |
+      <a href="/signup">Sign Up</a>
+    <% } %>
   </nav>
   <main class="container">
-    <% if (rankings.length === 0) { %>
-      <p class="message">No goals scored yet</p>
+    <% if (rankings.length === 0 && pastTournaments.length === 0) { %>
+      <p class="message">No rankings or past tournaments available yet</p>
     <% } else { %>
-      <table>
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Team</th>
-            <th>Goals</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% rankings.forEach(player => { %>
+      <h2>Top Goal Scorers</h2>
+      <% if (rankings.length > 0) { %>
+        <table>
+          <thead>
             <tr>
-              <td><%= player.name %></td>
-              <td><%= player.team %></td>
-              <td><%= player.goals %></td>
+              <th>Player</th>
+              <th>Team</th>
+              <th>Goals</th>
             </tr>
-          <% }); %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% rankings.forEach(player => { %>
+              <tr>
+                <td><%= player.name %></td>
+                <td><%= player.team %></td>
+                <td><%= player.goals %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>No goal scorers recorded yet.</p>
+      <% } %>
+
+      <h2>Past Tournaments</h2>
+      <% if (pastTournaments.length > 0) { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Winner</th>
+              <th>Runner-up</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% pastTournaments.forEach(tournament => { %>
+              <% if (tournament.bracket.final[0] && tournament.bracket.final[0].match_id) { %>
+                <% const match = tournament.bracket.final[0].match_id; %>
+                <% const winner = match.score.team1 > match.score.team2 ? tournament.bracket.final[0].team1_id : tournament.bracket.final[0].team2_id; %>
+                <% const loser = match.score.team1 > match.score.team2 ? tournament.bracket.final[0].team2_id : tournament.bracket.final[0].team1_id; %>
+                <tr>
+                  <td><%= tournament.year %></td>
+                  <td><%= winner.country %></td>
+                  <td><%= loser.country %></td>
+                  <td><%= match.score.team1 %>-<%= match.score.team2 %></td>
+                </tr>
+              <% } %>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>No past tournaments recorded yet.</p>
+      <% } %>
     <% } %>
   </main>
 </body>

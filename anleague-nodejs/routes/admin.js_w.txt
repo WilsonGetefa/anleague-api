@@ -17,7 +17,7 @@ router.post('/start', async (req, res) => {
     }
 
     const shuffled = [...teams].sort(() => 0.5 - Math.random());
-    const validTeams = shuffled.slice(0, 8).filter(team => team._id && team._id.toString().length === 24); // Ensure valid ObjectId
+    const validTeams = shuffled.slice(0, 8).filter(team => team._id && team._id.toString().length === 24);
     if (validTeams.length < 8) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
@@ -113,6 +113,7 @@ router.post('/simulate', async (req, res) => {
       match.score.team2 = Math.floor(Math.random() * 3);
       match.type = 'simulated';
       match.status = 'completed';
+      match.commentary = `Match simulated: ${match.score.team1}-${match.score.team2}`;
       await match.save();
     }
 
@@ -165,10 +166,10 @@ router.post('/play', async (req, res) => {
     }
 
     for (const match of pendingMatches) {
-      match.score.team1 = Math.floor(Math.random() * 3); // Placeholder for manual input
-      match.score.team2 = Math.floor(Math.random() * 3); // Placeholder for manual input
+      match.score.team1 = Math.floor(Math.random() * 3);
+      match.score.team2 = Math.floor(Math.random() * 3);
       match.type = 'played';
-      match.commentary = 'Match played with simulated commentary'; // Placeholder
+      match.commentary = `Match played: ${match.score.team1}-${match.score.team2} with simulated commentary`;
       match.status = 'completed';
       await match.save();
     }
@@ -220,8 +221,35 @@ router.post('/advance', async (req, res) => {
       for (let i = 0; i < tournament.bracket.quarterfinals.length; i += 2) {
         const match1 = tournament.bracket.quarterfinals[i].match_id;
         const match2 = tournament.bracket.quarterfinals[i + 1].match_id;
-        const winner1 = match1.score.team1 > match1.score.team2 ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
-        const winner2 = match2.score.team1 > match2.score.team2 ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
+        let winner1 = match1.score.team1 > match1.score.team2 ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
+        let winner2 = match2.score.team1 > match2.score.team2 ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
+
+        // Handle draws with extra time and penalties
+        if (match1.score.team1 === match1.score.team2) {
+          const extraTimeGoal = Math.random() < 0.5 ? 1 : 0; // Simulate extra time goal
+          if (extraTimeGoal === 1) {
+            winner1 = Math.random() < 0.5 ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
+            match1.commentary += `; Extra time goal decided winner: ${winner1}`;
+          } else {
+            const penaltyWin = Math.random() < 0.5; // Simulate penalty shootout
+            winner1 = penaltyWin ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
+            match1.commentary += `; Penalty shootout won by: ${winner1}`;
+          }
+          await match1.save();
+        }
+        if (match2.score.team1 === match2.score.team2) {
+          const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
+          if (extraTimeGoal === 1) {
+            winner2 = Math.random() < 0.5 ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
+            match2.commentary += `; Extra time goal decided winner: ${winner2}`;
+          } else {
+            const penaltyWin = Math.random() < 0.5;
+            winner2 = penaltyWin ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
+            match2.commentary += `; Penalty shootout won by: ${winner2}`;
+          }
+          await match2.save();
+        }
+
         const match = new Match({
           stage: 'semifinal',
           team1_id: winner1,
@@ -262,8 +290,34 @@ router.post('/advance', async (req, res) => {
       for (let i = 0; i < tournament.bracket.semifinals.length; i += 2) {
         const match1 = tournament.bracket.semifinals[i].match_id;
         const match2 = tournament.bracket.semifinals[i + 1].match_id;
-        const winner1 = match1.score.team1 > match1.score.team2 ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
-        const winner2 = match2.score.team1 > match2.score.team2 ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
+        let winner1 = match1.score.team1 > match1.score.team2 ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
+        let winner2 = match2.score.team1 > match2.score.team2 ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
+
+        if (match1.score.team1 === match1.score.team2) {
+          const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
+          if (extraTimeGoal === 1) {
+            winner1 = Math.random() < 0.5 ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
+            match1.commentary += `; Extra time goal decided winner: ${winner1}`;
+          } else {
+            const penaltyWin = Math.random() < 0.5;
+            winner1 = penaltyWin ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
+            match1.commentary += `; Penalty shootout won by: ${winner1}`;
+          }
+          await match1.save();
+        }
+        if (match2.score.team1 === match2.score.team2) {
+          const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
+          if (extraTimeGoal === 1) {
+            winner2 = Math.random() < 0.5 ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
+            match2.commentary += `; Extra time goal decided winner: ${winner2}`;
+          } else {
+            const penaltyWin = Math.random() < 0.5;
+            winner2 = penaltyWin ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
+            match2.commentary += `; Penalty shootout won by: ${winner2}`;
+          }
+          await match2.save();
+        }
+
         const match = new Match({
           stage: 'final',
           team1_id: winner1,
