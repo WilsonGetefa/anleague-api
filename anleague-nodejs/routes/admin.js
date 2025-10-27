@@ -3,7 +3,6 @@ const router = express.Router();
 const Tournament = require('../models/tournament');
 const Team = require('../models/team');
 const Match = require('../models/match');
-const matchController = require('../controllers/matchController');
 
 router.post('/start', async (req, res) => {
   try {
@@ -46,7 +45,10 @@ router.post('/start', async (req, res) => {
         team1_id: team1._id,
         team2_id: team2._id,
         type: 'simulated',
-        status: 'pending'
+        status: 'pending',
+        score: { team1: 0, team2: 0 },
+        goal_scorers: [],
+        commentary: ''
       });
       await match.save();
       quarterfinals.push({ match_id: match._id, team1_id: team1._id, team2_id: team2._id });
@@ -75,8 +77,251 @@ router.post('/start', async (req, res) => {
   }
 });
 
-router.post('/simulate', matchController.simulateMatch);
-router.post('/play', matchController.playMatch);
+router.post('/simulate', async (req, res) => {
+  try {
+    const tournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
+    if (!tournament) {
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'Tournament not found',
+        message: null
+      });
+    }
+
+    let matchesToSimulate = [];
+    if (tournament.status === 'quarterfinals') {
+      matchesToSimulate = tournament.bracket.quarterfinals.map(qf => qf.match_id);
+    } else if (tournament.status === 'semifinals') {
+      matchesToSimulate = tournament.bracket.semifinals.map(sf => sf.match_id);
+    } else if (tournament.status === 'final') {
+      matchesToSimulate = tournament.bracket.final.map(f => f.match_id);
+    }
+
+    const pendingMatches = matchesToSimulate.filter(match => match.status === 'pending');
+    if (pendingMatches.length === 0) {
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'No pending matches to simulate',
+        message: null
+      });
+    }
+
+    for (const match of pendingMatches) {
+      match.score.team1 = Math.floor(Math.random() * 3);
+      match.score.team2 = Math.floor(Math.random() * 3);
+      match.type = 'simulated';
+      match.status = 'completed';
+      await match.save();
+    }
+
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      message: 'Matches simulated successfully',
+      error: null
+    });
+  } catch (err) {
+    console.error('Simulate matches error:', err.message);
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      error: 'Failed to simulate matches',
+      message: null
+    });
+  }
+});
+
+router.post('/play', async (req, res) => {
+  try {
+    const tournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
+    if (!tournament) {
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'Tournament not found',
+        message: null
+      });
+    }
+
+    let matchesToPlay = [];
+    if (tournament.status === 'quarterfinals') {
+      matchesToPlay = tournament.bracket.quarterfinals.map(qf => qf.match_id);
+    } else if (tournament.status === 'semifinals') {
+      matchesToPlay = tournament.bracket.semifinals.map(sf => sf.match_id);
+    } else if (tournament.status === 'final') {
+      matchesToPlay = tournament.bracket.final.map(f => f.match_id);
+    }
+
+    const pendingMatches = matchesToPlay.filter(match => match.status === 'pending');
+    if (pendingMatches.length === 0) {
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'No pending matches to play',
+        message: null
+      });
+    }
+
+    for (const match of pendingMatches) {
+      match.score.team1 = Math.floor(Math.random() * 3); // Placeholder for manual input
+      match.score.team2 = Math.floor(Math.random() * 3); // Placeholder for manual input
+      match.type = 'played';
+      match.commentary = 'Match played with simulated commentary'; // Placeholder
+      match.status = 'completed';
+      await match.save();
+    }
+
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      message: 'Matches played successfully',
+      error: null
+    });
+  } catch (err) {
+    console.error('Play matches error:', err.message);
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      error: 'Failed to play matches',
+      message: null
+    });
+  }
+});
+
+router.post('/advance', async (req, res) => {
+  try {
+    const tournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
+    if (!tournament) {
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        error: 'Tournament not found',
+        message: null
+      });
+    }
+
+    if (tournament.status === 'quarterfinals') {
+      const allQuarterfinalsCompleted = tournament.bracket.quarterfinals.every(qf => {
+        const match = qf.match_id;
+        return match && match.status === 'completed';
+      });
+      if (!allQuarterfinalsCompleted) {
+        return res.render('admin_dashboard', {
+          title: 'Admin Dashboard',
+          username: req.user.username,
+          error: 'All quarterfinal matches must be completed',
+          message: null
+        });
+      }
+
+      const semifinalMatches = [];
+      for (let i = 0; i < tournament.bracket.quarterfinals.length; i += 2) {
+        const match1 = tournament.bracket.quarterfinals[i].match_id;
+        const match2 = tournament.bracket.quarterfinals[i + 1].match_id;
+        const winner1 = match1.score.team1 > match1.score.team2 ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
+        const winner2 = match2.score.team1 > match2.score.team2 ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
+        const match = new Match({
+          stage: 'semifinal',
+          team1_id: winner1,
+          team2_id: winner2,
+          type: 'simulated',
+          status: 'pending',
+          score: { team1: 0, team2: 0 },
+          goal_scorers: [],
+          commentary: ''
+        });
+        await match.save();
+        semifinalMatches.push({ match_id: match._id, team1_id: winner1, team2_id: winner2 });
+      }
+      tournament.bracket.semifinals = semifinalMatches;
+      tournament.status = 'semifinals';
+      await tournament.save();
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        message: 'Semifinals set up successfully',
+        error: null
+      });
+    } else if (tournament.status === 'semifinals') {
+      const allSemifinalsCompleted = tournament.bracket.semifinals.every(sf => {
+        const match = sf.match_id;
+        return match && match.status === 'completed';
+      });
+      if (!allSemifinalsCompleted) {
+        return res.render('admin_dashboard', {
+          title: 'Admin Dashboard',
+          username: req.user.username,
+          error: 'All semifinal matches must be completed',
+          message: null
+        });
+      }
+
+      const finalMatches = [];
+      for (let i = 0; i < tournament.bracket.semifinals.length; i += 2) {
+        const match1 = tournament.bracket.semifinals[i].match_id;
+        const match2 = tournament.bracket.semifinals[i + 1].match_id;
+        const winner1 = match1.score.team1 > match1.score.team2 ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
+        const winner2 = match2.score.team1 > match2.score.team2 ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
+        const match = new Match({
+          stage: 'final',
+          team1_id: winner1,
+          team2_id: winner2,
+          type: 'simulated',
+          status: 'pending',
+          score: { team1: 0, team2: 0 },
+          goal_scorers: [],
+          commentary: ''
+        });
+        await match.save();
+        finalMatches.push({ match_id: match._id, team1_id: winner1, team2_id: winner2 });
+      }
+      tournament.bracket.final = finalMatches;
+      tournament.status = 'final';
+      await tournament.save();
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        message: 'Final set up successfully',
+        error: null
+      });
+    } else if (tournament.status === 'final') {
+      const finalMatch = tournament.bracket.final[0].match_id;
+      if (finalMatch && finalMatch.status !== 'completed') {
+        return res.render('admin_dashboard', {
+          title: 'Admin Dashboard',
+          username: req.user.username,
+          error: 'Final match must be completed',
+          message: null
+        });
+      }
+      tournament.status = 'completed';
+      await tournament.save();
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        message: 'Tournament completed successfully',
+        error: null
+      });
+    }
+
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      error: 'No further stages to advance',
+      message: null
+    });
+  } catch (err) {
+    console.error('Advance stage error:', err.message);
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user.username,
+      error: 'Failed to advance stage',
+      message: null
+    });
+  }
+});
 
 router.post('/restart', async (req, res) => {
   try {

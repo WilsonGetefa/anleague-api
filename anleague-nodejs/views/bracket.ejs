@@ -14,6 +14,7 @@
     a.completed { color: #28a745; }
     @media (max-width: 600px) {
       nav a { display: block; margin-bottom: 5px; }
+      a:hover { background-color: #f1f1f1; }
       li { font-size: 1em; }
     }
   </style>
@@ -24,9 +25,9 @@
   </header>
   <nav>
     <a href="/">Home</a> |
-    <a href="/teams">Teams</a> |
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
+    <a href="/teams">Teams</a> |
     <% if (user) { %>
       <% if (user.role === 'admin') { %>
         <a href="/admin/dashboard">Admin Dashboard</a> |
