@@ -31,16 +31,16 @@
   </nav>
   <main class="container">
     <p>Welcome to the African Nations League! Explore the tournament bracket, check top goal scorers, or sign up to join the competition.</p>
-    <% if (currentTournament) { %>
+    <% if (currentTournament && currentTournament.status) { %>
       <p>Current Stage: <%= currentTournament.status %></p>
       <a href="/bracket">View Bracket</a>
     <% } else { %>
-      <p>No active tournament. <a href="/admin/dashboard">Start one as admin</a> (if logged in).</p>
+      <p>No active tournament. <% if (user && user.role === 'admin') { %> <a href="/admin/dashboard">Start one as admin</a> <% } else { %> Log in as admin to start one. <% } %></p>
     <% } %>
     <h3>Past Champions</h3>
     <ul>
       <% pastWinners.forEach(winner => { %>
-        <li><%= winner.year %> - <%= winner.country %></li>
+        <li><%= winner.year %> - <%= winner.country === 'N/A' ? 'No winner recorded' : winner.country %></li>
       <% }); %>
     </ul>
     <p>Total Goals Scored: <%= totalGoals %></p>

@@ -7,13 +7,41 @@ const Team = require('../models/team');
 
 router.get('/', async (req, res) => {
   try {
-    const currentTournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
-    const pastTournaments = await PastTournament.find().populate('bracket.final.match_id').populate('bracket.final.team1_id').populate('bracket.final.team2_id');
-    const pastWinners = pastTournaments.map(t => ({
-      year: t.year,
-      country: t.bracket.final[0].match_id ? (t.bracket.final[0].match_id.score.team1 > t.bracket.final[0].match_id.score.team2 ? t.bracket.final[0].team1_id.country : t.bracket.final[0].team2_id.country) : 'N/A'
-    })).slice(-3); // Last 3 winners
+    // Fetch current tournament with populated match data, handling null case
+    const currentTournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.final.match_id');
+    let currentMatchData = null;
+    if (currentTournament && currentTournament.bracket) {
+      currentMatchData = {
+        status: currentTournament.status, // Add status
+        quarterfinals: currentTournament.bracket.quarterfinals?.map(qf => qf.match_id) || [],
+        semifinals: currentTournament.bracket.semifinals?.map(sf => sf.match_id) || [],
+        final: currentTournament.bracket.final?.map(f => f.match_id) || []
+      };
+    }
 
+    // Fetch past tournaments with populated final match and team data
+    const pastTournaments = await PastTournament.find()
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
+    const pastWinners = pastTournaments
+      .map(t => {
+        const finalMatch = t.bracket.final[0]?.match_id;
+        if (finalMatch) {
+          const winnerTeam = finalMatch.score.team1 > finalMatch.score.team2 ? t.bracket.final[0].team1_id : t.bracket.final[0].team2_id;
+          return {
+            year: t.year,
+            country: winnerTeam ? winnerTeam.country || 'N/A' : 'N/A'
+          };
+        }
+        return { year: t.year, country: 'N/A' };
+      })
+      .slice(-3); // Last 3 winners
+
+    // Calculate total goals
     const totalGoals = await Match.aggregate([
       { $unwind: '$goal_scorers' },
       { $group: { _id: null, total: { $sum: 1 } } }
@@ -21,13 +49,13 @@ router.get('/', async (req, res) => {
 
     res.render('index', {
       title: 'African Nations League',
-      currentTournament,
+      currentTournament: currentMatchData,
       pastWinners,
       totalGoals,
       user: req.user // Ensure this is passed
     });
   } catch (err) {
-    console.error('Index error:', err.message);
+    console.error('Index error:', err.message, err.stack);
     res.render('index', {
       title: 'African Nations League',
       currentTournament: null,
