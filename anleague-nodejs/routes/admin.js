@@ -430,7 +430,7 @@ router.post('/advance', async (req, res) => {
           score: { team1: 0, team2: 0 },
           goal_scorers: [],
           commentary: '',
-          tournament_id: tournament._id // Added to satisfy validation
+          tournament_id: tournament._id // Ensure tournament_id is set
         });
         await match.save();
         semifinalMatches.push({ match_id: match._id, team1_id: winner1._id, team2_id: winner2._id });
@@ -454,7 +454,7 @@ router.post('/advance', async (req, res) => {
         role: req.user.role,
         message: 'Semifinals set up successfully',
         error: null,
-        tournament: updatedTournament || tournament,
+        tournament: updatedTournament,
         user: req.user
       });
     } else if (tournament.status === 'semifinals') {
@@ -515,7 +515,7 @@ router.post('/advance', async (req, res) => {
           score: { team1: 0, team2: 0 },
           goal_scorers: [],
           commentary: '',
-          tournament_id: tournament._id // Added to satisfy validation
+          tournament_id: tournament._id // Ensure tournament_id is set
         });
         await match.save();
         finalMatches.push({ match_id: match._id, team1_id: winner1._id, team2_id: winner2._id });
@@ -539,7 +539,7 @@ router.post('/advance', async (req, res) => {
         role: req.user.role,
         message: 'Final set up successfully',
         error: null,
-        tournament: updatedTournament || tournament,
+        tournament: updatedTournament,
         user: req.user
       });
     } else if (tournament.status === 'final') {
@@ -555,28 +555,50 @@ router.post('/advance', async (req, res) => {
           user: req.user
         });
       }
+
+      // Archive the completed tournament
+      const pastTournament = new PastTournament({
+        year: new Date().getFullYear(),
+        bracket: tournament.bracket,
+        status: 'completed'
+      });
+      await pastTournament.save();
+      console.log('Archived tournament:', pastTournament._id);
+
+      // Mark current tournament as completed
       tournament.status = 'completed';
       await tournament.save();
+
+      const updatedTournament = await Tournament.findOne(tournament._id)
+        .populate('bracket.quarterfinals.match_id')
+        .populate('bracket.quarterfinals.team1_id', 'country')
+        .populate('bracket.quarterfinals.team2_id', 'country')
+        .populate('bracket.semifinals.match_id')
+        .populate('bracket.semifinals.team1_id', 'country')
+        .populate('bracket.semifinals.team2_id', 'country')
+        .populate('bracket.final.match_id')
+        .populate('bracket.final.team1_id', 'country')
+        .populate('bracket.final.team2_id', 'country');
       res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
         role: req.user.role,
         message: 'Tournament completed successfully',
         error: null,
+        tournament: updatedTournament,
+        user: req.user
+      });
+    } else {
+      res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        role: req.user.role,
+        error: 'No further stages to advance',
+        message: null,
         tournament,
         user: req.user
       });
     }
-
-    res.render('admin_dashboard', {
-      title: 'Admin Dashboard',
-      username: req.user.username,
-      role: req.user.role,
-      error: 'No further stages to advance',
-      message: null,
-      tournament,
-      user: req.user
-    });
   } catch (err) {
     console.error('Advance stage error:', err.message, err.stack);
     res.status(500).render('admin_dashboard', {
@@ -591,6 +613,7 @@ router.post('/advance', async (req, res) => {
   }
 });
 
+// routes/admin.js
 router.post('/restart', async (req, res) => {
   try {
     const tournament = await Tournament.findOne().sort({ createdAt: -1 }); // Get the most recent tournament
@@ -603,10 +626,10 @@ router.post('/restart', async (req, res) => {
       await pastTournament.save();
       console.log('Archived tournament:', pastTournament._id);
     }
-    const deleteTournamentResult = await Tournament.deleteMany({});
-    const deleteMatchResult = await Match.deleteMany({});
+    const deleteTournamentResult = await Tournament.deleteMany({ status: { $ne: 'completed' } }); // Only delete non-completed tournaments
+    // Do not delete Match documents to preserve rankings
     console.log('Deleted tournaments:', deleteTournamentResult.deletedCount);
-    console.log('Deleted matches:', deleteMatchResult.deletedCount);
+    // console.log('Deleted matches:', deleteMatchResult.deletedCount); // Removed since we’re not deleting matches
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
