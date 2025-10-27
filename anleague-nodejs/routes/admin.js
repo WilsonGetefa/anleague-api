@@ -52,7 +52,8 @@ router.post('/start', async (req, res) => {
         role: req.user.role,
         error: 'Need at least 8 teams',
         message: null,
-        tournament: null
+        tournament: null,
+        user: req.user
       });
     }
 
@@ -65,7 +66,8 @@ router.post('/start', async (req, res) => {
         role: req.user.role,
         error: 'Not enough valid teams to pair for quarterfinals',
         message: null,
-        tournament: null
+        tournament: null,
+        user: req.user
       });
     }
 
@@ -81,7 +83,8 @@ router.post('/start', async (req, res) => {
           role: req.user.role,
           error: 'Invalid team data detected',
           message: null,
-          tournament: null
+          tournament: null,
+          user: req.user
         });
       }
       const match = new Match({
@@ -105,11 +108,16 @@ router.post('/start', async (req, res) => {
     });
     await tournament.save();
 
-    // Populate the tournament data for the template
     const populatedTournament = await Tournament.findOne()
       .populate('bracket.quarterfinals.match_id')
       .populate('bracket.quarterfinals.team1_id', 'country')
-      .populate('bracket.quarterfinals.team2_id', 'country');
+      .populate('bracket.quarterfinals.team2_id', 'country')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
@@ -117,7 +125,8 @@ router.post('/start', async (req, res) => {
       role: req.user.role,
       message: 'Tournament started successfully',
       error: null,
-      tournament: populatedTournament
+      tournament: populatedTournament,
+      user: req.user
     });
   } catch (err) {
     console.error('Start tournament error:', err.message);
@@ -127,7 +136,8 @@ router.post('/start', async (req, res) => {
       role: req.user.role,
       error: 'Failed to start tournament',
       message: null,
-      tournament: null
+      tournament: null,
+      user: req.user
     });
   }
 });
@@ -287,7 +297,8 @@ router.post('/advance', async (req, res) => {
         role: req.user.role,
         error: 'Tournament not found',
         message: null,
-        tournament: null
+        tournament: null,
+        user: req.user
       });
     }
 
@@ -303,7 +314,8 @@ router.post('/advance', async (req, res) => {
           role: req.user.role,
           error: 'All quarterfinal matches must be completed',
           message: null,
-          tournament
+          tournament,
+          user: req.user
         });
       }
 
@@ -318,11 +330,11 @@ router.post('/advance', async (req, res) => {
           const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner1 = Math.random() < 0.5 ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
-            match1.commentary += `; Extra time goal decided winner: ${winner1}`;
+            match1.commentary += `; Extra time goal decided winner: ${winner1.country}`;
           } else {
             const penaltyWin = Math.random() < 0.5;
             winner1 = penaltyWin ? tournament.bracket.quarterfinals[i].team1_id : tournament.bracket.quarterfinals[i].team2_id;
-            match1.commentary += `; Penalty shootout won by: ${winner1}`;
+            match1.commentary += `; Penalty shootout won by: ${winner1.country}`;
           }
           await match1.save();
         }
@@ -330,19 +342,19 @@ router.post('/advance', async (req, res) => {
           const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner2 = Math.random() < 0.5 ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
-            match2.commentary += `; Extra time goal decided winner: ${winner2}`;
+            match2.commentary += `; Extra time goal decided winner: ${winner2.country}`;
           } else {
             const penaltyWin = Math.random() < 0.5;
             winner2 = penaltyWin ? tournament.bracket.quarterfinals[i + 1].team1_id : tournament.bracket.quarterfinals[i + 1].team2_id;
-            match2.commentary += `; Penalty shootout won by: ${winner2}`;
+            match2.commentary += `; Penalty shootout won by: ${winner2.country}`;
           }
           await match2.save();
         }
 
         const match = new Match({
           stage: 'semifinal',
-          team1_id: winner1,
-          team2_id: winner2,
+          team1_id: winner1._id,
+          team2_id: winner2._id,
           type: 'simulated',
           status: 'pending',
           score: { team1: 0, team2: 0 },
@@ -350,7 +362,7 @@ router.post('/advance', async (req, res) => {
           commentary: ''
         });
         await match.save();
-        semifinalMatches.push({ match_id: match._id, team1_id: winner1, team2_id: winner2 });
+        semifinalMatches.push({ match_id: match._id, team1_id: winner1._id, team2_id: winner2._id });
       }
       tournament.bracket.semifinals = semifinalMatches;
       tournament.status = 'semifinals';
@@ -361,7 +373,8 @@ router.post('/advance', async (req, res) => {
         role: req.user.role,
         message: 'Semifinals set up successfully',
         error: null,
-        tournament
+        tournament,
+        user: req.user
       });
     } else if (tournament.status === 'semifinals') {
       const allSemifinalsCompleted = tournament.bracket.semifinals.every(sf => {
@@ -375,7 +388,8 @@ router.post('/advance', async (req, res) => {
           role: req.user.role,
           error: 'All semifinal matches must be completed',
           message: null,
-          tournament
+          tournament,
+          user: req.user
         });
       }
 
@@ -390,11 +404,11 @@ router.post('/advance', async (req, res) => {
           const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner1 = Math.random() < 0.5 ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
-            match1.commentary += `; Extra time goal decided winner: ${winner1}`;
+            match1.commentary += `; Extra time goal decided winner: ${winner1.country}`;
           } else {
             const penaltyWin = Math.random() < 0.5;
             winner1 = penaltyWin ? tournament.bracket.semifinals[i].team1_id : tournament.bracket.semifinals[i].team2_id;
-            match1.commentary += `; Penalty shootout won by: ${winner1}`;
+            match1.commentary += `; Penalty shootout won by: ${winner1.country}`;
           }
           await match1.save();
         }
@@ -402,19 +416,19 @@ router.post('/advance', async (req, res) => {
           const extraTimeGoal = Math.random() < 0.5 ? 1 : 0;
           if (extraTimeGoal === 1) {
             winner2 = Math.random() < 0.5 ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
-            match2.commentary += `; Extra time goal decided winner: ${winner2}`;
+            match2.commentary += `; Extra time goal decided winner: ${winner2.country}`;
           } else {
             const penaltyWin = Math.random() < 0.5;
             winner2 = penaltyWin ? tournament.bracket.semifinals[i + 1].team1_id : tournament.bracket.semifinals[i + 1].team2_id;
-            match2.commentary += `; Penalty shootout won by: ${winner2}`;
+            match2.commentary += `; Penalty shootout won by: ${winner2.country}`;
           }
           await match2.save();
         }
 
         const match = new Match({
           stage: 'final',
-          team1_id: winner1,
-          team2_id: winner2,
+          team1_id: winner1._id,
+          team2_id: winner2._id,
           type: 'simulated',
           status: 'pending',
           score: { team1: 0, team2: 0 },
@@ -422,7 +436,7 @@ router.post('/advance', async (req, res) => {
           commentary: ''
         });
         await match.save();
-        finalMatches.push({ match_id: match._id, team1_id: winner1, team2_id: winner2 });
+        finalMatches.push({ match_id: match._id, team1_id: winner1._id, team2_id: winner2._id });
       }
       tournament.bracket.final = finalMatches;
       tournament.status = 'final';
@@ -433,7 +447,8 @@ router.post('/advance', async (req, res) => {
         role: req.user.role,
         message: 'Final set up successfully',
         error: null,
-        tournament
+        tournament,
+        user: req.user
       });
     } else if (tournament.status === 'final') {
       const finalMatch = tournament.bracket.final[0].match_id;
@@ -444,7 +459,8 @@ router.post('/advance', async (req, res) => {
           role: req.user.role,
           error: 'Final match must be completed',
           message: null,
-          tournament
+          tournament,
+          user: req.user
         });
       }
       tournament.status = 'completed';
@@ -455,7 +471,8 @@ router.post('/advance', async (req, res) => {
         role: req.user.role,
         message: 'Tournament completed successfully',
         error: null,
-        tournament
+        tournament,
+        user: req.user
       });
     }
 
@@ -465,7 +482,8 @@ router.post('/advance', async (req, res) => {
       role: req.user.role,
       error: 'No further stages to advance',
       message: null,
-      tournament
+      tournament,
+      user: req.user
     });
   } catch (err) {
     console.error('Advance stage error:', err.message);
@@ -475,7 +493,8 @@ router.post('/advance', async (req, res) => {
       role: req.user.role,
       error: 'Failed to advance stage',
       message: null,
-      tournament: null
+      tournament: null,
+      user: req.user
     });
   }
 });

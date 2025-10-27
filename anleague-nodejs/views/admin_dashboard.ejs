@@ -73,7 +73,11 @@
         <% if (tournament.bracket.semifinals.length > 0) { %>
           <h4>Semifinals</h4>
           <% tournament.bracket.semifinals.forEach(sf => { %>
-            <p><%= sf.team1_id.country %> vs <%= sf.team2_id.country %> - <%= sf.match_id ? `${sf.match_id.score.team1}-${sf.match_id.score.team2} (${sf.match_id.status})` : 'Pending' %></p>
+            <p>
+              <%= sf.team1_id ? sf.team1_id.country || 'Unknown' : 'Unknown' %> vs
+              <%= sf.team2_id ? sf.team2_id.country || 'Unknown' : 'Unknown' %> -
+              <%= sf.match_id ? `${sf.match_id.score.team1}-${sf.match_id.score.team2} (${sf.match_id.status})` : 'Pending' %>
+            </p>
           <% }); %>
         <% } %>
         <% if (tournament.bracket.final.length > 0) { %>
