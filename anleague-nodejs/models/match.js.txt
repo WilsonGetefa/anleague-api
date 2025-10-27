@@ -14,17 +14,9 @@ const matchSchema = new mongoose.Schema({
     team1: { type: Number, default: 0 },
     team2: { type: Number, default: 0 }
   },
-  extra_time_score: {
-    team1: { type: Number, default: 0 },
-    team2: { type: Number, default: 0 }
-  },
-  penalty_outcome: {
-    team1: { type: Number, default: 0 }, // Penalty kicks scored
-    team2: { type: Number, default: 0 }
-  },
   goal_scorers: [goalScorerSchema],
   type: { type: String, enum: ['played', 'simulated'], required: true },
-  commentary: { type: String },
+  commentary: { type: String }, // For played matches
   status: { type: String, enum: ['pending', 'in_progress', 'completed'], default: 'pending' }
 });
 
