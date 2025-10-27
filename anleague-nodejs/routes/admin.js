@@ -94,23 +94,32 @@ router.post('/start', async (req, res) => {
         type: 'simulated',
         status: 'pending',
         score: { team1: 0, team2: 0 },
-        goal_scorers: [], // To be populated during simulation/play
+        goal_scorers: [],
         commentary: '',
-        tournament_id: tournament._id
+        // tournament_id: tournament._id // Moved below to avoid TDZ
       });
       await match.save();
       quarterfinals.push({ match_id: match._id, team1_id: team1._id, team2_id: team2._id });
     }
 
-    await Tournament.deleteMany({});
-    const tournament = new Tournament({
+    // Create and save tournament after matches are created
+    const tournamentData = {
       teams: validTeams.map(t => t._id),
       bracket: { quarterfinals, semifinals: [], final: [] },
       status: 'quarterfinals'
-    });
-    await tournament.save();
+    };
+    await Tournament.deleteMany({}); // Clear existing tournaments
+    const tournament = await Tournament.create(tournamentData); // Use create to ensure _id is available
 
-    const populatedTournament = await Tournament.findOne()
+    // Update matches with tournament_id if schema includes it
+    if ('tournament_id' in match.schema.paths) {
+      await Match.updateMany(
+        { _id: { $in: quarterfinals.map(qf => qf.match_id) } },
+        { $set: { tournament_id: tournament._id } }
+      );
+    }
+
+    const populatedTournament = await Tournament.findOne(tournament._id)
       .populate('teams', 'country')
       .populate('bracket.quarterfinals.match_id')
       .populate('bracket.quarterfinals.team1_id', 'country')
@@ -132,12 +141,12 @@ router.post('/start', async (req, res) => {
       user: req.user
     });
   } catch (err) {
-    console.error('Start tournament error:', err.message);
+    console.error('Start tournament error:', err.message, err.stack);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
-      error: 'Failed to start tournament',
+      error: 'Failed to start tournament: ' + err.message,
       message: null,
       tournament: null,
       user: req.user
