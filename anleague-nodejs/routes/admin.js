@@ -279,7 +279,7 @@ router.post('/play', async (req, res) => {
   }
 });
 
-router.post('/advance', async (req, res) => { // Removed next parameter since it's not needed with proper error handling
+router.post('/advance', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
       .populate('bracket.quarterfinals.match_id')
@@ -372,13 +372,23 @@ router.post('/advance', async (req, res) => { // Removed next parameter since it
       tournament.bracket.semifinals = semifinalMatches;
       tournament.status = 'semifinals';
       await tournament.save();
+      const updatedTournament = await Tournament.findOne()
+        .populate('bracket.quarterfinals.match_id')
+        .populate('bracket.quarterfinals.team1_id', 'country')
+        .populate('bracket.quarterfinals.team2_id', 'country')
+        .populate('bracket.semifinals.match_id')
+        .populate('bracket.semifinals.team1_id', 'country')
+        .populate('bracket.semifinals.team2_id', 'country')
+        .populate('bracket.final.match_id')
+        .populate('bracket.final.team1_id', 'country')
+        .populate('bracket.final.team2_id', 'country');
       res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
         role: req.user.role,
         message: 'Semifinals set up successfully',
         error: null,
-        tournament,
+        tournament: updatedTournament || tournament,
         user: req.user
       });
     } else if (tournament.status === 'semifinals') {
@@ -446,13 +456,23 @@ router.post('/advance', async (req, res) => { // Removed next parameter since it
       tournament.bracket.final = finalMatches;
       tournament.status = 'final';
       await tournament.save();
+      const updatedTournament = await Tournament.findOne()
+        .populate('bracket.quarterfinals.match_id')
+        .populate('bracket.quarterfinals.team1_id', 'country')
+        .populate('bracket.quarterfinals.team2_id', 'country')
+        .populate('bracket.semifinals.match_id')
+        .populate('bracket.semifinals.team1_id', 'country')
+        .populate('bracket.semifinals.team2_id', 'country')
+        .populate('bracket.final.match_id')
+        .populate('bracket.final.team1_id', 'country')
+        .populate('bracket.final.team2_id', 'country');
       res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
         role: req.user.role,
         message: 'Final set up successfully',
         error: null,
-        tournament,
+        tournament: updatedTournament || tournament,
         user: req.user
       });
     } else if (tournament.status === 'final') {
