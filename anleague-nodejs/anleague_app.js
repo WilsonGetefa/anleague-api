@@ -1,3 +1,4 @@
+// anleague_app.js
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -61,8 +62,7 @@ const adminMiddleware = (req, res, next) => {
 // Routes
 app.use('/auth', require('./routes/auth'));
 app.use('/teams', require('./routes/teams'));
-//app.use('/admin', authMiddleware, adminMiddleware, require('./routes/admin'));
-app.use('/admin', authMiddleware, adminRouter); // authMiddleware should set req.user
+app.use('/admin', authMiddleware, adminMiddleware, require('./routes/admin')); // Corrected line
 app.use('/', require('./routes/public')); // Already includes rankings, bracket, match
 app.use('/', require('./routes/index')); // New index route
 
