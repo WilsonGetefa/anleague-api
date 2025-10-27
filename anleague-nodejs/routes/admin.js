@@ -501,15 +501,12 @@ router.post('/advance', async (req, res) => {
 
 router.post('/restart', async (req, res) => {
   try {
-    const tournament = await Tournament.findOne()
-      .populate('bracket.quarterfinals.match_id')
-      .populate('bracket.semifinals.match_id')
-      .populate('bracket.final.match_id');
+    const tournament = await Tournament.findOne();
     if (tournament) {
-      // Archive the old tournament
+      tournament.status = 'completed';
       const pastTournament = new PastTournament({
         ...tournament.toObject(),
-        year: new Date().getFullYear() // Use current year as a placeholder
+        year: new Date().getFullYear()
       });
       await pastTournament.save();
       await Tournament.deleteMany({});
@@ -521,7 +518,8 @@ router.post('/restart', async (req, res) => {
       role: req.user.role,
       message: 'Tournament reset and archived successfully',
       error: null,
-      tournament: null
+      tournament: null,
+      user: req.user
     });
   } catch (err) {
     console.error('Restart tournament error:', err.message);
@@ -531,7 +529,8 @@ router.post('/restart', async (req, res) => {
       role: req.user.role,
       error: 'Failed to reset tournament',
       message: null,
-      tournament: null
+      tournament: null,
+      user: req.user
     });
   }
 });

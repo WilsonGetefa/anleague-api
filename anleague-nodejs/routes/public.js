@@ -141,6 +141,7 @@ router.get('/bracket', async (req, res) => {
   try {
     console.log('Fetching tournament for /bracket');
     const tournament = await Tournament.findOne({ status: { $ne: 'completed' } })
+      .sort({ createdAt: -1 }) // Prioritize the most recent tournament
       .populate({
         path: 'teams',
         select: 'country'
@@ -191,7 +192,11 @@ router.get('/bracket', async (req, res) => {
 
 router.get('/rankings', async (req, res) => {
   try {
-    const matches = await Match.find({ type: { $in: ['simulated', 'played'] } })
+    const currentTournament = await Tournament.findOne({ status: { $ne: 'completed' } });
+    const matches = await Match.find({
+      type: { $in: ['simulated', 'played'] },
+      ...(currentTournament && { tournament_id: currentTournament._id }) // Filter by current tournament if exists
+    })
       .populate('team1_id', 'country')
       .populate('team2_id', 'country');
 
