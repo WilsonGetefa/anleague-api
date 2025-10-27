@@ -37,7 +37,7 @@
   <main class="container admin-container">
     <section class="admin-panel form-box">
       <h2>Welcome, <%= username %>!</h2>
-      <p>Role: <strong><%= role %></strong></p>
+      <p>Role: <strong><%= typeof role !== 'undefined' ? role : 'N/A' %></strong></p>
 
       <% if (message) { %>
         <p class="message"><%= message %></p>

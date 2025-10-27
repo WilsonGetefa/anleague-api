@@ -67,6 +67,7 @@ router.post('/start', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role, // Add role here
       message: 'Tournament started successfully',
       error: null,
       tournament
@@ -76,6 +77,7 @@ router.post('/start', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role, // Add role here
       error: 'Failed to start tournament',
       message: null,
       tournament: null
