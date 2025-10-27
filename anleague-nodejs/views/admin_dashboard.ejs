@@ -17,7 +17,7 @@
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
     <a href="/teams">Teams</a> |
-    <% if (user) { %>
+    <% if (typeof user !== 'undefined' && user) { %> <!-- Safely check user -->
       <% if (user.role === 'admin') { %>
         <a href="/admin/dashboard">Admin Dashboard</a> |
       <% } else { %>

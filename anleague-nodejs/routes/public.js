@@ -3,7 +3,7 @@ const router = express.Router();
 const Tournament = require('../models/tournament');
 const Team = require('../models/team');
 const Match = require('../models/match');
-const matchController = require('../controllers/matchController');
+const PastTournament = require('../models/pastTournament'); // Add this import
 
 // Start tournament (admin-only)
 router.post('/start', async (req, res) => {
@@ -47,7 +47,7 @@ router.post('/start', async (req, res) => {
   }
 });
 
-// [Rest of the routes remain unchanged]
+// [Rest of the routes remain unchanged for now]
 router.post('/simulate', matchController.simulateMatch);
 router.post('/play', matchController.playMatch);
 router.post('/restart', async (req, res) => {
@@ -133,7 +133,7 @@ router.get('/rankings', async (req, res) => {
     });
 
     const rankings = Object.values(goalScorers).sort((a, b) => b.goals - a.goals);
-    const pastTournaments = await PastTournament.find()
+    const pastTournaments = await PastTournament.find() // Line 136
       .populate('bracket.final.match_id')
       .populate('bracket.final.team1_id', 'country')
       .populate('bracket.final.team2_id', 'country');
@@ -145,7 +145,7 @@ router.get('/rankings', async (req, res) => {
     res.render('rankings', { 
       title: 'Goal Scorers Rankings', 
       rankings, 
-      pastTournaments, // Add pastTournaments here
+      pastTournaments, 
       user: req.user 
     });
   } catch (err) {

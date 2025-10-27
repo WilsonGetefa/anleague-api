@@ -5,6 +5,43 @@ const Team = require('../models/team');
 const Match = require('../models/match');
 const PastTournament = require('../models/pastTournament'); // For archiving
 
+// Add this at the top with other routes in routes/admin.js
+router.get('/dashboard', async (req, res) => {
+  try {
+    const tournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user ? req.user.username : 'Guest',
+      role: req.user ? req.user.role : 'N/A',
+      message: null,
+      error: null,
+      tournament: tournament || null,
+      user: req.user // Ensure user is passed
+    });
+  } catch (err) {
+    console.error('Dashboard error:', err.message);
+    res.render('admin_dashboard', {
+      title: 'Admin Dashboard',
+      username: req.user ? req.user.username : 'Guest',
+      role: req.user ? req.user.role : 'N/A',
+      error: 'Failed to load dashboard',
+      message: null,
+      tournament: null,
+      user: req.user // Ensure user is passed
+    });
+  }
+});
+
+// ... (rest of the existing routes remain as provided earlier) ...
 router.post('/start', async (req, res) => {
   try {
     const teams = await Team.find().lean();
