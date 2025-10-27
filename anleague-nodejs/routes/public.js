@@ -114,7 +114,6 @@ router.get('/bracket', async (req, res) => {
 });
 
 // Get rankings (public)
-// In routes/public.js, update the rankings route
 router.get('/rankings', async (req, res) => {
   try {
     const matches = await Match.find({ type: { $in: ['simulated', 'played'] } })
@@ -134,12 +133,21 @@ router.get('/rankings', async (req, res) => {
     });
 
     const rankings = Object.values(goalScorers).sort((a, b) => b.goals - a.goals);
+    const pastTournaments = await PastTournament.find()
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
 
     if (req.query.format === 'json') {
       return res.json({ rankings });
     }
 
-    res.render('rankings', { title: 'Goal Scorers Rankings', rankings, user: req.user }); // Add user here
+    res.render('rankings', { 
+      title: 'Goal Scorers Rankings', 
+      rankings, 
+      pastTournaments, // Add pastTournaments here
+      user: req.user 
+    });
   } catch (err) {
     console.error('Rankings route error:', err.message, err.stack);
     res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load rankings' });

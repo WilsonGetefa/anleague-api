@@ -3,7 +3,7 @@ const router = express.Router();
 const Tournament = require('../models/tournament');
 const Team = require('../models/team');
 const Match = require('../models/match');
-const PastTournament = require('../models/pastTournament'); // New model for archiving
+const PastTournament = require('../models/pastTournament'); // For archiving
 
 router.post('/start', async (req, res) => {
   try {
@@ -12,6 +12,7 @@ router.post('/start', async (req, res) => {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         error: 'Need at least 8 teams',
         message: null,
         tournament: null
@@ -24,6 +25,7 @@ router.post('/start', async (req, res) => {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         error: 'Not enough valid teams to pair for quarterfinals',
         message: null,
         tournament: null
@@ -39,6 +41,7 @@ router.post('/start', async (req, res) => {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
           username: req.user.username,
+          role: req.user.role,
           error: 'Invalid team data detected',
           message: null,
           tournament: null
@@ -64,20 +67,27 @@ router.post('/start', async (req, res) => {
       status: 'quarterfinals'
     });
     await tournament.save();
+
+    // Populate the tournament data for the template
+    const populatedTournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country');
+
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      role: req.user.role, // Add role here
+      role: req.user.role,
       message: 'Tournament started successfully',
       error: null,
-      tournament
+      tournament: populatedTournament
     });
   } catch (err) {
     console.error('Start tournament error:', err.message);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
-      role: req.user.role, // Add role here
+      role: req.user.role,
       error: 'Failed to start tournament',
       message: null,
       tournament: null
@@ -87,11 +97,15 @@ router.post('/start', async (req, res) => {
 
 router.post('/simulate', async (req, res) => {
   try {
-    const tournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
+    const tournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.final.match_id');
     if (!tournament) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         error: 'Tournament not found',
         message: null,
         tournament: null
@@ -107,11 +121,12 @@ router.post('/simulate', async (req, res) => {
       matchesToSimulate = tournament.bracket.final.map(f => f.match_id);
     }
 
-    const pendingMatches = matchesToSimulate.filter(match => match.status === 'pending');
+    const pendingMatches = matchesToSimulate.filter(match => match && match.status === 'pending');
     if (pendingMatches.length === 0) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         error: 'No pending matches to simulate',
         message: null,
         tournament
@@ -130,6 +145,7 @@ router.post('/simulate', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       message: 'Matches simulated successfully',
       error: null,
       tournament
@@ -139,6 +155,7 @@ router.post('/simulate', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       error: 'Failed to simulate matches',
       message: null,
       tournament: null
@@ -148,11 +165,15 @@ router.post('/simulate', async (req, res) => {
 
 router.post('/play', async (req, res) => {
   try {
-    const tournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
+    const tournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.final.match_id');
     if (!tournament) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         error: 'Tournament not found',
         message: null,
         tournament: null
@@ -168,11 +189,12 @@ router.post('/play', async (req, res) => {
       matchesToPlay = tournament.bracket.final.map(f => f.match_id);
     }
 
-    const pendingMatches = matchesToPlay.filter(match => match.status === 'pending');
+    const pendingMatches = matchesToPlay.filter(match => match && match.status === 'pending');
     if (pendingMatches.length === 0) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         error: 'No pending matches to play',
         message: null,
         tournament
@@ -191,6 +213,7 @@ router.post('/play', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       message: 'Matches played successfully',
       error: null,
       tournament
@@ -200,6 +223,7 @@ router.post('/play', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       error: 'Failed to play matches',
       message: null,
       tournament: null
@@ -209,11 +233,21 @@ router.post('/play', async (req, res) => {
 
 router.post('/advance', async (req, res) => {
   try {
-    const tournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
+    const tournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
     if (!tournament) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         error: 'Tournament not found',
         message: null,
         tournament: null
@@ -229,6 +263,7 @@ router.post('/advance', async (req, res) => {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
           username: req.user.username,
+          role: req.user.role,
           error: 'All quarterfinal matches must be completed',
           message: null,
           tournament
@@ -286,6 +321,7 @@ router.post('/advance', async (req, res) => {
       res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         message: 'Semifinals set up successfully',
         error: null,
         tournament
@@ -299,6 +335,7 @@ router.post('/advance', async (req, res) => {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
           username: req.user.username,
+          role: req.user.role,
           error: 'All semifinal matches must be completed',
           message: null,
           tournament
@@ -356,6 +393,7 @@ router.post('/advance', async (req, res) => {
       res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         message: 'Final set up successfully',
         error: null,
         tournament
@@ -366,6 +404,7 @@ router.post('/advance', async (req, res) => {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
           username: req.user.username,
+          role: req.user.role,
           error: 'Final match must be completed',
           message: null,
           tournament
@@ -376,6 +415,7 @@ router.post('/advance', async (req, res) => {
       res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         message: 'Tournament completed successfully',
         error: null,
         tournament
@@ -385,6 +425,7 @@ router.post('/advance', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       error: 'No further stages to advance',
       message: null,
       tournament
@@ -394,6 +435,7 @@ router.post('/advance', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       error: 'Failed to advance stage',
       message: null,
       tournament: null
@@ -403,7 +445,10 @@ router.post('/advance', async (req, res) => {
 
 router.post('/restart', async (req, res) => {
   try {
-    const tournament = await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id');
+    const tournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.final.match_id');
     if (tournament) {
       // Archive the old tournament
       const pastTournament = new PastTournament({
@@ -417,6 +462,7 @@ router.post('/restart', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       message: 'Tournament reset and archived successfully',
       error: null,
       tournament: null
@@ -426,6 +472,7 @@ router.post('/restart', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       error: 'Failed to reset tournament',
       message: null,
       tournament: null
@@ -433,7 +480,6 @@ router.post('/restart', async (req, res) => {
   }
 });
 
-// Append to routes/admin.js
 router.post('/edit-match', async (req, res) => {
   try {
     const { matchId, team1Score, team2Score } = req.body;
@@ -442,9 +488,19 @@ router.post('/edit-match', async (req, res) => {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
+        role: req.user.role,
         error: 'Match not found',
         message: null,
         tournament: await Tournament.findOne()
+          .populate('bracket.quarterfinals.match_id')
+          .populate('bracket.quarterfinals.team1_id', 'country')
+          .populate('bracket.quarterfinals.team2_id', 'country')
+          .populate('bracket.semifinals.match_id')
+          .populate('bracket.semifinals.team1_id', 'country')
+          .populate('bracket.semifinals.team2_id', 'country')
+          .populate('bracket.final.match_id')
+          .populate('bracket.final.team1_id', 'country')
+          .populate('bracket.final.team2_id', 'country')
       });
     }
 
@@ -457,15 +513,26 @@ router.post('/edit-match', async (req, res) => {
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       message: 'Match score updated successfully',
       error: null,
-      tournament: await Tournament.findOne().populate('bracket.quarterfinals.match_id').populate('bracket.semifinals.match_id').populate('bracket.final.match_id')
+      tournament: await Tournament.findOne()
+        .populate('bracket.quarterfinals.match_id')
+        .populate('bracket.quarterfinals.team1_id', 'country')
+        .populate('bracket.quarterfinals.team2_id', 'country')
+        .populate('bracket.semifinals.match_id')
+        .populate('bracket.semifinals.team1_id', 'country')
+        .populate('bracket.semifinals.team2_id', 'country')
+        .populate('bracket.final.match_id')
+        .populate('bracket.final.team1_id', 'country')
+        .populate('bracket.final.team2_id', 'country')
     });
   } catch (err) {
     console.error('Edit match error:', err.message);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
+      role: req.user.role,
       error: 'Failed to update match score',
       message: null,
       tournament: null
