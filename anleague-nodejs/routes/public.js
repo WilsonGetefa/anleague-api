@@ -3,12 +3,11 @@ const router = express.Router();
 const Tournament = require('../models/tournament');
 const Team = require('../models/team');
 const Match = require('../models/match');
-const PastTournament = require('../models/pastTournament'); // Add this import
+const PastTournament = require('../models/pastTournament');
 
-// Start tournament (admin-only)
 router.post('/start', async (req, res) => {
   try {
-    const teams = await Team.find().lean(); // Use lean to avoid Mongoose overhead
+    const teams = await Team.find().lean();
     if (teams.length < 8) {
       return res.status(400).json({ error: 'Need at least 8 teams' });
     }
@@ -47,9 +46,86 @@ router.post('/start', async (req, res) => {
   }
 });
 
-// [Rest of the routes remain unchanged for now]
-router.post('/simulate', matchController.simulateMatch);
-router.post('/play', matchController.playMatch);
+router.post('/simulate', async (req, res) => {
+  try {
+    const tournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.final.match_id');
+    if (!tournament) {
+      return res.status(404).json({ error: 'Tournament not found' });
+    }
+
+    let matchesToSimulate = [];
+    if (tournament.status === 'active' && tournament.bracket.quarterfinals.length > 0) {
+      matchesToSimulate = tournament.bracket.quarterfinals.map(qf => qf.match_id);
+    } else if (tournament.status === 'semifinals') {
+      matchesToSimulate = tournament.bracket.semifinals.map(sf => sf.match_id);
+    } else if (tournament.status === 'final') {
+      matchesToSimulate = tournament.bracket.final.map(f => f.match_id);
+    }
+
+    const pendingMatches = matchesToSimulate.filter(match => match && match.status === 'pending');
+    if (pendingMatches.length === 0) {
+      return res.status(400).json({ error: 'No pending matches to simulate' });
+    }
+
+    for (const match of pendingMatches) {
+      match.score.team1 = Math.floor(Math.random() * 3);
+      match.score.team2 = Math.floor(Math.random() * 3);
+      match.type = 'simulated';
+      match.status = 'completed';
+      match.commentary = `Match simulated: ${match.score.team1}-${match.score.team2}`;
+      await match.save();
+    }
+
+    res.json({ message: 'Matches simulated successfully' });
+  } catch (err) {
+    console.error('Simulate matches error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/play', async (req, res) => {
+  try {
+    const tournament = await Tournament.findOne()
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.final.match_id');
+    if (!tournament) {
+      return res.status(404).json({ error: 'Tournament not found' });
+    }
+
+    let matchesToPlay = [];
+    if (tournament.status === 'active' && tournament.bracket.quarterfinals.length > 0) {
+      matchesToPlay = tournament.bracket.quarterfinals.map(qf => qf.match_id);
+    } else if (tournament.status === 'semifinals') {
+      matchesToPlay = tournament.bracket.semifinals.map(sf => sf.match_id);
+    } else if (tournament.status === 'final') {
+      matchesToPlay = tournament.bracket.final.map(f => f.match_id);
+    }
+
+    const pendingMatches = matchesToPlay.filter(match => match && match.status === 'pending');
+    if (pendingMatches.length === 0) {
+      return res.status(400).json({ error: 'No pending matches to play' });
+    }
+
+    for (const match of pendingMatches) {
+      match.score.team1 = Math.floor(Math.random() * 3);
+      match.score.team2 = Math.floor(Math.random() * 3);
+      match.type = 'played';
+      match.commentary = `Match played: ${match.score.team1}-${match.score.team2} with simulated commentary`;
+      match.status = 'completed';
+      await match.save();
+    }
+
+    res.json({ message: 'Matches played successfully' });
+  } catch (err) {
+    console.error('Play matches error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.post('/restart', async (req, res) => {
   try {
     await Tournament.deleteMany({});
@@ -113,7 +189,6 @@ router.get('/bracket', async (req, res) => {
   }
 });
 
-// Get rankings (public)
 router.get('/rankings', async (req, res) => {
   try {
     const matches = await Match.find({ type: { $in: ['simulated', 'played'] } })
@@ -133,7 +208,7 @@ router.get('/rankings', async (req, res) => {
     });
 
     const rankings = Object.values(goalScorers).sort((a, b) => b.goals - a.goals);
-    const pastTournaments = await PastTournament.find() // Line 136
+    const pastTournaments = await PastTournament.find()
       .populate('bracket.final.match_id')
       .populate('bracket.final.team1_id', 'country')
       .populate('bracket.final.team2_id', 'country');
@@ -154,7 +229,6 @@ router.get('/rankings', async (req, res) => {
   }
 });
 
-// Get match details (public)
 router.get('/match/:id', async (req, res) => {
   try {
     const match = await Match.findById(req.params.id)
