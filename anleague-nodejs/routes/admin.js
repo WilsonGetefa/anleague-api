@@ -94,14 +94,15 @@ router.post('/start', async (req, res) => {
         type: 'simulated',
         status: 'pending',
         score: { team1: 0, team2: 0 },
-        goal_scorers: [],
-        commentary: ''
+        goal_scorers: [], // To be populated during simulation/play
+        commentary: '',
+        tournament_id: tournament._id
       });
       await match.save();
       quarterfinals.push({ match_id: match._id, team1_id: team1._id, team2_id: team2._id });
     }
 
-    await Tournament.deleteMany({}); // Clear existing tournaments before creating a new one
+    await Tournament.deleteMany({});
     const tournament = new Tournament({
       teams: validTeams.map(t => t._id),
       bracket: { quarterfinals, semifinals: [], final: [] },
@@ -110,6 +111,7 @@ router.post('/start', async (req, res) => {
     await tournament.save();
 
     const populatedTournament = await Tournament.findOne()
+      .populate('teams', 'country')
       .populate('bracket.quarterfinals.match_id')
       .populate('bracket.quarterfinals.team1_id', 'country')
       .populate('bracket.quarterfinals.team2_id', 'country')
@@ -147,8 +149,14 @@ router.post('/simulate', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
       .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country')
       .populate('bracket.semifinals.match_id')
-      .populate('bracket.final.match_id');
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
     if (!tournament) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
@@ -156,17 +164,28 @@ router.post('/simulate', async (req, res) => {
         role: req.user.role,
         error: 'Tournament not found',
         message: null,
-        tournament: null
+        tournament: null,
+        user: req.user
       });
     }
 
     let matchesToSimulate = [];
     if (tournament.status === 'quarterfinals') {
-      matchesToSimulate = tournament.bracket.quarterfinals.map(qf => qf.match_id);
+      matchesToSimulate = tournament.bracket.quarterfinals.map(qf => qf.match_id).filter(m => m);
     } else if (tournament.status === 'semifinals') {
-      matchesToSimulate = tournament.bracket.semifinals.map(sf => sf.match_id);
+      matchesToSimulate = tournament.bracket.semifinals.map(sf => sf.match_id).filter(m => m);
     } else if (tournament.status === 'final') {
-      matchesToSimulate = tournament.bracket.final.map(f => f.match_id);
+      matchesToSimulate = tournament.bracket.final.map(f => f.match_id).filter(m => m);
+    } else {
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        role: req.user.role,
+        error: 'No valid stage to simulate',
+        message: null,
+        tournament,
+        user: req.user
+      });
     }
 
     const pendingMatches = matchesToSimulate.filter(match => match && match.status === 'pending');
@@ -177,18 +196,62 @@ router.post('/simulate', async (req, res) => {
         role: req.user.role,
         error: 'No pending matches to simulate',
         message: null,
-        tournament
+        tournament,
+        user: req.user
       });
     }
 
     for (const match of pendingMatches) {
-      match.score.team1 = Math.floor(Math.random() * 3);
-      match.score.team2 = Math.floor(Math.random() * 3);
+      // Simulate scores
+      match.score.team1 = Math.floor(Math.random() * 4); // 0 to 3 goals
+      match.score.team2 = Math.floor(Math.random() * 4);
       match.type = 'simulated';
       match.status = 'completed';
-      match.commentary = `Match simulated: ${match.score.team1}-${match.score.team2}`;
+
+      // Simulate goal scorers
+      const maxGoals = Math.max(match.score.team1, match.score.team2);
+      match.goal_scorers = [];
+      for (let i = 0; i < maxGoals; i++) {
+        if (i < match.score.team1) {
+          match.goal_scorers.push({
+            player_name: `Player${i + 1}_T1_${match._id.toString().slice(-4)}`,
+            minute: Math.floor(Math.random() * 90) + 1,
+            team: 'team1'
+          });
+        }
+        if (i < match.score.team2) {
+          match.goal_scorers.push({
+            player_name: `Player${i + 1}_T2_${match._id.toString().slice(-4)}`,
+            minute: Math.floor(Math.random() * 90) + 1,
+            team: 'team2'
+          });
+        }
+      }
+
+      // Add commentary
+      const team1Name = match.team1_id ? match.team1_id.country || 'Unknown' : 'Unknown';
+      const team2Name = match.team2_id ? match.team2_id.country || 'Unknown' : 'Unknown';
+      match.commentary = `Match simulated: ${team1Name} ${match.score.team1}-${match.score.team2} ${team2Name}`;
+
+      // Set tournament_id if implemented
+      if (!match.tournament_id) {
+        match.tournament_id = tournament._id; // Add if schema includes tournament_id
+      }
+
       await match.save();
     }
+
+    // Re-fetch tournament with updated data
+    const updatedTournament = await Tournament.findOne(tournament._id)
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
@@ -196,17 +259,19 @@ router.post('/simulate', async (req, res) => {
       role: req.user.role,
       message: 'Matches simulated successfully',
       error: null,
-      tournament
+      tournament: updatedTournament || tournament,
+      user: req.user
     });
   } catch (err) {
-    console.error('Simulate matches error:', err.message);
+    console.error('Simulate matches error:', err.message, err.stack);
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
-      error: 'Failed to simulate matches',
+      error: 'Failed to simulate matches: ' + err.message,
       message: null,
-      tournament: null
+      tournament: null,
+      user: req.user
     });
   }
 });
@@ -364,7 +429,8 @@ router.post('/advance', async (req, res) => {
           status: 'pending',
           score: { team1: 0, team2: 0 },
           goal_scorers: [],
-          commentary: ''
+          commentary: '',
+          tournament_id: tournament._id
         });
         await match.save();
         semifinalMatches.push({ match_id: match._id, team1_id: winner1._id, team2_id: winner2._id });
