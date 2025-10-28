@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Define the player schema
 const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   natural_position: { type: String, enum: ['GK', 'DF', 'MD', 'AT'], required: true },
@@ -50,13 +49,10 @@ const playerSchema = new mongoose.Schema({
   goals: { type: Number, default: 0 }
 });
 
-// Define the team schema (merged)
 const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   representative_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  
-  // The detailed squad based on playerSchema
   squad: {
     type: [playerSchema],
     validate: {
@@ -64,32 +60,23 @@ const teamSchema = new mongoose.Schema({
       message: 'Squad must contain exactly 23 players'
     }
   },
-
-  // Simple array of basic player info (from your "insert this" schema)
-  players: [
-    {
-      name: { type: String, required: true },
-      position: String,
-      number: Number
-    }
-  ],
-
   rating: { type: Number, default: 0.0 },
   manager: { type: String, required: true },
   captain_name: { type: String, required: true, default: 'Unknown Captain' }
 }, { strict: 'throw' });
 
-// Pre-save hook for rating & validation
 teamSchema.pre('save', function (next) {
   try {
     console.log(`Pre-save hook started for team: ${this.country}, squad length: ${this.squad ? this.squad.length : 0}`);
-
+    
+    // Validate squad
     if (!this.squad || this.squad.length !== 23) {
       const error = new Error(`Squad must contain exactly 23 players, got ${this.squad ? this.squad.length : 0}`);
       console.error('Pre-save error:', error.message);
       return next(error);
     }
 
+    // Calculate team rating
     const totalRating = this.squad.reduce((sum, player, index) => {
       if (!player.ratings || !player.natural_position) {
         console.error(`Invalid player at index ${index}:`, player);
@@ -99,10 +86,11 @@ teamSchema.pre('save', function (next) {
       console.log(`Player ${player.name}: ${player.natural_position} rating = ${rating}`);
       return sum + rating;
     }, 0);
-
+    // Ensure rating is a double by adding a small decimal
     this.rating = Number((totalRating / this.squad.length).toFixed(2)) + 0.000001;
-    console.log(`Calculated rating: ${this.rating}`);
+    console.log(`Calculated rating: ${this.rating}, type: ${typeof this.rating}, isInteger: ${Number.isInteger(this.rating)}`);
 
+    // Set captain_name
     const captain = this.squad.find(player => player.is_captain);
     this.captain_name = captain ? captain.name : this.squad[0].name || `${this.country} Captain`;
     console.log(`Set captain_name: ${this.captain_name}`);

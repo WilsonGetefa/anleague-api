@@ -171,4 +171,47 @@ function calculateTeamRating(squad) {
   return Number((totalRating / squad.length).toFixed(2));
 }
 
+// Middleware: Only allow rep of this team
+const ownsTeam = async (req, res, next) => {
+  const team = await Team.findOne({ representative_id: req.user._id });
+  if (!team) return res.redirect('/dashboard');
+  req.team = team;
+  next();
+};
+
+router.use(auth, ownsTeam);
+
+// Update Manager
+router.post('/update-manager', ownsTeam, async (req, res) => {
+  req.team.manager = req.body.manager;
+  await req.team.save();
+  res.redirect('/dashboard?message=Manager updated');
+});
+
+router.post('/add-player', ownsTeam, async (req, res) => {
+  const { name, natural_position, gk, df, md, at, is_captain } = req.body;
+  if (is_captain) req.team.squad.forEach(p => p.is_captain = false);
+  req.team.squad.push({
+    name, natural_position,
+    ratings: { GK: +gk, DF: +df, MD: +md, AT: +at },
+    is_captain: !!is_captain,
+    goals: 0
+  });
+  await req.team.save();
+  res.redirect('/dashboard');
+});
+
+router.post('/remove-player', ownsTeam, async (req, res) => {
+  req.team.squad = req.team.squad.filter(p => p._id.toString() !== req.body.playerId);
+  await req.team.save();
+  res.redirect('/dashboard');
+});
+
+// Remove Player
+router.post('/remove-player', async (req, res) => {
+  req.team.squad = req.team.squad.filter(p => p._id.toString() !== req.body.playerId);
+  await req.team.save();
+  res.redirect('/dashboard');
+});
+
 module.exports = router;

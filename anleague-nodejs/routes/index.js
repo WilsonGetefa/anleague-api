@@ -66,4 +66,28 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/dashboard', auth, async (req, res) => {
+  try {
+    const team = await Team.findOne({ representative_id: req.user._id });
+    if (!team) {
+      return res.render('dashboard', {
+        title: 'Dashboard',
+        user: req.user,
+        hasTeam: false,
+        country: req.user.country
+      });
+    }
+
+    res.render('dashboard', {
+      title: 'Team Dashboard',
+      user: req.user,
+      team,
+      message: req.query.message,
+      error: req.query.error
+    });
+  } catch (err) {
+    res.render('dashboard', { title: 'Dashboard', error: 'Failed to load team' });
+  }
+});
+
 module.exports = router;

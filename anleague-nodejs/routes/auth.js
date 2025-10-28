@@ -4,21 +4,98 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-// Signup route
+// Full CAF Nations (you can expand)
+const CAF_COUNTRIES = [
+  'Algeria', 'Angola', 'Cameroon', 'Côte d\'Ivoire', 'DR Congo', 'Egypt',
+  'Ghana', 'Guinea', 'Mali', 'Morocco', 'Nigeria', 'Senegal', 'South Africa',
+  'Tunisia', 'Zambia'
+];
+
+// GET /signup — show form with country dropdown
+router.get('/signup', (req, res) => {
+  res.render('signup', {
+    title: 'Sign Up',
+    error: null,
+    countries: CAF_COUNTRIES
+  });
+});
+
+// POST /signup — create user + link to team
 router.post('/signup', async (req, res) => {
-  const { username, email, password, country, role } = req.body;
+  const { username, email, password, country, role = 'representative' } = req.body;
+
+  // Validate country
+  if (!CAF_COUNTRIES.includes(country)) {
+    return res.render('signup', {
+      title: 'Sign Up',
+      error: 'Invalid country selected',
+      countries: CAF_COUNTRIES
+    });
+  }
+
   try {
+    // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
-      return res.render('signup', { title: 'Sign Up', error: 'Username or email already exists' });
+      return res.render('signup', {
+        title: 'Sign Up',
+        error: 'Username or email already taken',
+        countries: CAF_COUNTRIES
+      });
     }
+
+    // Check if country already has a rep
+    const existingRep = await Team.findOne({ country, representative_id: { $ne: null } });
+    if (existingRep) {
+      return res.render('signup', {
+        title: 'Sign Up',
+        error: `Team "${country}" already has a representative`,
+        countries: CAF_COUNTRIES
+      });
+    }
+
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, email, password: hashedPassword, country, role });
-    await user.save();
-    res.redirect('/login');
+
+    // Create user
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+      country,
+      role
+    });
+
+    // Find or create team
+    let team = await Team.findOne({ country });
+    if (!team) {
+      team = await Team.create({
+        country,
+        manager: '',
+        representative_id: user._id,
+        squad: []
+      });
+    } else {
+      team.representative_id = user._id;
+      await team.save();
+    }
+
+    // Auto-login
+    req.login(user, (err) => {
+      if (err) {
+        console.error('Auto-login failed:', err);
+        return res.redirect('/login');
+      }
+      res.redirect('/dashboard');
+    });
+
   } catch (err) {
-    console.error('Signup error:', err.message);
-    res.render('signup', { title: 'Sign Up', error: 'Error creating user' });
+    console.error('Signup error:', err);
+    res.render('signup', {
+      title: 'Sign Up',
+      error: 'Failed to create account',
+      countries: CAF_COUNTRIES
+    });
   }
 });
 

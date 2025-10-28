@@ -1,0 +1,71 @@
+/* Dashboard Styles */
+.container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+.team-header { 
+  background: #f4f6f9; 
+  padding: 15px; 
+  border-radius: 8px; 
+  margin-bottom: 20px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+}
+.country { font-size: 1.4em; color: #1a1a1a; font-weight: 600; }
+
+.inline-form { display: inline; }
+.inline-form input { width: 180px; margin-right: 8px; }
+
+.add-player-section { margin: 30px 0; }
+.btn-toggle {
+  background: #0066cc; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer;
+}
+.btn-toggle:hover { background: #0055aa; }
+
+.form-card {
+  background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-top: 10px;
+}
+.form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.form-row input, .form-row select { flex: 1; min-width: 120px; }
+.ratings input { width: 60px; text-align: center; }
+
+.checkbox-label { display: flex; align-items: center; gap: 6px; margin: 10px 0; font-size: 0.95em; }
+
+.squad-section h4 { margin: 25px 0 10px; color: #1a1a1a; }
+.table-container { overflow-x: auto; }
+.squad-table {
+  width: 100%; border-collapse: collapse; font-size: 0.95em; margin-top: 10px;
+}
+.squad-table th, .squad-table td {
+  border: 1px solid #ddd; padding: 10px; text-align: center;
+}
+.squad-table th { background: #f0f2f5; font-weight: 600; }
+.squad-table tr:nth-child(even) { background: #fafafa; }
+
+.captain-badge {
+  background: #d4af37; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;
+}
+
+.empty { color: #888; font-style: italic; }
+
+.btn-primary {
+  background: #28a745; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer;
+}
+.btn-primary:hover { background: #218838; }
+
+.btn-small {
+  background: #17a2b8; color: white; padding: 6px 10px; font-size: 0.85em;
+}
+.btn-danger {
+  background: #dc3545; color: white; padding: 6px 10px; font-size: 0.85em; border: none; border-radius: 4px;
+}
+.btn-danger:hover { background: #c82333; }
+
+.success { color: #28a745; font-weight: 500; }
+.error { color: #dc3545; font-weight: 500; }
+
+.back-link a { color: #0066cc; text-decoration: none; font-weight: 500; }
+.back-link a:hover { text-decoration: underline; }
+
+.no-team {
+  background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; text-align: center;
+}
