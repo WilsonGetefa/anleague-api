@@ -10,17 +10,15 @@ const mongoose = require('mongoose'); // ← ADD THIS AT TOP OF FILE
 router.get('/dashboard', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
-    .populate({path: 'bracket.quarterfinals.match_id'})
-    .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-    .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-    .populate({path: 'bracket.semifinals.match_id'})
-    .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-    .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-    .populate({path: 'bracket.final.match_id'})
-    .populate({path: 'bracket.final.team1_id',select: 'country'})
-    .populate({path: 'bracket.final.team2_id',select: 'country'});
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user ? req.user.username : 'Guest',
@@ -120,17 +118,15 @@ router.post('/start', async (req, res) => {
 
     const populatedTournament = await Tournament.findOne(tournament._id)
       .populate('teams', 'country')
-        .populate({path: 'bracket.quarterfinals.match_id'})
-        .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.semifinals.match_id'})
-        .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.final.match_id'})
-        .populate({path: 'bracket.final.team1_id',select: 'country'})
-        .populate({path: 'bracket.final.team2_id',select: 'country'});
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
@@ -163,17 +159,15 @@ router.post('/simulate', async (req, res) => {
       //.populate('bracket.quarterfinals.team1_id', 'country')
       //.populate('bracket.quarterfinals.team2_id', 'country')
 
-        .populate({path: 'bracket.quarterfinals.match_id'})
-        .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.semifinals.match_id'})
-        .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.final.match_id'})
-        .populate({path: 'bracket.final.team1_id',select: 'country'})
-        .populate({path: 'bracket.final.team2_id',select: 'country'});
+      .populate({path: 'bracket.quarterfinals.match_id'})
+      .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
+      .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
 
     if (!tournament) {
       return res.render('admin_dashboard', {
@@ -337,9 +331,9 @@ router.post('/simulate', async (req, res) => {
 router.post('/play', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
-      .populate({path: 'bracket.quarterfinals.match_id'})
-    .populate({path: 'bracket.semifinals.match_id'})
-    .populate({path: 'bracket.final.match_id'});
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.final.match_id');
     if (!tournament) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
@@ -406,17 +400,15 @@ router.post('/play', async (req, res) => {
 router.post('/advance', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
-        .populate({path: 'bracket.quarterfinals.match_id'})
-        .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.semifinals.match_id'})
-        .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.final.match_id'})
-        .populate({path: 'bracket.final.team1_id',select: 'country'})
-        .populate({path: 'bracket.final.team2_id',select: 'country'});
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
 
     if (!tournament) {
       return res.render('admin_dashboard', {
@@ -591,17 +583,15 @@ router.post('/advance', async (req, res) => {
 
     // === RELOAD WITH FRESH POPULATION ===
     const updated = await Tournament.findById(tournament._id)
-        .populate({path: 'bracket.quarterfinals.match_id'})
-        .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.semifinals.match_id'})
-        .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.final.match_id'})
-        .populate({path: 'bracket.final.team1_id',select: 'country'})
-        .populate({path: 'bracket.final.team2_id',select: 'country'});
+      .populate('bracket.quarterfinals.match_id')
+      .populate('bracket.quarterfinals.team1_id', 'country')
+      .populate('bracket.quarterfinals.team2_id', 'country')
+      .populate('bracket.semifinals.match_id')
+      .populate('bracket.semifinals.team1_id', 'country')
+      .populate('bracket.semifinals.team2_id', 'country')
+      .populate('bracket.final.match_id')
+      .populate('bracket.final.team1_id', 'country')
+      .populate('bracket.final.team2_id', 'country');
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
@@ -704,17 +694,15 @@ router.post('/edit-match', async (req, res) => {
         error: 'Match not found',
         message: null,
         tournament: await Tournament.findOne()
-            .populate({path: 'bracket.quarterfinals.match_id'})
-            .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-            .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-            .populate({path: 'bracket.semifinals.match_id'})
-            .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-            .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-            .populate({path: 'bracket.final.match_id'})
-            .populate({path: 'bracket.final.team1_id',select: 'country'})
-            .populate({path: 'bracket.final.team2_id',select: 'country'})
+          .populate('bracket.quarterfinals.match_id')
+          .populate('bracket.quarterfinals.team1_id', 'country')
+          .populate('bracket.quarterfinals.team2_id', 'country')
+          .populate('bracket.semifinals.match_id')
+          .populate('bracket.semifinals.team1_id', 'country')
+          .populate('bracket.semifinals.team2_id', 'country')
+          .populate('bracket.final.match_id')
+          .populate('bracket.final.team1_id', 'country')
+          .populate('bracket.final.team2_id', 'country')
       });
     }
 
@@ -731,17 +719,15 @@ router.post('/edit-match', async (req, res) => {
       message: 'Match score updated successfully',
       error: null,
       tournament: await Tournament.findOne()
-          .populate({path: 'bracket.quarterfinals.match_id'})
-        .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.semifinals.match_id'})
-        .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.final.match_id'})
-        .populate({path: 'bracket.final.team1_id',select: 'country'})
-        .populate({path: 'bracket.final.team2_id',select: 'country'})
+        .populate('bracket.quarterfinals.match_id')
+        .populate('bracket.quarterfinals.team1_id', 'country')
+        .populate('bracket.quarterfinals.team2_id', 'country')
+        .populate('bracket.semifinals.match_id')
+        .populate('bracket.semifinals.team1_id', 'country')
+        .populate('bracket.semifinals.team2_id', 'country')
+        .populate('bracket.final.match_id')
+        .populate('bracket.final.team1_id', 'country')
+        .populate('bracket.final.team2_id', 'country')
     });
   } catch (err) {
     console.error('Edit match error:', err.message);
