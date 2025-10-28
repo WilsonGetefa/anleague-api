@@ -3,6 +3,7 @@ const router = express.Router();
 const Team = require('../models/team');
 const User = require('../models/user');
 const mongoose = require('mongoose');
+const auth = require('../middleware/auth').authMiddleware;
 
 // ————————————————————————————————————————————————
 // PUBLIC: Autofill team (protected by login)
