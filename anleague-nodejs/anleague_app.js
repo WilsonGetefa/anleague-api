@@ -66,6 +66,10 @@ app.use('/admin', authMiddleware, adminMiddleware, require('./routes/admin')); /
 app.use('/', require('./routes/public')); // Already includes rankings, bracket, match
 app.use('/', require('./routes/index')); // New index route
 
+// In anleague_app.js — add these
+app.get('/signup', (req, res) => res.redirect('/auth/signup'));
+app.get('/login', (req, res) => res.redirect('/auth/login'));
+
 // Home route (redirect to index.js handling)
 app.get('/', (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
