@@ -217,11 +217,25 @@ router.post('/simulate', async (req, res) => {
       match.goal_scorers = [];
 
       // Safe team data retrieval
-      const team1 = await Team.findById(match.team1_id).select('squad.name squad.natural_position country').lean();
-      const team2 = await Team.findById(match.team2_id).select('squad.name squad.natural_position country').lean();
+      //const team1 = await Team.findById(match.team1_id).select('squad.name squad.natural_position country').lean();
+      //const team2 = await Team.findById(match.team2_id).select('squad.name squad.natural_position country').lean();
+
+      //const team1Name = team1?.country || 'Unknown';
+      //const team2Name = team2?.country || 'Unknown';
+
+      const team1Id = match.team1_id?._id || match.team1_id;
+      const team2Id = match.team2_id?._id || match.team2_id;
+
+      console.log(`Match: ${match._id} | team1_id: ${team1Id} | team2_id: ${team2Id}`);
+
+      const team1 = await Team.findById(team1Id).select('squad.name country').lean();
+      const team2 = await Team.findById(team2Id).select('squad.name country').lean();
 
       const team1Name = team1?.country || 'Unknown';
       const team2Name = team2?.country || 'Unknown';
+
+      console.log(`Team1: ${team1Name} | Squad count: ${team1?.squad?.length}`);
+      console.log(`Team2: ${team2Name} | Squad count: ${team2?.squad?.length}`);
 
       // Generate goals with safe player selection
       if (team1?.squad?.length) {
