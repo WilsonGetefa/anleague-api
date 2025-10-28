@@ -75,7 +75,8 @@ router.get('/dashboard', auth, async (req, res) => {
         title: 'Dashboard',
         user: req.user,
         hasTeam: false,
-        country: req.user.country
+        country: req.user.country,
+        team: null
       });
     }
 
