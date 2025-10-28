@@ -4,6 +4,7 @@ const Tournament = require('../models/tournament');
 const Match = require('../models/match');
 const PastTournament = require('../models/pastTournament'); // Ensure this line is present
 const Team = require('../models/team');
+const auth = require('../middleware/auth').authMiddleware;
 
 router.get('/', async (req, res) => {
   try {
