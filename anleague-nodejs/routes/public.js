@@ -190,83 +190,94 @@ router.get('/bracket', async (req, res) => {
   }
 });
 
+// routes/public.js
 router.get('/rankings', async (req, res) => {
   try {
-    // --------------------------------------------------------------
-    // 1. Find ALL matches that have been simulated or played
-    // --------------------------------------------------------------
-    const matches = await Match.find({
-      type: { $in: ['simulated', 'played'] }
-    })
+    // === CURRENT TOURNAMENT RANKINGS (all time) ===
+    const matches = await Match.find({ type: { $in: ['simulated', 'played'] } })
       .populate('team1_id', 'country')
       .populate('team2_id', 'country')
-      .lean();               // <-- lean() = plain JS objects (faster)
+      .lean();
 
-    // --------------------------------------------------------------
-    // 2. Build the goal-scorer map
-    // --------------------------------------------------------------
     const goalScorers = {};
-
     matches.forEach(match => {
-      // Guard against missing goal_scorers array
       if (!Array.isArray(match.goal_scorers)) return;
-
       match.goal_scorers.forEach(goal => {
-        const playerName = goal.player_name?.trim() || 'Unknown Player';
-        const teamCountry =
-          goal.team === 'team1'
-            ? match.team1_id?.country || 'Unknown'
-            : match.team2_id?.country || 'Unknown';
-
-        if (!goalScorers[playerName]) {
-          goalScorers[playerName] = {
-            name: playerName,
-            team: teamCountry,
-            goals: 0
-          };
+        const player = goal.player_name;
+        const team = goal.team === 'team1'
+          ? match.team1_id?.country || 'Unknown'
+          : match.team2_id?.country || 'Unknown';
+        if (!goalScorers[player]) {
+          goalScorers[player] = { name: player, team, goals: 0 };
         }
-        goalScorers[playerName].goals += 1;
+        goalScorers[player].goals++;
       });
     });
 
-    // --------------------------------------------------------------
-    // 3. Sort & slice (top 10 is usually enough)
-    // --------------------------------------------------------------
     const rankings = Object.values(goalScorers)
       .sort((a, b) => b.goals - a.goals)
-      .slice(0, 10);
+      .slice(0, 20);
 
-    // --------------------------------------------------------------
-    // 4. Past tournaments (for the “Past Champions” section)
-    // --------------------------------------------------------------
+    // === PAST TOURNAMENTS WITH FULL MATCH DATA ===
     const pastTournaments = await PastTournament.find()
-      .populate('bracket.final.match_id')
-      .populate('bracket.final.team1_id', 'country')
-      .populate('bracket.final.team2_id', 'country')
+      .sort({ year: -1 })
       .lean();
 
-    // --------------------------------------------------------------
-    // 5. JSON API (optional)
-    // --------------------------------------------------------------
+    const pastWithMatches = await Promise.all(
+      pastTournaments.map(async (pt) => {
+        // Extract all match_ids from bracket
+        const matchIds = [];
+        ['quarterfinals', 'semifinals', 'final'].forEach(stage => {
+          pt.bracket[stage]?.forEach(fixture => {
+            if (fixture.match_id) matchIds.push(fixture.match_id);
+          });
+        });
+
+        // Fetch matches + populate teams
+        const matches = await Match.find({ _id: { $in: matchIds } })
+          .populate('team1_id', 'country')
+          .populate('team2_id', 'country')
+          .lean();
+
+        // Determine winner & runner-up
+        const finalMatch = matches.find(m => m.stage === 'final');
+        const winner = finalMatch
+          ? (finalMatch.score.team1 > finalMatch.score.team2
+              ? finalMatch.team1_id?.country
+              : finalMatch.team2_id?.country)
+          : 'N/A';
+        const runnerUp = finalMatch
+          ? (finalMatch.score.team1 > finalMatch.score.team2
+              ? finalMatch.team2_id?.country
+              : finalMatch.team1_id?.country)
+          : 'N/A';
+        const score = finalMatch
+          ? `${finalMatch.score.team1}-${finalMatch.score.team2}`
+          : 'N/A';
+
+        return {
+          ...pt,
+          matches,
+          winner,
+          runnerUp,
+          score
+        };
+      })
+    );
+
     if (req.query.format === 'json') {
-      return res.json({ rankings, pastTournaments });
+      return res.json({ rankings, pastTournaments: pastWithMatches });
     }
 
-    // --------------------------------------------------------------
-    // 6. Render the page
-    // --------------------------------------------------------------
     res.render('rankings', {
-      title: 'Goal Scorers Rankings',
+      title: 'Goal Scorers & Past Tournaments',
       rankings,
-      pastTournaments,
+      pastTournaments: pastWithMatches,
       user: req.user
     });
   } catch (err) {
-    console.error('Rankings route error:', err.message, err.stack);
-    res.status(500).render('error', {
-      title: 'Error',
-      error: 'Internal Server Error: Unable to load rankings'
-    });
+    console.error('Rankings error:', err);
+    res.status(500).render('error', { error: 'Failed to load rankings' });
   }
 });
 

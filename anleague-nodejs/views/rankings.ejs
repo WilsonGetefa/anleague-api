@@ -1,90 +1,106 @@
+<!-- views/rankings.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" href="images/caf.png">
+  <style>
+    .tournament-card { border: 1px solid #ccc; margin: 20px 0; padding: 15px; border-radius: 8px; }
+    .match { background: #f9f9f9; padding: 10px; margin: 8px 0; border-radius: 4px; }
+    .commentary { font-style: italic; color: #555; margin: 5px 0; font-size: 0.9em; }
+    .goals { color: #2e6b5b; font-weight: bold; }
+    details { margin: 10px 0; }
+    summary { cursor: pointer; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #2e6b5b; color: white; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1><%= title %></h1>
-  </header>
+  <header><h1><%= title %></h1></header>
   <nav>
     <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
-    <a href="/teams">Teams</a> |
-    <% if (typeof user !== 'undefined' && user) { %>
+    <a href="/teams">Teams</a>
+    <% if (user) { %>
       <% if (user.role === 'admin') { %>
-        <a href="/admin/dashboard">Admin Dashboard</a> |
+        <a href="/admin/dashboard">Admin</a> |
       <% } else { %>
         <a href="/dashboard">Dashboard</a> |
       <% } %>
       <a href="/auth/logout">Logout</a>
     <% } else { %>
-      <a href="/login">Login</a> |
-      <a href="/signup">Sign Up</a>
+      <a href="/login">Login</a>
     <% } %>
   </nav>
+
   <main class="container">
-    <section class="rankings-panel">
-      <h2>Top Goal Scorers</h2>
-      <% if (rankings.length > 0) { %>
+
+    <!-- ALL-TIME GOAL SCORERS -->
+    <section>
+      <h2>All-Time Top Scorers</h2>
+      <% if (rankings.length) { %>
         <table>
-          <thead>
+          <tr><th>Player</th><th>Team</th><th>Goals</th></tr>
+          <% rankings.forEach(r => { %>
             <tr>
-              <th>Player</th>
-              <th>Team</th>
-              <th>Goals</th>
+              <td><%= r.name %></td>
+              <td><%= r.team %></td>
+              <td class="goals"><%= r.goals %></td>
             </tr>
-          </thead>
-          <tbody>
-            <% rankings.forEach(ranking => { %>
-              <tr>
-                <td><%= ranking.name %></td>
-                <td><%= ranking.team %></td>
-                <td><%= ranking.goals %></td>
-              </tr>
-            <% }); %>
-          </tbody>
+          <% }); %>
         </table>
       <% } else { %>
-        <p>No goal scorers recorded yet.</p>
-      <% } %>
-      <h2>Past Tournaments</h2>
-      <% if (pastTournaments.length > 0) { %>
-        <table>
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Winner</th>
-              <th>Runner-up</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% pastTournaments.forEach(tournament => { %>
-              <% if (tournament.bracket.final[0] && tournament.bracket.final[0].match_id) { %>
-                <% const match = tournament.bracket.final[0].match_id; %>
-                <% const winner = match.score.team1 > match.score.team2 ? tournament.bracket.final[0].team1_id : tournament.bracket.final[0].team2_id; %>
-                <% const loser = match.score.team1 > match.score.team2 ? tournament.bracket.final[0].team2_id : tournament.bracket.final[0].team1_id; %>
-                <tr>
-                  <td><%= tournament.year %></td>
-                  <td><%= winner ? winner.country || 'Unknown' : 'Unknown' %></td>
-                  <td><%= loser ? loser.country || 'Unknown' : 'Unknown' %></td>
-                  <td><%= match.score.team1 || 0 %>-<%= match.score.team2 || 0 %></td>
-                </tr>
-              <% } %>
-            <% }); %>
-          </tbody>
-        </table>
-      <% } else { %>
-        <p>No past tournaments recorded yet.</p>
+        <p>No goals recorded yet.</p>
       <% } %>
     </section>
+
+    <!-- PAST TOURNAMENTS -->
+    <section style="margin-top: 40px;">
+      <h2>Past Tournaments</h2>
+      <% if (pastTournaments.length === 0) { %>
+        <p>No past tournaments recorded.</p>
+      <% } else { %>
+        <% pastTournaments.forEach(pt => { %>
+          <div class="tournament-card">
+            <h3><%= pt.year %> – <%= pt.winner %> def. <%= pt.runnerUp %> (<%= pt.score %>)</h3>
+
+            <details>
+              <summary>View All Matches & Commentary (<%= pt.matches.length %>)</summary>
+              <% pt.matches.forEach(match => { %>
+                <div class="match">
+                  <strong>
+                    <%= match.team1_id?.country || 'Unknown' %> 
+                    <%= match.score.team1 %>–<%= match.score.team2 %> 
+                    <%= match.team2_id?.country || 'Unknown' %>
+                  </strong>
+                  <em>(<%= match.stage %>)</em>
+
+                  <% if (match.commentary) { %>
+                    <p class="commentary"><%= match.commentary %></p>
+                  <% } %>
+
+                  <% if (match.goal_scorers?.length) { %>
+                    <ul>
+                      <% match.goal_scorers.forEach(g => { %>
+                        <li>
+                          <%= g.player_name %> 
+                          <small>(<%= g.minute %>')</small>
+                        </li>
+                      <% }); %>
+                    </ul>
+                  <% } %>
+                </div>
+              <% }); %>
+            </details>
+          </div>
+        <% }); %>
+      <% } %>
+    </section>
+
   </main>
 </body>
 </html>
