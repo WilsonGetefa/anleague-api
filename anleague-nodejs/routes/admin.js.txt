@@ -162,6 +162,7 @@ router.post('/simulate', async (req, res) => {
       .populate('bracket.final.match_id')
       .populate('bracket.final.team1_id', 'country')
       .populate('bracket.final.team2_id', 'country');
+
     if (!tournament) {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
@@ -206,31 +207,45 @@ router.post('/simulate', async (req, res) => {
       });
     }
 
+    // Simulate each match
     for (const match of pendingMatches) {
+      // Randomly generate scores
       match.score.team1 = Math.floor(Math.random() * 4);
       match.score.team2 = Math.floor(Math.random() * 4);
       match.type = 'simulated';
       match.status = 'completed';
-
-      const maxGoals = Math.max(match.score.team1, match.score.team2);
       match.goal_scorers = [];
-      for (let i = 0; i < maxGoals; i++) {
-        if (i < match.score.team1) {
-          match.goal_scorers.push({
-            player_name: `Player${i + 1}_${match._id.toString().slice(-4)}`,
-            minute: Math.floor(Math.random() * 90) + 1,
-            team: 'team1'
-          });
-        }
-        if (i < match.score.team2) {
-          match.goal_scorers.push({
-            player_name: `Player${i + 1}_${match._id.toString().slice(-4)}`,
-            minute: Math.floor(Math.random() * 90) + 1,
-            team: 'team2'
-          });
-        }
+
+      // ✅ Inserted realistic goal-scorer logic
+      const team1 = await Team.findById(match.team1_id).select('players');
+      const team2 = await Team.findById(match.team2_id).select('players');
+
+      if (!team1 || !team2) {
+        console.error(`Missing team data for match ${match._id}`);
+        continue;
       }
 
+      // For Team 1 goals
+      for (let i = 0; i < match.score.team1; i++) {
+        const player = team1.players[Math.floor(Math.random() * team1.players.length)];
+        match.goal_scorers.push({
+          player_name: player.name,
+          minute: Math.floor(Math.random() * 90) + 1,
+          team: 'team1'
+        });
+      }
+
+      // For Team 2 goals
+      for (let i = 0; i < match.score.team2; i++) {
+        const player = team2.players[Math.floor(Math.random() * team2.players.length)];
+        match.goal_scorers.push({
+          player_name: player.name,
+          minute: Math.floor(Math.random() * 90) + 1,
+          team: 'team2'
+        });
+      }
+
+      // Commentary and metadata
       const team1Name = match.team1_id ? match.team1_id.country || 'Unknown' : 'Unknown';
       const team2Name = match.team2_id ? match.team2_id.country || 'Unknown' : 'Unknown';
       match.commentary = `Match simulated: ${team1Name} ${match.score.team1}-${match.score.team2} ${team2Name} with ${match.goal_scorers.length} goals`;
@@ -262,6 +277,7 @@ router.post('/simulate', async (req, res) => {
       tournament: updatedTournament || tournament,
       user: req.user
     });
+
   } catch (err) {
     console.error('Simulate matches error:', err.message, err.stack);
     res.render('admin_dashboard', {
@@ -275,6 +291,7 @@ router.post('/simulate', async (req, res) => {
     });
   }
 });
+
 
 router.post('/play', async (req, res) => {
   try {

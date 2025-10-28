@@ -177,10 +177,16 @@
       <% } %>
 
     <% } else { %>
-      <p>No tournament data available.</p>
-      <% if (user && user.role === 'admin') { %>
-        <p><a href="/admin/start">Start a new tournament</a></p>
-      <% } %>
+      <div style="text-align:center; margin:40px 0;"></div>
+        <p>No active tournament.</p>
+        <% if (user && user.role === 'admin') { %>
+          <form action="/admin/start" method="post" style="display:inline; margin-top:10px;">
+            <button type="submit">Start New Tournament</button>
+          </form>
+        <% } else { %>
+            <p>Log in as admin to start a tournament.</p>
+        <% } %>
+      </div>
     <% } %>
   </main>
 </body>
