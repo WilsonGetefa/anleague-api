@@ -226,7 +226,7 @@ router.post('/simulate', async (req, res) => {
       // Generate goals with safe player selection
       if (team1?.squad?.length) {
         for (let i = 0; i < match.score.team1; i++) {
-          const player = team1.squad[Math.floor(Math.random() * team1.players.length)];
+          const player = team1.squad[Math.floor(Math.random() * team1.squad.length)];
           match.goal_scorers.push({
             player_name: player.name || `Player${i + 1}_T1`,
             minute: Math.floor(Math.random() * 90) + 1,
@@ -597,22 +597,46 @@ router.post('/advance', async (req, res) => {
 });
 
 // routes/admin.js
+// routes/admin.js – /restart
 router.post('/restart', async (req, res) => {
   try {
-    const tournament = await Tournament.findOne().sort({ createdAt: -1 }); // Get the most recent tournament
+    const tournament = await Tournament.findOne().sort({ createdAt: -1 });
+    let archived = null;
+
     if (tournament) {
-      tournament.status = 'completed';
+      // Remove _id and any populated refs before saving
+      const { _id, ...cleanData } = tournament.toObject();
+
       const pastTournament = new PastTournament({
-        ...tournament.toObject(),
-        year: new Date().getFullYear()
+        ...cleanData,
+        year: new Date().getFullYear(),
+        // Optionally clean up populated refs
+        bracket: {
+          quarterfinals: cleanData.bracket?.quarterfinals?.map(qf => ({
+            team1_id: qf.team1_id?._id || qf.team1_id,
+            team2_id: qf.team2_id?._id || qf.team2_id,
+            match_id: qf.match_id?._id || qf.match_id
+          })) || [],
+          semifinals: cleanData.bracket?.semifinals?.map(sf => ({
+            team1_id: sf.team1_id?._id || sf.team1_id,
+            team2_id: sf.team2_id?._id || sf.team2_id,
+            match_id: sf.match_id?._id || sf.match_id
+          })) || [],
+          final: cleanData.bracket?.final?.map(f => ({
+            team1_id: f.team1_id?._id || f.team1_id,
+            team2_id: f.team2_id?._id || f.team2_id,
+            match_id: f.match_id?._id || f.match_id
+          })) || []
+        }
       });
-      await pastTournament.save();
-      console.log('Archived tournament:', pastTournament._id);
+
+      archived = await pastTournament.save();
+      console.log('Archived tournament:', archived._id);
     }
-    const deleteTournamentResult = await Tournament.deleteMany({ status: { $ne: 'completed' } }); // Only delete non-completed tournaments
-    // Do not delete Match documents to preserve rankings
-    console.log('Deleted tournaments:', deleteTournamentResult.deletedCount);
-    // console.log('Deleted matches:', deleteMatchResult.deletedCount); // Removed since we’re not deleting matches
+
+    // Delete ALL non-completed tournaments
+    const deleteResult = await Tournament.deleteMany({ status: { $ne: 'completed' } });
+    console.log('Deleted active tournaments:', deleteResult.deletedCount);
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
@@ -620,7 +644,7 @@ router.post('/restart', async (req, res) => {
       role: req.user.role,
       message: 'Tournament reset and archived successfully',
       error: null,
-      tournament: null, // Explicitly set to null to indicate no active tournament
+      tournament: null,
       user: req.user
     });
   } catch (err) {
