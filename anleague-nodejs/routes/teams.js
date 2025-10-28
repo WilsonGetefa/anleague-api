@@ -4,6 +4,7 @@ const Team = require('../models/team');
 const User = require('../models/user');
 const mongoose = require('mongoose');
 const { authMiddleware } = require('../middleware/auth');
+const auth = require('../middleware/auth');
 
 router.post('/autofill', authMiddleware, async (req, res) => {
   const { country } = req.body;
@@ -173,10 +174,17 @@ function calculateTeamRating(squad) {
 
 // Middleware: Only allow rep of this team
 const ownsTeam = async (req, res, next) => {
-  const team = await Team.findOne({ representative_id: req.user._id });
-  if (!team) return res.redirect('/dashboard');
-  req.team = team;
-  next();
+  try {
+    const team = await Team.findOne({ representative_id: req.user._id });
+    if (!team) {
+      return res.redirect('/dashboard');
+    }
+    req.team = team;
+    next();
+  } catch (err) {
+    console.error('ownsTeam error:', err);
+    res.redirect('/dashboard');
+  }
 };
 
 router.use(auth, ownsTeam);
