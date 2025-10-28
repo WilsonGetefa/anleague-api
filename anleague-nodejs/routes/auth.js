@@ -30,12 +30,13 @@ router.post('/login', async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.render('login', { title: 'Login', error: 'Invalid credentials' });
     }
-    const token = jwt.sign({ id: user._id, username, country: user.country, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id, username, country: user.country, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.cookie('token', token, {
       httpOnly: true,
       path: '/',
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
     console.log('Login successful, token set for user:', username);
     res.redirect(user.role === 'admin' ? '/admin/dashboard' : '/dashboard');

@@ -217,16 +217,16 @@ router.post('/simulate', async (req, res) => {
       match.goal_scorers = [];
 
       // Safe team data retrieval
-      const team1 = await Team.findById(match.team1_id).select('players country').lean();
-      const team2 = await Team.findById(match.team2_id).select('players country').lean();
+      const team1 = await Team.findById(match.team1_id).select('squad country').lean();
+      const team2 = await Team.findById(match.team2_id).select('squad country').lean();
 
       const team1Name = team1?.country || 'Unknown';
       const team2Name = team2?.country || 'Unknown';
 
       // Generate goals with safe player selection
-      if (team1?.players?.length) {
+      if (team1?.squad?.length) {
         for (let i = 0; i < match.score.team1; i++) {
-          const player = team1.players[Math.floor(Math.random() * team1.players.length)];
+          const player = team1.squad[Math.floor(Math.random() * team1.players.length)];
           match.goal_scorers.push({
             player_name: player.name || `Player${i + 1}_T1`,
             minute: Math.floor(Math.random() * 90) + 1,
@@ -244,9 +244,9 @@ router.post('/simulate', async (req, res) => {
         }
       }
 
-      if (team2?.players?.length) {
+      if (team2?.squad?.length) {
         for (let i = 0; i < match.score.team2; i++) {
-          const player = team2.players[Math.floor(Math.random() * team2.players.length)];
+          const player = team2.squad[Math.floor(Math.random() * team2.squad.length)];
           match.goal_scorers.push({
             player_name: player.name || `Player${i + 1}_T2`,
             minute: Math.floor(Math.random() * 90) + 1,
