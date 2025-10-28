@@ -70,26 +70,27 @@ router.get('/', async (req, res) => {
 router.get('/dashboard', auth, async (req, res) => {
   try {
     const team = await Team.findOne({ representative_id: req.user._id });
-    if (!team) {
-      return res.render('dashboard', {
-        title: 'Dashboard',
-        user: req.user,
-        hasTeam: false,
-        country: req.user.country,
-        team: null
-      });
-    }
 
     res.render('dashboard', {
-      title: 'Team Dashboard',
+      title: team ? 'Team Dashboard' : 'Dashboard',
       user: req.user,
-      team,
-      message: req.query.message,
-      error: req.query.error,
-      team: null
+      team: team || null,
+      hasTeam: !!team,
+      country: req.user.country,
+      message: req.query.message || null,  // ← Always defined
+      error: req.query.error || null       // ← Always defined
     });
   } catch (err) {
-    res.render('dashboard', { title: 'Dashboard', error: 'Failed to load team' });
+    console.error('Dashboard error:', err);
+    res.render('dashboard', {
+      title: 'Dashboard',
+      user: req.user,
+      team: null,
+      hasTeam: false,
+      country: req.user.country,
+      message: null,           // ← Explicitly included
+      error: 'Failed to load team data'
+    });
   }
 });
 

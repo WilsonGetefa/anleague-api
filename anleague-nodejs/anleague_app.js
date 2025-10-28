@@ -91,32 +91,7 @@ app.get('/signup', (req, res) => {
 });
 
 // Dashboard route
-app.get('/dashboard', authMiddleware, async (req, res) => {
-  const { username, country, role } = req.user;
-  try {
-    const hasTeam = await Team.findOne({ country });
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    res.render('dashboard', {
-      title: 'Dashboard',
-      username,
-      country,
-      role,
-      error: null,
-      hasTeam: !!hasTeam
-    });
-  } catch (err) {
-    console.error('Dashboard error:', err.message);
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    res.render('dashboard', {
-      title: 'Dashboard',
-      username,
-      country,
-      role,
-      error: 'Error checking team status',
-      hasTeam: false
-    });
-  }
-});
+
 
 // Admin dashboard route
 app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
