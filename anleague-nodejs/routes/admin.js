@@ -269,6 +269,7 @@ router.post('/simulate', async (req, res) => {
       match.tournament_id = tournament._id;
 
       await match.save();
+      console.log('Team1 squad:', team1?.squad?.map(p => p.name));
     }
 
     const updatedTournament = await Tournament.findById(tournament._id)
