@@ -389,6 +389,28 @@ router.post('/advance', async (req, res) => {
     console.log('Tournament status:', tournament.status);
     console.log('Bracket data:', JSON.stringify(tournament.bracket, null, 2));
 
+    // Helper: resolve winner with tiebreaker
+    const resolveWinner = async (match, team1Doc, team2Doc) => {
+        if (!match || match.status !== 'completed') return null;
+
+        if (match.score.team1 !== match.score.team2) {
+            return match.score.team1 > match.score.team2 ? team1Doc : team2Doc;
+        }
+
+        // Tie → extra time or penalties
+        const isExtraTime = Math.random() < 0.5;
+        const winner = Math.random() < 0.5 ? team1Doc : team2Doc;
+        const winnerName = winner?.country || 'Unknown';
+
+        if (isExtraTime) {
+            match.commentary += `; Extra time goal: ${winnerName} wins!`;
+        } else {
+            match.commentary += `; Penalty shootout: ${winnerName} wins!`;
+        }
+        await match.save();
+        return winner;
+    };
+
     if (tournament.status === 'quarterfinals') {
       const allQuarterfinalsCompleted = tournament.bracket.quarterfinals.every(qf => {
         const match = qf.match_id;
