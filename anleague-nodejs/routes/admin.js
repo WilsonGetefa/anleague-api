@@ -217,8 +217,8 @@ router.post('/simulate', async (req, res) => {
       match.goal_scorers = [];
 
       // Safe team data retrieval
-      const team1 = await Team.findById(match.team1_id).select('squad country').lean();
-      const team2 = await Team.findById(match.team2_id).select('squad country').lean();
+      const team1 = await Team.findById(match.team1_id).select('squad.name squad.natural_position country').lean();
+      const team2 = await Team.findById(match.team2_id).select('squad.name squad.natural_position country').lean();
 
       const team1Name = team1?.country || 'Unknown';
       const team2Name = team2?.country || 'Unknown';
@@ -234,7 +234,7 @@ router.post('/simulate', async (req, res) => {
           });
         }
       } else {
-        console.warn(`No players for team1 ${team1Name}, using placeholders`);
+        console.warn(`No players for team1 ${team1Name}`);//, using placeholders`);
         for (let i = 0; i < match.score.team1; i++) {
           match.goal_scorers.push({
             player_name: `Player${i + 1}_T1`,
@@ -254,7 +254,7 @@ router.post('/simulate', async (req, res) => {
           });
         }
       } else {
-        console.warn(`No players for team2 ${team2Name}, using placeholders`);
+        console.warn(`No players for team2 ${team2Name}`);//, using placeholders`);
         for (let i = 0; i < match.score.team2; i++) {
           match.goal_scorers.push({
             player_name: `Player${i + 1}_T2`,
