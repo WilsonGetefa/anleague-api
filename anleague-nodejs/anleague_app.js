@@ -82,13 +82,7 @@ app.get('/login', (req, res) => {
 });
 
 // Signup route
-app.get('/signup', (req, res) => {
-  if (req.user) {
-    return res.redirect(req.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
-  }
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-  res.render('signup', { title: 'Sign Up', error: null });
-});
+
 
 // Dashboard route
 
