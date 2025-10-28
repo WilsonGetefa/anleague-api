@@ -23,15 +23,15 @@
       <label>Username</label>
       <input type="text" name="username" required>
 
-      <label>Password</label>
-      <input type="password" name="password" required>
-
       <label>Email</label>
       <input type="email" name="email" required>
 
+      <label>Password</label>
+      <input type="password" name="password" required>
+
       <label>Representing Country</label>
       <select name="country" required>
-        <option value="">Choose your team</option>
+        <option value="">Select your team</option>
         <% countries.forEach(c => { %>
           <option value="<%= c %>"><%= c %></option>
         <% }) %>
@@ -43,7 +43,7 @@
         <option value="admin">Admin</option>
       </select>
 
-      <button type="submit">Sign Up</button>
+      <button type="submit">Create Account</button>
     </form>
     <p><a href="/login">Already have an account? Log in</a></p>
   </main>
