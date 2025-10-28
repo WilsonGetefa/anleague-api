@@ -4,34 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
+
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Global CSS -->
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" href="images/caf.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/images/caf.png">
+
+  <!-- Button style (same as admin dashboard) -->
   <style>
     .btn {
-      padding: 10px;
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 8px 4px;
       background-color: #2e6b5b;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-size: 1.1em;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.2s;
     }
     .btn:hover {
-      background-color: #3a8c76;;
+      background-color: #3a8c76;
+    }
+    .btn-inline {
+      padding: 6px 12px;
+      font-size: 1em;
     }
   </style>
 </head>
 <body>
+
   <header>
     <h1><%= title %></h1>
   </header>
+
+  <!-- Navigation (plain links – you can convert to .btn later) -->
   <nav>
     <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
     <a href="/teams">Teams</a> |
-    <% if (typeof user !== 'undefined' && user) { %> <!-- Safely check user -->
+    <% if (typeof user !== 'undefined' && user) { %>
       <% if (user.role === 'admin') { %>
         <a href="/admin/dashboard">Admin Dashboard</a> |
       <% } else { %>
@@ -43,23 +63,64 @@
       <a href="/signup">Sign Up</a>
     <% } %>
   </nav>
+
   <main class="container">
+
     <p>Welcome to the African Nations League! Explore the tournament bracket, check top goal scorers, or sign up to join the competition.</p>
+
+    <!-- ==================== CURRENT TOURNAMENT ==================== -->
     <% if (currentTournament && currentTournament.status) { %>
-      <p>Current Stage: <%= currentTournament.status %></p>
+      <p><strong>Current Stage:</strong> <%= currentTournament.status %></p>
       <a href="/bracket" class="btn">View Bracket</a>
+
+      <!-- Admin-only “Restart” button when a tournament is active -->
+      <% if (user && user.role === 'admin') { %>
+        <form action="/admin/restart" method="post" style="display:inline; margin-left:10px;">
+          <button type="submit"
+                  class="btn"
+                  style="background:#c62828;"
+                  onclick="return confirm('This will archive the current tournament and start fresh. Continue?');">
+            Restart Tournament
+          </button>
+        </form>
+      <% } %>
+
     <% } else { %>
-      <p>No active tournament. <% if (user && user.role === 'admin') { %> <a href="/admin/dashboard" class="btn">Start one as admin</a> <% } else { %> Log in as admin to start one. <% } %></p>
+      <p><strong>No active tournament.</strong></p>
+
+      <% if (user && user.role === 'admin') { %>
+        <a href="/admin/dashboard" class="btn">Start New Tournament</a>
+      <% } else { %>
+        <p>Log in as <strong>admin</strong> to start one.</p>
+        <a href="/login" class="btn btn-inline">Login as Admin</a>
+      <% } %>
     <% } %>
-    <h3>Past Champions</h3>
-    <ul>
-      <% pastWinners.forEach(winner => { %>
-        <li><%= winner.year %> - <%= winner.country === 'N/A' ? 'No winner recorded' : winner.country %></li>
-      <% }); %>
-    </ul>
-    <p>Total Goals Scored: <%= totalGoals %></p>
+
+    <!-- ==================== PAST CHAMPIONS ==================== -->
+    <section style="margin-top:30px;">
+      <h3>Past Champions</h3>
+      <% if (pastWinners && pastWinners.length) { %>
+        <ul style="list-style:none; padding:0;">
+          <% pastWinners.forEach(winner => { %>
+            <li style="margin:6px 0; padding:8px; background:#f9f9f9; border-radius:4px;">
+              <%= winner.year %> – <%= winner.country === 'N/A' ? 'No winner recorded' : winner.country %>
+            </li>
+          <% }); %>
+        </ul>
+      <% } else { %>
+        <p>No past champions recorded yet.</p>
+      <% } %>
+    </section>
+
+    <!-- ==================== TOTAL GOALS ==================== -->
+    <p style="margin-top:20px;">
+      <strong>Total Goals Scored:</strong> <%= totalGoals %>
+    </p>
+
+    <!-- ==================== FULL RANKINGS ==================== -->
     <a href="/rankings" class="btn">See Full Rankings</a>
-    <button type="submit">Start New Tournament</button>
+
   </main>
+
 </body>
 </html>
