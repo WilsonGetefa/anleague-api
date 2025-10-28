@@ -155,9 +155,13 @@ router.post('/start', async (req, res) => {
 router.post('/simulate', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
-      .populate('bracket.quarterfinals.match_id')
-      .populate('bracket.quarterfinals.team1_id', 'country')
-      .populate('bracket.quarterfinals.team2_id', 'country')
+      //.populate('bracket.quarterfinals.match_id')
+      //.populate('bracket.quarterfinals.team1_id', 'country')
+      //.populate('bracket.quarterfinals.team2_id', 'country')
+
+      .populate({path: 'bracket.quarterfinals.match_id'})
+      .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
+      .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
       .populate('bracket.semifinals.match_id')
       .populate('bracket.semifinals.team1_id', 'country')
       .populate('bracket.semifinals.team2_id', 'country')
