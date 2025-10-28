@@ -19,6 +19,7 @@
       min-width: 280px;
     }
     .match a { text-decoration: none; color: #333; font-weight: 500; }
+    .match a:hover { text-decoration: underline; }
     .in-progress { color: #FFA500; font-weight: bold; }
     .completed { color: #28a745; font-weight: bold; }
     .winner {
@@ -36,8 +37,16 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
     }
-    .champion-banner h2 { color: #d4af37; margin: 0; font-size: 1.8em; }
-    .champion-banner p { margin: 8px 0 0; font-size: 1.1em; color: #555; }
+    .champion-banner h2 {
+      color: #d4af37;
+      margin: 0;
+      font-size: 1.8em;
+    }
+    .champion-banner p {
+      margin: 8px 0 0;
+      font-size: 1.1em;
+      color: #555;
+    }
     @media (max-width: 600px) {
       .bracket-round { flex-direction: column; align-items: center; }
       .match { min-width: 100%; }
@@ -108,7 +117,7 @@
                   <% if (match.match_id.commentary) { %>
                     <p style="margin: 6px 0; font-size: 0.9em; color: #555;"><%= match.match_id.commentary %></p>
                   <% } %>
-                  <% if (winner && winner !== 'Unknown') { %>
+                  <% if (winner) { %>
                     <p class="winner">Winner: <%= winner %></p>
                   <% } %>
                 </li>
@@ -140,7 +149,7 @@
                   <% if (match.match_id.commentary) { %>
                     <p style="margin: 6px 0; font-size: 0.9em; color: #555;"><%= match.match_id.commentary %></p>
                   <% } %>
-                  <% if (winner && winner !== 'Unknown') { %>
+                  <% if (winner) { %>
                     <p class="winner">Winner: <%= winner %></p>
                   <% } %>
                 </li>
@@ -172,7 +181,7 @@
                   <% if (match.match_id.commentary) { %>
                     <p style="margin: 6px 0; font-size: 0.9em; color: #555;"><%= match.match_id.commentary %></p>
                   <% } %>
-                  <% if (winner && winner !== 'Unknown') { %>
+                  <% if (winner) { %>
                     <p class="winner">Winner: <%= winner %></p>
                   <% } %>
                 </li>
@@ -184,16 +193,14 @@
 
       <!-- CHAMPION BANNER -->
       <% if (tournament.status === 'completed' && tournament.bracket.final[0]?.match_id?.status === 'completed') { %>
-        <% const champion = getWinner(tournament.bracket.final[0]); %>
-        <% if (champion && champion !== 'Unknown') { %>
-          <div class="champion-banner">
-            <h2>Champion: <%= champion %></h2>
-            <p>African Nations League <%= new Date().getFullYear() %> Champions</p>
-          </div>
-        <% } %>
+        <div class="champion-banner">
+          <h2>Champion: <%= getWinner(tournament.bracket.final[0]) %></h2>
+          <p>African Nations League <%= new Date().getFullYear() %> Champions</p>
+        </div>
       <% } %>
 
     <% } else if (pastTournaments.length > 0) { %>
+      <h2>ROAD TO THE FINAL</h2>
       <h2>Past Tournaments</h2>
       <% pastTournaments.forEach(pt => { %>
         <h3>Year: <%= pt.year %></h3>
@@ -204,17 +211,14 @@
               <ul style="list-style: none; padding: 0;">
                 <% pt.bracket[stage].forEach(f => { %>
                   <% const pastWinner = f.match_id.score.team1 > f.match_id.score.team2 
-                        ? f.team1_id?.country || 'Unknown' 
-                        : f.team2_id?.country || 'Unknown'; %>
+                        ? f.team1_id.country : f.team2_id.country; %>
                   <li class="match">
-                    <%= f.team1_id?.country || 'TBD' %> vs <%= f.team2_id?.country || 'TBD' %> 
+                    <%= f.team1_id.country %> vs <%= f.team2_id.country %> 
                     - <%= f.match_id.score.team1 %>-<%= f.match_id.score.team2 %>
                     <% if (f.match_id.commentary) { %>
                       <p style="margin: 6px 0; font-size: 0.9em; color: #555;"><%= f.match_id.commentary %></p>
                     <% } %>
-                    <% if (pastWinner !== 'Unknown') { %>
-                      <p class="winner">Winner: <%= pastWinner %></p>
-                    <% } %>
+                    <p class="winner">Winner: <%= pastWinner %></p>
                   </li>
                 <% }); %>
               </ul>

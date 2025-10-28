@@ -303,18 +303,29 @@ router.get('/rankings', async (req, res) => {
   }
 });
 
+// routes/public.js
 router.get('/match/:id', async (req, res) => {
   try {
     const match = await Match.findById(req.params.id)
       .populate('team1_id', 'country')
-      .populate('team2_id', 'country');
+      .populate('team2_id', 'country')
+      .select('stage score status commentary goal_scorers type');
+
     if (!match) {
-      return res.render('match', { title: 'Match Details', match: null, message: 'Match not found', error: null, user: req.user });
+      return res.status(404).render('error', {
+        title: 'Not Found',
+        error: 'Match not found'
+      });
     }
-    res.render('match', { title: 'Match Details', match, message: match.commentary ? 'Match commentary available' : null, error: null, user: req.user });
+
+    res.render('match', {
+      title: `${match.team1_id?.country || 'Team 1'} vs ${match.team2_id?.country || 'Team 2'}`,
+      match,
+      user: req.user
+    });
   } catch (err) {
-    console.error('Match details error:', err.message, err.stack);
-    res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load match details' });
+    console.error('Match route error:', err);
+    res.status(500).render('error', { title: 'Error', error: 'Failed to load match' });
   }
 });
 
