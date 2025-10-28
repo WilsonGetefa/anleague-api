@@ -4,7 +4,32 @@ const Team = require('../models/team');
 const User = require('../models/user');
 const mongoose = require('mongoose');
 const { authMiddleware } = require('../middleware/auth');
-const auth = require('../middleware/auth');
+
+
+router.get('/', async (req, res) => {
+  try {
+    const teams = await Team.find()
+      .select('country manager rating squad captain_name representative_id')
+      .populate('userId', 'username')
+      .populate('representative_id', 'username')
+      .sort({ rating: -1 });
+    console.log('Fetched teams:', teams.length);
+    res.render('teams', {
+      title: 'Teams',
+      teams,
+      user: req.user,
+      error: null
+    });
+  } catch (err) {
+    console.error('Teams fetch error:', err.message);
+    res.render('teams', {
+      title: 'Teams',
+      teams: [],
+      user: req.user,
+      error: 'Unable to fetch teams'
+    });
+  }
+});
 
 router.post('/autofill', authMiddleware, async (req, res) => {
   const { country } = req.body;
@@ -105,31 +130,6 @@ router.post('/autofill', authMiddleware, async (req, res) => {
       role: user.role,
       error: errorMessage,
       hasTeam: await Team.findOne({ country }).then(t => !!t)
-    });
-  }
-});
-
-router.get('/', async (req, res) => {
-  try {
-    const teams = await Team.find()
-      .select('country manager rating squad captain_name representative_id')
-      .populate('userId', 'username')
-      .populate('representative_id', 'username')
-      .sort({ rating: -1 });
-    console.log('Fetched teams:', teams.length);
-    res.render('teams', {
-      title: 'Teams',
-      teams,
-      user: req.user,
-      error: null
-    });
-  } catch (err) {
-    console.error('Teams fetch error:', err.message);
-    res.render('teams', {
-      title: 'Teams',
-      teams: [],
-      user: req.user,
-      error: 'Unable to fetch teams'
     });
   }
 });
