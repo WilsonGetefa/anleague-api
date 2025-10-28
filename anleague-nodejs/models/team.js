@@ -1,117 +1,199 @@
+const express = require('express');
+const router = express.Router();
+const Team = require('../models/team');
+const User = require('../models/user');
 const mongoose = require('mongoose');
+const auth = require('../middleware/auth');   // ← ONLY ONE AUTH
 
-// Define the player schema
-const playerSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  natural_position: { type: String, enum: ['GK', 'DF', 'MD', 'AT'], required: true },
-  ratings: {
-    GK: { 
-      type: Number, 
-      min: 0, 
-      max: 100, 
-      default: 50,
-      validate: {
-        validator: Number.isInteger,
-        message: '{VALUE} is not an integer for GK rating'
-      }
-    },
-    DF: { 
-      type: Number, 
-      min: 0, 
-      max: 100, 
-      default: 50,
-      validate: {
-        validator: Number.isInteger,
-        message: '{VALUE} is not an integer for DF rating'
-      }
-    },
-    MD: { 
-      type: Number, 
-      min: 0, 
-      max: 100, 
-      default: 50,
-      validate: {
-        validator: Number.isInteger,
-        message: '{VALUE} is not an integer for MD rating'
-      }
-    },
-    AT: { 
-      type: Number, 
-      min: 0, 
-      max: 100, 
-      default: 50,
-      validate: {
-        validator: Number.isInteger,
-        message: '{VALUE} is not an integer for AT rating'
-      }
-    }
-  },
-  is_captain: { type: Boolean, default: false },
-  goals: { type: Number, default: 0 }
-});
+// ————————————————————————————————————————————————
+// PUBLIC: Autofill team (protected by login)
+// ————————————————————————————————————————————————
+router.post('/autofill', auth, async (req, res) => {
+  const { country } = req.body;
+  const user = req.user;
 
-// Define the team schema (merged)
-const teamSchema = new mongoose.Schema({
-  country: { type: String, required: true, unique: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  representative_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  
-  // The detailed squad based on playerSchema
-  squad: {
-    type: [playerSchema],
-    validate: {
-      validator: arr => arr.length === 23,
-      message: 'Squad must contain exactly 23 players'
-    }
-  },
-
-  // Simple array of basic player info (from your "insert this" schema)
-  players: [
-    {
-      name: { type: String, required: true },
-      position: { type: String },
-      number: { type: Number }
-    }
-  ],
-
-  rating: { type: Number, default: 0.0 },
-  manager: { type: String, required: true },
-  captain_name: { type: String, required: true, default: 'Unknown Captain' }
-}, { strict: 'throw' });
-
-// Pre-save hook for rating & validation
-teamSchema.pre('save', function (next) {
   try {
-    console.log(`Pre-save hook started for team: ${this.country}, squad length: ${this.squad ? this.squad.length : 0}`);
-
-    if (!this.squad || this.squad.length !== 23) {
-      const error = new Error(`Squad must contain exactly 23 players, got ${this.squad ? this.squad.length : 0}`);
-      console.error('Pre-save error:', error.message);
-      return next(error);
+    if (!user) return res.redirect('/login');
+    if (!country || user.country !== country) {
+      return res.render('dashboard', {
+        title: 'Dashboard',
+        user,
+        country: user.country,
+        error: 'Can only create team for your country',
+        hasTeam: false
+      });
     }
 
-    const totalRating = this.squad.reduce((sum, player, index) => {
-      if (!player.ratings || !player.natural_position) {
-        console.error(`Invalid player at index ${index}:`, player);
-        throw new Error(`Invalid player data at index ${index}`);
-      }
-      const rating = player.ratings[player.natural_position] || 50;
-      console.log(`Player ${player.name}: ${player.natural_position} rating = ${rating}`);
-      return sum + rating;
-    }, 0);
+    const existingTeam = await Team.findOne({ country });
+    if (existingTeam) {
+      return res.render('dashboard', {
+        title: 'Dashboard',
+        user,
+        country,
+        error: `Team for ${country} already exists`,
+        hasTeam: true
+      });
+    }
 
-    this.rating = Number((totalRating / this.squad.length).toFixed(2)) + 0.000001;
-    console.log(`Calculated rating: ${this.rating}`);
+    const squad = generateDefaultPlayers(country);
+    if (squad.length !== 23) {
+      throw new Error(`Generated ${squad.length} players, expected 23`);
+    }
 
-    const captain = this.squad.find(player => player.is_captain);
-    this.captain_name = captain ? captain.name : this.squad[0].name || `${this.country} Captain`;
-    console.log(`Set captain_name: ${this.captain_name}`);
+    const team = new Team({
+      country,
+      userId: user._id,
+      representative_id: user._id,
+      squad,
+      manager: `${user.username}'s Manager`,
+      players: [], // optional
+      captain_name: '' // will be set in pre-save
+    });
 
-    next();
-  } catch (error) {
-    console.error('Pre-save hook failed:', error.message);
-    next(error);
+    await team.save(); // ← pre-save hook calculates rating & captain_name
+    console.log(`Team created: ${country} | Rating: ${team.rating} | Captain: ${team.captain_name}`);
+    res.redirect('/dashboard');
+
+  } catch (err) {
+    console.error('Autofill error:', err);
+    const hasTeam = await Team.findOne({ country }).then(t => !!t);
+    res.render('dashboard', {
+      title: 'Dashboard',
+      user,
+      country,
+      error: err.message || 'Failed to create team',
+      hasTeam
+    });
   }
 });
 
-module.exports = mongoose.model('Team', teamSchema);
+// ————————————————————————————————————————————————
+// PUBLIC: View all teams
+// ————————————————————————————————————————————————
+router.get('/', async (req, res) => {
+  try {
+    const teams = await Team.find()
+      .select('country manager rating squad captain_name representative_id')
+      .populate('representative_id', 'username')
+      .sort({ rating: -1 });
+
+    res.render('teams', {
+      title: 'Teams',
+      teams,
+      user: req.user || null,
+      error: null
+    });
+  } catch (err) {
+    console.error('Teams fetch error:', err);
+    res.render('teams', {
+      title: 'Teams',
+      teams: [],
+      user: req.user || null,
+      error: 'Unable to fetch teams'
+    });
+  }
+});
+
+// ————————————————————————————————————————————————
+// PROTECTED: Team management (login + owns team)
+// ————————————————————————————————————————————————
+
+// Middleware: user must own the team
+const ownsTeam = async (req, res, next) => {
+  try {
+    const team = await Team.findOne({ representative_id: req.user._id });
+    if (!team) return res.redirect('/dashboard');
+    req.team = team;
+    next();
+  } catch (err) {
+    console.error('ownsTeam error:', err);
+    res.redirect('/dashboard');
+  }
+};
+
+// Apply auth + ownsTeam to all routes below
+router.use(auth, ownsTeam);
+
+// Update Manager
+router.post('/update-manager', async (req, res) => {
+  req.team.manager = req.body.manager?.trim() || 'Unnamed Manager';
+  await req.team.save(); // ← rating & captain auto-updated
+  res.redirect('/dashboard?message=Manager updated');
+});
+
+// Add Player
+router.post('/add-player', async (req, res) => {
+  const { name, natural_position, gk, df, md, at, is_captain } = req.body;
+
+  if (!name || !natural_position) {
+    return res.redirect('/dashboard?error=Missing player data');
+  }
+
+  if (is_captain) {
+    req.team.squad.forEach(p => p.is_captain = false);
+  }
+
+  req.team.squad.push({
+    name: name.trim(),
+    natural_position,
+    ratings: {
+      GK: +gk || 50,
+      DF: +df || 50,
+      MD: +md || 50,
+      AT: +at || 50
+    },
+    is_captain: !!is_captain,
+    goals: 0
+  });
+
+  await req.team.save(); // ← rating & captain auto-updated
+  res.redirect('/dashboard');
+});
+
+// Remove Player
+router.post('/remove-player', async (req, res) => {
+  const { playerId } = req.body;
+  if (!playerId) return res.redirect('/dashboard?error=No player selected');
+
+  req.team.squad = req.team.squad.filter(p => p._id.toString() !== playerId);
+  await req.team.save(); // ← rating & captain auto-updated
+  res.redirect('/dashboard');
+});
+
+// ————————————————————————————————————————————————
+// UTILS: Generate 23 default players
+// ————————————————————————————————————————————————
+function generateDefaultPlayers(country) {
+  const positions = [
+    'GK', 'GK', 'GK',
+    'DF', 'DF', 'DF', 'DF', 'DF', 'DF', 'DF',
+    'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD',
+    'AT', 'AT', 'AT', 'AT', 'AT'
+  ];
+
+  return positions.map((pos, i) => ({
+    name: `${country} Player ${i + 1}`,
+    natural_position: pos,
+    ratings: {
+      GK: pos === 'GK' ? 80 : 50,
+      DF: pos === 'DF' ? 80 : 50,
+      MD: pos === 'MD' ? 80 : 50,
+      AT: pos === 'AT' ? 80 : 50
+    },
+    is_captain: i === 0,
+    goals: 0
+  }));
+}
+
+// ————————————————————————————————————————————————
+// OPTIONAL: Manual rating calculator (not needed)
+// ————————————————————————————————————————————————
+function calculateTeamRating(squad) {
+  if (!squad || squad.length === 0) return 0.0;
+  const total = squad.reduce((sum, p) => {
+    return sum + (p.ratings[p.natural_position] || 50);
+  }, 0);
+  return Number((total / squad.length).toFixed(2));
+}
+
+module.exports = router;
