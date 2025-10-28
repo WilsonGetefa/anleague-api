@@ -192,45 +192,81 @@ router.get('/bracket', async (req, res) => {
 
 router.get('/rankings', async (req, res) => {
   try {
-    const currentTournament = await Tournament.findOne({ status: { $ne: 'completed' } });
+    // --------------------------------------------------------------
+    // 1. Find ALL matches that have been simulated or played
+    // --------------------------------------------------------------
     const matches = await Match.find({
-      type: { $in: ['simulated', 'played'] },
-      ...(currentTournament && { tournament_id: currentTournament._id })
+      type: { $in: ['simulated', 'played'] }
     })
       .populate('team1_id', 'country')
-      .populate('team2_id', 'country');
+      .populate('team2_id', 'country')
+      .lean();               // <-- lean() = plain JS objects (faster)
 
+    // --------------------------------------------------------------
+    // 2. Build the goal-scorer map
+    // --------------------------------------------------------------
     const goalScorers = {};
+
     matches.forEach(match => {
+      // Guard against missing goal_scorers array
+      if (!Array.isArray(match.goal_scorers)) return;
+
       match.goal_scorers.forEach(goal => {
-        const player = goal.player_name;
-        const team = goal.team === 'team1' ? (match.team1_id ? match.team1_id.country : 'Unknown') : (match.team2_id ? match.team2_id.country : 'Unknown');
-        if (!goalScorers[player]) {
-          goalScorers[player] = { name: player, team: team, goals: 0 };
+        const playerName = goal.player_name?.trim() || 'Unknown Player';
+        const teamCountry =
+          goal.team === 'team1'
+            ? match.team1_id?.country || 'Unknown'
+            : match.team2_id?.country || 'Unknown';
+
+        if (!goalScorers[playerName]) {
+          goalScorers[playerName] = {
+            name: playerName,
+            team: teamCountry,
+            goals: 0
+          };
         }
-        goalScorers[player].goals += 1;
+        goalScorers[playerName].goals += 1;
       });
     });
 
-    const rankings = Object.values(goalScorers).sort((a, b) => b.goals - a.goals);
+    // --------------------------------------------------------------
+    // 3. Sort & slice (top 10 is usually enough)
+    // --------------------------------------------------------------
+    const rankings = Object.values(goalScorers)
+      .sort((a, b) => b.goals - a.goals)
+      .slice(0, 10);
+
+    // --------------------------------------------------------------
+    // 4. Past tournaments (for the “Past Champions” section)
+    // --------------------------------------------------------------
     const pastTournaments = await PastTournament.find()
       .populate('bracket.final.match_id')
       .populate('bracket.final.team1_id', 'country')
-      .populate('bracket.final.team2_id', 'country');
+      .populate('bracket.final.team2_id', 'country')
+      .lean();
 
+    // --------------------------------------------------------------
+    // 5. JSON API (optional)
+    // --------------------------------------------------------------
     if (req.query.format === 'json') {
       return res.json({ rankings, pastTournaments });
     }
 
-    res.render('rankings', { 
-      title: 'Goal Scorers Rankings', 
-      rankings, 
-      pastTournaments, 
-      user: req.user 
+    // --------------------------------------------------------------
+    // 6. Render the page
+    // --------------------------------------------------------------
+    res.render('rankings', {
+      title: 'Goal Scorers Rankings',
+      rankings,
+      pastTournaments,
+      user: req.user
     });
   } catch (err) {
     console.error('Rankings route error:', err.message, err.stack);
-    res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load rankings' });
+    res.status(500).render('error', {
+      title: 'Error',
+      error: 'Internal Server Error: Unable to load rankings'
+    });
   }
 });
 

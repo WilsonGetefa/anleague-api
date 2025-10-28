@@ -69,8 +69,8 @@ const teamSchema = new mongoose.Schema({
   players: [
     {
       name: { type: String, required: true },
-      position: { type: String },
-      number: { type: Number }
+      position: String,
+      number: Number
     }
   ],
 
