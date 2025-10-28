@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Team = require('../models/team');
 
 // Full CAF Nations (you can expand)
 const CAF_COUNTRIES = [
