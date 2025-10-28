@@ -4,98 +4,111 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Team = require('../models/team');
+const { generatePlaceholderSquad } = require('../utils/placeholderSquad');
 
-// Full CAF Nations (you can expand)
+// POST /signup — create user + link to team
 const CAF_COUNTRIES = [
-  'Algeria', 'Angola', 'Cameroon', 'Côte d\'Ivoire', 'DR Congo', 'Egypt',
-  'Ghana', 'Guinea', 'Mali', 'Morocco', 'Nigeria', 'Senegal', 'South Africa',
-  'Tunisia', 'Zambia'
+  'Algeria', 'Angola', 'Cameroon', "Côte d'Ivoire", 'DR Congo', 'Egypt',
+  'Ghana', 'Guinea', 'Mali', 'Morocco', 'Nigeria', 'Senegal',
+  'South Africa', 'Tunisia', 'Zambia'
 ];
 
-// GET /signup — show form with country dropdown
+/* ---------- GET /auth/signup ---------- */
 router.get('/signup', (req, res) => {
   res.render('signup', {
     title: 'Sign Up',
     error: null,
-    countries: CAF_COUNTRIES
+    countries: CAF_COUNTRIES,
   });
 });
 
-// POST /signup — create user + link to team
+/* ---------- POST /auth/signup ---------- */
 router.post('/signup', async (req, res) => {
   const { username, email, password, country, role = 'representative' } = req.body;
 
-  // Validate country
+  // ---- 1. Validate country ----
   if (!CAF_COUNTRIES.includes(country)) {
     return res.render('signup', {
       title: 'Sign Up',
       error: 'Invalid country selected',
-      countries: CAF_COUNTRIES
+      countries: CAF_COUNTRIES,
     });
   }
 
   try {
-    // Check if user already exists
+    // ---- 2. User uniqueness ----
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       return res.render('signup', {
         title: 'Sign Up',
         error: 'Username or email already taken',
-        countries: CAF_COUNTRIES
+        countries: CAF_COUNTRIES,
       });
     }
 
-    // Check if country already has a rep
-    const existingRep = await Team.findOne({ country, representative_id: { $ne: null } });
+    // ---- 3. Country already has a rep? ----
+    const existingRep = await Team.findOne({
+      country,
+      representative_id: { $ne: null },
+    });
     if (existingRep) {
       return res.render('signup', {
         title: 'Sign Up',
         error: `Team "${country}" already has a representative`,
-        countries: CAF_COUNTRIES
+        countries: CAF_COUNTRIES,
       });
     }
 
-    // Hash password
+    // ---- 4. Create User ----
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
     const user = await User.create({
       username,
       email,
       password: hashedPassword,
       country,
-      role
+      role,
     });
 
-    // Find or create team
-    let team = await Team.findOne({ country });
-    if (!team) {
-      team = await Team.create({
-        country,
-        manager: '',
-        representative_id: user._id,
-        squad: []
-      });
-    } else {
-      team.representative_id = user._id;
-      await team.save();
-    }
+    // ---- 5. Build 23-player squad ----
+    const squad = generatePlaceholderSquad(country);
+    const captain = squad.find(p => p.is_captain);
+    const captainName = captain ? captain.name : `${country} Player 1`;
 
-    // Auto-login
-    req.login(user, (err) => {
-      if (err) {
-        console.error('Auto-login failed:', err);
-        return res.redirect('/login');
-      }
-      res.redirect('/dashboard');
+    // ---- 6. Create Team (full, satisfies validator) ----
+    const team = await Team.create({
+      country,
+      manager: `${username} Manager`,          // default – rep can edit later
+      representative_id: user._id,
+      squad,
+      captain_name: captainName,
+      rating: 78,                              // any sensible default
     });
+
+    // ---- 7. Auto-login with JWT ----
+    const token = jwt.sign(
+      { id: user._id, username: user.username, country: user.country, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    console.log('Signup & auto-login successful:', username);
+    return res.redirect('/dashboard');
 
   } catch (err) {
     console.error('Signup error:', err);
-    res.render('signup', {
+    return res.render('signup', {
       title: 'Sign Up',
-      error: 'Failed to create account',
-      countries: CAF_COUNTRIES
+      error: err.message.includes('validation failed')
+        ? 'Team data incomplete – contact admin'
+        : 'Failed to create account',
+      countries: CAF_COUNTRIES,
     });
   }
 });
