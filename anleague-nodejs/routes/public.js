@@ -141,11 +141,10 @@ router.get('/bracket', async (req, res) => {
   try {
     console.log('Fetching tournament for /bracket');
     const tournament = await Tournament.findOne({ status: { $ne: 'completed' } })
-      .sort({ createdAt: -1 }) // Prioritize the most recent tournament
-      .populate({
-        path: 'teams',
-        select: 'country'
-      })
+      .sort({ createdAt: -1 })
+      .populate('teams', 'country')
+
+      // === QUARTERFINALS ===
       .populate({
         path: 'bracket.quarterfinals.match_id',
         populate: [
@@ -153,6 +152,10 @@ router.get('/bracket', async (req, res) => {
           { path: 'team2_id', select: 'country' }
         ]
       })
+      .populate({ path: 'bracket.quarterfinals.team1_id', select: 'country' })
+      .populate({ path: 'bracket.quarterfinals.team2_id', select: 'country' })
+
+      // === SEMIFINALS ===
       .populate({
         path: 'bracket.semifinals.match_id',
         populate: [
@@ -160,33 +163,52 @@ router.get('/bracket', async (req, res) => {
           { path: 'team2_id', select: 'country' }
         ]
       })
+      .populate({ path: 'bracket.semifinals.team1_id', select: 'country' })
+      .populate({ path: 'bracket.semifinals.team2_id', select: 'country' })
+
+      // === FINAL ===
       .populate({
         path: 'bracket.final.match_id',
         populate: [
           { path: 'team1_id', select: 'country' },
           { path: 'team2_id', select: 'country' }
         ]
-      });
+      })
+      .populate({ path: 'bracket.final.team1_id', select: 'country' })
+      .populate({ path: 'bracket.final.team2_id', select: 'country' });
 
-    console.log('Tournament data:', JSON.stringify(tournament, null, 2));
+    console.log('Populated bracket:', JSON.stringify(tournament?.bracket, null, 2));
 
     if (req.query.format === 'json') {
       return res.json({ tournament });
     }
 
     if (!tournament) {
-      return res.render('bracket', { title: 'Tournament Bracket', tournament: null, message: 'No active tournament', error: null, user: req.user });
+      return res.render('bracket', {
+        title: 'Tournament Bracket',
+        tournament: null,
+        message: 'No active tournament',
+        error: null,
+        user: req.user
+      });
     }
 
+    // Clean empty matches
     tournament.bracket = tournament.bracket || {};
-    tournament.bracket.quarterfinals = (tournament.bracket.quarterfinals || []).filter(match => match.match_id && match.match_id._id);
-    tournament.bracket.semifinals = (tournament.bracket.semifinals || []).filter(match => match.match_id && match.match_id._id);
-    tournament.bracket.final = (tournament.bracket.final || []).filter(match => match.match_id && match.match_id._id);
+    tournament.bracket.quarterfinals = (tournament.bracket.quarterfinals || []).filter(m => m.match_id?._id);
+    tournament.bracket.semifinals = (tournament.bracket.semifinals || []).filter(m => m.match_id?._id);
+    tournament.bracket.final = (tournament.bracket.final || []).filter(m => m.match_id?._id);
 
-    res.render('bracket', { title: 'Tournament Bracket', tournament, message: null, error: null, user: req.user });
+    res.render('bracket', {
+      title: 'Tournament Bracket',
+      tournament,
+      message: null,
+      error: null,
+      user: req.user
+    });
   } catch (err) {
     console.error('Bracket route error:', err.message, err.stack);
-    res.status(500).render('error', { title: 'Error', error: 'Internal Server Error: Unable to load bracket' });
+    res.status(500).render('error', { title: 'Error', error: 'Internal Server Error' });
   }
 });
 
