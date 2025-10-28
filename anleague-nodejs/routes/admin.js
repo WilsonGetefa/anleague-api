@@ -150,6 +150,7 @@ router.post('/start', async (req, res) => {
   }
 });
 
+// routes/admin.js (only the /simulate route)
 router.post('/simulate', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
@@ -177,11 +178,11 @@ router.post('/simulate', async (req, res) => {
 
     let matchesToSimulate = [];
     if (tournament.status === 'quarterfinals') {
-      matchesToSimulate = tournament.bracket.quarterfinals.map(qf => qf.match_id).filter(m => m);
+      matchesToSimulate = tournament.bracket.quarterfinals.map(qf => qf.match_id).filter(Boolean);
     } else if (tournament.status === 'semifinals') {
-      matchesToSimulate = tournament.bracket.semifinals.map(sf => sf.match_id).filter(m => m);
+      matchesToSimulate = tournament.bracket.semifinals.map(sf => sf.match_id).filter(Boolean);
     } else if (tournament.status === 'final') {
-      matchesToSimulate = tournament.bracket.final.map(f => f.match_id).filter(m => m);
+      matchesToSimulate = tournament.bracket.final.map(f => f.match_id).filter(Boolean);
     } else {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
@@ -209,64 +210,77 @@ router.post('/simulate', async (req, res) => {
 
     // Simulate each match
     for (const match of pendingMatches) {
-      // Randomly generate scores
       match.score.team1 = Math.floor(Math.random() * 4);
       match.score.team2 = Math.floor(Math.random() * 4);
       match.type = 'simulated';
       match.status = 'completed';
       match.goal_scorers = [];
 
-      // ✅ Inserted realistic goal-scorer logic
-      const team1 = await Team.findById(match.team1_id).select('players');
-      const team2 = await Team.findById(match.team2_id).select('players');
+      // Safe team data retrieval
+      const team1 = await Team.findById(match.team1_id).select('players country').lean();
+      const team2 = await Team.findById(match.team2_id).select('players country').lean();
 
-      if (!team1 || !team2) {
-        console.error(`Missing team data for match ${match._id}`);
-        continue;
+      const team1Name = team1?.country || 'Unknown';
+      const team2Name = team2?.country || 'Unknown';
+
+      // Generate goals with safe player selection
+      if (team1?.players?.length) {
+        for (let i = 0; i < match.score.team1; i++) {
+          const player = team1.players[Math.floor(Math.random() * team1.players.length)];
+          match.goal_scorers.push({
+            player_name: player.name || `Player${i + 1}_T1`,
+            minute: Math.floor(Math.random() * 90) + 1,
+            team: 'team1'
+          });
+        }
+      } else {
+        console.warn(`No players for team1 ${team1Name}, using placeholders`);
+        for (let i = 0; i < match.score.team1; i++) {
+          match.goal_scorers.push({
+            player_name: `Player${i + 1}_T1`,
+            minute: Math.floor(Math.random() * 90) + 1,
+            team: 'team1'
+          });
+        }
       }
 
-      // For Team 1 goals
-      for (let i = 0; i < match.score.team1; i++) {
-        const player = team1.players[Math.floor(Math.random() * team1.players.length)];
-        match.goal_scorers.push({
-          player_name: player.name,
-          minute: Math.floor(Math.random() * 90) + 1,
-          team: 'team1'
-        });
+      if (team2?.players?.length) {
+        for (let i = 0; i < match.score.team2; i++) {
+          const player = team2.players[Math.floor(Math.random() * team2.players.length)];
+          match.goal_scorers.push({
+            player_name: player.name || `Player${i + 1}_T2`,
+            minute: Math.floor(Math.random() * 90) + 1,
+            team: 'team2'
+          });
+        }
+      } else {
+        console.warn(`No players for team2 ${team2Name}, using placeholders`);
+        for (let i = 0; i < match.score.team2; i++) {
+          match.goal_scorers.push({
+            player_name: `Player${i + 1}_T2`,
+            minute: Math.floor(Math.random() * 90) + 1,
+            team: 'team2'
+          });
+        }
       }
 
-      // For Team 2 goals
-      for (let i = 0; i < match.score.team2; i++) {
-        const player = team2.players[Math.floor(Math.random() * team2.players.length)];
-        match.goal_scorers.push({
-          player_name: player.name,
-          minute: Math.floor(Math.random() * 90) + 1,
-          team: 'team2'
-        });
-      }
-
-      // Commentary and metadata
-      const team1Name = match.team1_id ? match.team1_id.country || 'Unknown' : 'Unknown';
-      const team2Name = match.team2_id ? match.team2_id.country || 'Unknown' : 'Unknown';
+      // Commentary
       match.commentary = `Match simulated: ${team1Name} ${match.score.team1}-${match.score.team2} ${team2Name} with ${match.goal_scorers.length} goals`;
-
-      if (!match.tournament_id) {
-        match.tournament_id = tournament._id;
-      }
+      match.tournament_id = tournament._id;
 
       await match.save();
     }
 
-    const updatedTournament = await Tournament.findOne(tournament._id)
-      .populate('bracket.quarterfinals.match_id')
-      .populate('bracket.quarterfinals.team1_id', 'country')
-      .populate('bracket.quarterfinals.team2_id', 'country')
-      .populate('bracket.semifinals.match_id')
-      .populate('bracket.semifinals.team1_id', 'country')
-      .populate('bracket.semifinals.team2_id', 'country')
-      .populate('bracket.final.match_id')
-      .populate('bracket.final.team1_id', 'country')
-      .populate('bracket.final.team2_id', 'country');
+    const updatedTournament = await Tournament.findById(tournament._id)
+      .populate({ path: 'bracket.quarterfinals.match_id' })
+      .populate({ path: 'bracket.quarterfinals.team1_id', select: 'country' })
+      .populate({ path: 'bracket.quarterfinals.team2_id', select: 'country' })
+      .populate({ path: 'bracket.semifinals.match_id' })
+      .populate({ path: 'bracket.semifinals.team1_id', select: 'country' })
+      .populate({ path: 'bracket.semifinals.team2_id', select: 'country' })
+      .populate({ path: 'bracket.final.match_id' })
+      .populate({ path: 'bracket.final.team1_id', select: 'country' })
+      .populate({ path: 'bracket.final.team2_id', select: 'country' });
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
@@ -274,7 +288,7 @@ router.post('/simulate', async (req, res) => {
       role: req.user.role,
       message: 'Matches simulated successfully',
       error: null,
-      tournament: updatedTournament || tournament,
+      tournament: updatedTournament,
       user: req.user
     });
 
