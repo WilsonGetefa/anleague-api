@@ -85,7 +85,8 @@ router.get('/dashboard', auth, async (req, res) => {
       user: req.user,
       team,
       message: req.query.message,
-      error: req.query.error
+      error: req.query.error,
+      team: null
     });
   } catch (err) {
     res.render('dashboard', { title: 'Dashboard', error: 'Failed to load team' });
