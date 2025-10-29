@@ -5,14 +5,14 @@ const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   natural_position: { type: String, enum: ['GK', 'DF', 'MD', 'AT'], required: true },
   ratings: {
-    GK: { type: Number, required: true },
-    DF: { type: Number, required: true },
-    MD: { type: Number, required: true },
-    AT: { type: Number, required: true },
+    GK: { type: Number, default: 50 },
+    DF: { type: Number, default: 50 },
+    MD: { type: Number, default: 50 },
+    AT: { type: Number, default: 50 }
   },
   is_captain: { type: Boolean, default: false },
-  goals: { type: Number, default: 0 },
-}, { timestamps: false });
+  goals: { type: Number, default: 0 }
+}, { _id: false, timestamps: false });  // ← DISABLE _id
 
 const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },
@@ -23,19 +23,23 @@ const teamSchema = new mongoose.Schema({
     validate: [v => v.length === 23, 'Squad must have exactly 23 players']
   },
   captain_name: { type: String, required: true },
-  rating: { type: Number, required: true },
+  rating: { type: Number, required: true }
 });
 
 // ————————————————————————
 // PRE-SAVE HOOK: Auto-fill rating & captain_name
 // ————————————————————————
 teamSchema.pre('save', function (next) {
+  if (!this.squad || this.squad.length !== 23) {
+    return next(new Error('Squad must have exactly 23 players'));
+  }
+
   // 1. Calculate team rating
   const total = this.squad.reduce((sum, player) => {
     const pos = player.natural_position;
     return sum + (player.ratings[pos] || 50);
   }, 0);
-  this.rating = Number((total / this.squad.length).toFixed(2));
+  this.rating = Number((total / 23).toFixed(2));
 
   // 2. Set captain name
   const captain = this.squad.find(p => p.is_captain);
