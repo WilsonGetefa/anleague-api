@@ -13,7 +13,7 @@ function generatePlaceholderSquad(country) {
     'GK', 'GK', 'GK',
     'DF', 'DF', 'DF', 'DF', 'DF', 'DF', 'DF', 'DF',
     'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD',
-    'AT', 'AT', 'AT', 'AT', 'AT'
+    'AT', 'AT', 'AT', 'AT',
   ];
 
   if (positions.length !== 23) throw new Error('Must have 23 positions');
