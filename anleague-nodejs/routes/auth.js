@@ -151,15 +151,27 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// ======================
-// POST /auth/login
-// ======================
+// GET /auth/login — show login form
+router.get('/login', (req, res) => {
+  if (req.user) {
+    return res.redirect(req.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+  }
+  res.render('login', {
+    title: 'Login',
+    error: null
+  });
+});
+
+// POST /auth/login — handle login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.render('login', { title: 'Login', error: 'Invalid credentials' });
+      return res.render('login', { 
+        title: 'Login', 
+        error: 'Invalid credentials' 
+      });
     }
 
     const token = jwt.sign(
