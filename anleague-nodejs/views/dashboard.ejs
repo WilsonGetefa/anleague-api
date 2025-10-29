@@ -117,9 +117,10 @@
                       <% } %>
                     </td>
                     <td>
-                      <form action="/team/remove-player" method="POST" class="inline-form">
+                      <form action="/team/remove-player" method="POST" class="inline-form"
+                            onsubmit="return confirm('Remove <%= player.name %>?')">
                         <input type="hidden" name="playerId" value="<%= player._id %>">
-                        <button type="submit" class="btn-danger" onclick="return confirm('Remove <%= player.name %>?')">Remove</button>
+                        <button type="submit" class="btn-danger" onclick="">Remove</button>
                       </form>
                     </td>
                   </tr>
