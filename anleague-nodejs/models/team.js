@@ -20,7 +20,8 @@ const teamSchema = new mongoose.Schema({
   representative_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
   squad: {
     type: [playerSchema],
-    validate: [v => v.length === 23, 'Squad must have exactly 23 players']
+    validate: [v => v.length === 23, 'Squad must have exactly 23 players'],
+    required: true
   },
   captain_name: { type: String, required: true },
   rating: { type: Number, required: true },
