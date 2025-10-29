@@ -16,18 +16,20 @@ const playerSchema = new mongoose.Schema({
 
 const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },
-  manager: { type: String, required: true },               // required by validator
-  representative_id: {                                    // ONLY this field
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
+  manager: { type: String, required: true },
+  representative_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   squad: {
-    type: [playerSchema],
-    validate: [v => v.length === 23, 'Squad must contain exactly 23 players'],
+    type: [{
+      name: String,
+      natural_position: String,
+      ratings: { GK: Number, DF: Number, MD: Number, AT: Number },
+      is_captain: Boolean,
+      goals: Number,
+    }],
+    validate: [v => v.length === 23, 'Squad must have exactly 23 players']
   },
   captain_name: { type: String, required: true },
-  rating: { type: Number, required: true, min: 0 },
+  rating: { type: Number, required: true },
 });
 
 module.exports = mongoose.model('Team', teamSchema);
