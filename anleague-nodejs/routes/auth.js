@@ -234,6 +234,32 @@ router.post('/login', async (req, res) => {
 });
 
 // ======================
+// GET /dashboard — Representative Dashboard
+// ======================
+router.get('/dashboard', async (req, res) => {
+  try {
+    // Ensure user is logged in and is a representative
+    if (!req.user || req.user.role !== 'representative') {
+      return res.redirect('/login');
+    }
+
+    // Find the team for this representative
+    const team = await Team.findOne({ representative_id: req.user.id });
+
+    res.render('dashboard', {
+      title: 'Dashboard',
+      user: req.user,
+      team,        // ← PASS TEAM TO VIEW
+      message: req.flash?.('success') || null,
+      error: req.flash?.('error') || null
+    });
+  } catch (err) {
+      console.error('Dashboard error:', err);
+      res.status(500).render('error', { error: 'Server error' });
+  }
+});
+
+// ======================
 // GET /auth/logout
 // ======================
 router.get('/logout', (req, res) => {
