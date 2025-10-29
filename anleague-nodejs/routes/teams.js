@@ -151,6 +151,25 @@ router.post('/remove-player', async (req, res) => {
   res.redirect('/dashboard');
 });
 
+// Add this route before router.use(auth, ownsTeam)
+router.post('/team/edit-player-name', auth, ownsTeam, async (req, res) => {
+  const { playerId, newName } = req.body;
+
+  if (!playerId || !newName?.trim()) {
+    return res.redirect('/dashboard?error=Invalid name');
+  }
+
+  const player = req.team.squad.id(playerId);
+  if (!player) {
+    return res.redirect('/dashboard?error=Player not found');
+  }
+
+  player.name = newName.trim();
+  await req.team.save();
+
+  res.redirect('/dashboard?message=Player name updated');
+});
+
 // ————————————————————————————————————————————————
 // UTILS: Generate 23 default players
 // ————————————————————————————————————————————————

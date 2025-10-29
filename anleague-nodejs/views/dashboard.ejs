@@ -117,7 +117,20 @@
                       <% } %>
                     </td>
                     <td>
-                      <form action="/team/remove-player" method="POST" class="inline-form"
+                      <strong><%= player.name %></strong>
+                      <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Edit</button>
+
+                      <div id="edit-form-<%= player._id %>" style="display: none; margin-top: 5px;">
+                        <form action="/team/edit-player-name" method="POST">
+                          <input type="hidden" name="playerId" value="<%= player._id %>">
+                          <input type="text" name="newName" value="<%= player.name %>" required style="width: 100px;">
+                          <button type="submit" class="btn-small">Save</button>
+                          <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Cancel</button>
+                        </form>
+                      </div>
+                    </td>
+                    <td>
+                      <form action="/remove-player" method="POST" class="inline-form"
                             onsubmit="return confirm('Remove <%= player.name %> from the squad?')">
                         <input type="hidden" name="playerId" value="<%= player._id %>">
                         <button type="submit" class="btn-danger">Remove</button>
@@ -140,7 +153,11 @@
     function toggleAddForm() {
       const form = document.getElementById('add-player-form');
       form.style.display = form.style.display === 'block' ? 'none' : 'block';
-    }
+    };
+    function toggleEdit(id) {
+    const form = document.getElementById('edit-form-' + id);
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+  }
   </script>
 </body>
 </html>
