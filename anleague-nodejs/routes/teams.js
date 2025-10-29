@@ -104,8 +104,6 @@ const ownsTeam = async (req, res, next) => {
   }
 };
 
-router.use(auth, ownsTeam);
-
 // Update Manager
 router.post('/update-manager', async (req, res) => {
   req.team.manager = req.body.manager?.trim() || 'Unnamed Manager';
