@@ -12,7 +12,7 @@ const playerSchema = new mongoose.Schema({
   },
   is_captain: { type: Boolean, default: false },
   goals: { type: Number, default: 0 }
-}, { _id: false, timestamps: false });  // ← DISABLE _id
+}, { _id: true, timestamps: false });  // ← DISABLE _id
 
 const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },

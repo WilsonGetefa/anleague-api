@@ -102,6 +102,11 @@ app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
   });
 });
 
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.redirect('/error?error=' + encodeURIComponent('Server error. Please try again.'));
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
@@ -110,8 +115,3 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 mongoose.connect(process.env.MONGO_URI, { dbName: 'anleague' })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
-
-app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-  res.redirect('/error?error=' + encodeURIComponent('Server error. Please try again.'));
-});

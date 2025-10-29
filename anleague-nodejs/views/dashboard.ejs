@@ -110,14 +110,13 @@
                       <strong><%= player.name %></strong>
                       <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Edit</button>
 
-                      <div id="edit-form-<%= player._id %>" style="display: none; margin-top: 5px;">
-                        <form action="/team/edit-player-name" method="POST">
+                      <!--div -->
+                        <form id="edit-form-<%= player._id %>" action="/team/edit-player-name" method="POST" style="display: none; margin-top: 5px;">
                           <input type="hidden" name="playerId" value="<%= player._id %>">
                           <input type="text" name="newName" value="<%= player.name %>" required style="width: 100px;">
                           <button type="submit" class="btn-small">Save</button>
                           <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Cancel</button>
-                        </form>
-                      </div>
+                        </form
                     </td>
 
                     <td><%= player.natural_position %></td>
