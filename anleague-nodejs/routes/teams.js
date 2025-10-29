@@ -141,33 +141,26 @@ router.post('/add-player', async (req, res) => {
   res.redirect('/dashboard');
 });
 
-// Remove Player
-router.post('/remove-player', async (req, res) => {
-  const { playerId } = req.body;
-  if (!playerId) return res.redirect('/error?error=' + encodeURIComponent('No player selected for removal'));
+// EDIT
+router.post('/teams/edit-player-name', authMiddleware, ownsTeam, async (req, res) => {
+  const { playerId, newName } = req.body;
+  if (!playerId || !newName?.trim()) {
+    return res.redirect('/error?error=' + encodeURIComponent('Name required'));
+  }
+  const player = req.team.squad.id(playerId);
+  if (!player) return res.redirect('/error?error=' + encodeURIComponent('Player not found'));
+  player.name = newName.trim();
+  await req.team.save();
+  res.redirect('/dashboard?message=Name updated');
+});
 
+// REMOVE
+router.post('/teams/remove-player', authMiddleware, ownsTeam, async (req, res) => {
+  const { playerId } = req.body;
+  if (!playerId) return res.redirect('/error?error=' + encodeURIComponent('No player selected'));
   req.team.squad = req.team.squad.filter(p => p._id.toString() !== playerId);
   await req.team.save();
   res.redirect('/dashboard');
-});
-
-// Add this route before router.use(auth, ownsTeam)
-router.post('/team/edit-player-name', auth, ownsTeam, async (req, res) => {
-  const { playerId, newName } = req.body;
-
-  if (!playerId || !newName?.trim()) {
-    return res.redirect('/error?error=' + encodeURIComponent('Player name is required'));
-  }
-
-  const player = req.team.squad.id(playerId);
-  if (!player) {
-    return res.redirect('/error?error=' + encodeURIComponent('Player not found'));
-  }
-
-  player.name = newName.trim();
-  await req.team.save();
-
-  res.redirect('/dashboard?message=Player name updated');
 });
 
 // ————————————————————————————————————————————————

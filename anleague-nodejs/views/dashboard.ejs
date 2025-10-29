@@ -57,7 +57,7 @@
       <section class="add-player-section">
         <button type="button" class="btn-toggle" onclick="toggleAddForm()">Add New Player</button>
         <div id="add-player-form" class="form-card" style="display: none;">
-          <form action="/team/add-player" method="POST">
+          <form action="/teams/add-player" method="POST">
             <div class="form-row">
               <input type="text" name="name" placeholder="Player Name" required>
               <select name="natural_position" required>
@@ -111,7 +111,7 @@
                       <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Edit</button>
 
                       <!--div -->
-                        <form id="edit-form-<%= player._id %>" action="/team/edit-player-name" method="POST" style="display: none; margin-top: 5px;">
+                        <form id="edit-form-<%= player._id %>" action="/teams/edit-player-name" method="POST" style="display: none; margin-top: 5px;">
                           <input type="hidden" name="playerId" value="<%= player._id %>">
                           <input type="text" name="newName" value="<%= player.name %>" required style="width: 100px;">
                           <button type="submit" class="btn-small">Save</button>
@@ -130,7 +130,7 @@
                       <% } %>
                     </td>
                     <td>
-                      <form action="/remove-player" method="POST" class="inline-form"
+                      <form action="/teams/remove-player" method="POST" class="inline-form"
                             onsubmit="return confirm('Remove <%= player.name %> from the squad?')">
                         <input type="hidden" name="playerId" value="<%= player._id %>">
                         <button type="submit" class="btn-danger">Remove</button>

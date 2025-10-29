@@ -102,6 +102,12 @@ app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
   });
 });
 
+// 404 → error page
+app.use((req, res) => {
+  res.redirect('/error?error=' + encodeURIComponent('Page not found'));
+});
+
+// Global error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.redirect('/error?error=' + encodeURIComponent('Server error. Please try again.'));
