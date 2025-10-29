@@ -65,7 +65,9 @@ router.get('/signup', (req, res) => {
 router.post('/signup', async (req, res) => {
   const { username, email, password, country, role = 'representative' } = req.body;
 
-  // Validate role
+  // -----------------------------------------------------------------
+  // 1. Validate role & country
+  // -----------------------------------------------------------------
   if (!['representative', 'admin'].includes(role)) {
     return res.render('signup', {
       title: 'Sign Up',
@@ -74,7 +76,6 @@ router.post('/signup', async (req, res) => {
     });
   }
 
-  // Validate country
   if (!CAF_COUNTRIES.includes(country)) {
     return res.render('signup', {
       title: 'Sign Up',
@@ -84,7 +85,9 @@ router.post('/signup', async (req, res) => {
   }
 
   try {
-    // Check if user exists
+    // -----------------------------------------------------------------
+    // 2. User uniqueness
+    // -----------------------------------------------------------------
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       return res.render('signup', {
@@ -94,7 +97,9 @@ router.post('/signup', async (req, res) => {
       });
     }
 
-    // For representatives: check if country already has a rep
+    // -----------------------------------------------------------------
+    // 3. Country already taken (only for representatives)
+    // -----------------------------------------------------------------
     if (role === 'representative') {
       const existingRep = await Team.findOne({
         country,
@@ -109,32 +114,38 @@ router.post('/signup', async (req, res) => {
       }
     }
 
-    // Create user
+    // -----------------------------------------------------------------
+    // 4. Create the User
+    // -----------------------------------------------------------------
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
       email,
       password: hashedPassword,
-      country: role === 'representative' ? country : null, // admin has no country
+      country: role === 'representative' ? country : null,
       role,
     });
 
-    // Create team only for representatives
+    // -----------------------------------------------------------------
+    // 5. Create a full Team (only for representatives)
+    // -----------------------------------------------------------------
     if (role === 'representative') {
-      const squad = generatePlaceholderSquad(country);
+      const squad = generatePlaceholderSquad(country);   // ← ONE CALL ONLY
       const captainName = squad[0].name;
 
-      await Team.create({
+      await Team.collection.insertOne({
         country,
         manager: `${username} Manager`,
         representative_id: user._id,
-        squad,
-        captain_name: captainName,
+        squad,                                 // ← use the variable
+        captain_name: captainName,             // ← use the variable
         rating: 78,
       });
     }
 
-    // Auto-login with JWT
+    // -----------------------------------------------------------------
+    // 6. Auto-login with JWT
+    // -----------------------------------------------------------------
     const token = jwt.sign(
       { id: user._id, username: user.username, country: user.country, role: user.role },
       process.env.JWT_SECRET,
@@ -150,7 +161,9 @@ router.post('/signup', async (req, res) => {
 
     console.log('Signup & auto-login successful:', username, 'Role:', role);
 
-    // REDIRECT BASED ON ROLE
+    // -----------------------------------------------------------------
+    // 7. Redirect according to role
+    // -----------------------------------------------------------------
     return res.redirect(role === 'admin' ? '/admin/dashboard' : '/dashboard');
 
   } catch (err) {
