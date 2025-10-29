@@ -133,13 +133,26 @@ router.post('/signup', async (req, res) => {
       const squad = generatePlaceholderSquad(country);   // ← ONE CALL ONLY
       
 
-      const team = await Team.create({
+      await Team.create({
         country,
         manager: `${username} Manager`,
         representative_id: user._id,
-        squad
+        squad: squad.map(player => ({
+          name: player.name,
+          natural_position: player.natural_position,
+          ratings: {
+            GK: Number(player.ratings.GK),
+            DF: Number(player.ratings.DF),
+            MD: Number(player.ratings.MD),
+            AT: Number(player.ratings.AT),
+          },
+          is_captain: player.is_captain,
+          goals: player.goals,
+        })),
       });
-      console.log('Team created via Sign up page:', team.country);
+
+      await team.save();
+      console.log('Team created:', team.country, 'Rating:', team.rating);
     }
 
     // -----------------------------------------------------------------
