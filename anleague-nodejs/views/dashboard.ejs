@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - <%= team?.country : 'Representative' %></title>
+  <title>Dashboard - <%= team ? team.country : 'Representative' %></title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/dashboard.css">
@@ -55,7 +55,7 @@
 
       <!-- Add Player Form -->
       <section class="add-player-section">
-        <button class="btn-toggle" onclick="toggleAddForm()">Add New Player</button>
+        <button type="button" class="btn-toggle" onclick="toggleAddForm()">Add New Player</button>
         <div id="add-player-form" class="form-card" style="display: none;">
           <form action="/team/add-player" method="POST">
             <div class="form-row">
@@ -118,9 +118,9 @@
                     </td>
                     <td>
                       <form action="/team/remove-player" method="POST" class="inline-form"
-                            onsubmit="return confirm('Remove <%= player.name %>?')">
+                            onsubmit="return confirm('Remove <%= player.name %> from the squad?')">
                         <input type="hidden" name="playerId" value="<%= player._id %>">
-                        <button type="submit" class="btn-danger" onclick="">Remove</button>
+                        <button type="submit" class="btn-danger">Remove</button>
                       </form>
                     </td>
                   </tr>
