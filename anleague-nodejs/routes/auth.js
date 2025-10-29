@@ -131,16 +131,16 @@ router.post('/signup', async (req, res) => {
     // -----------------------------------------------------------------
     if (role === 'representative') {
       const squad = generatePlaceholderSquad(country);   // ← ONE CALL ONLY
-      const captainName = squad[0].name;
+      
 
-      await Team.collection.insertOne({
+      const team = new Team({
         country,
         manager: `${username} Manager`,
         representative_id: user._id,
-        squad,                                 // ← use the variable
-        captain_name: captainName,             // ← use the variable
-        rating: 78,
+        squad
       });
+      await team.save();
+      console.log('Team created via Sign up page:', team.country);
     }
 
     // -----------------------------------------------------------------
