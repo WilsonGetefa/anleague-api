@@ -82,6 +82,7 @@
       <h2>Semifinals</h2>
       <% (tournament.bracket.semifinals || []).forEach(sf => { %>
         <div class="match-block">
+          <a href="/match/<%= match.match_id._id %>"></a>
           <p>
             <strong><%= sf.team1_id?.country || 'TBD' %> vs <%= sf.team2_id?.country || 'TBD' %></strong> - 
             <%= sf.match_id ? `${sf.match_id.score.team1 || 0}-${sf.match_id.score.team2 || 0} (${sf.match_id.status})` : 'Pending' %>
