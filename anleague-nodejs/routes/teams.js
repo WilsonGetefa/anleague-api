@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Team = require('../models/team');
 const User = require('../models/user');
-const mongoose = require('mongoose');
 const auth = require('../middleware/auth').authMiddleware;
 
 // ————————————————————————————————————————————————
@@ -15,24 +14,12 @@ router.post('/autofill', auth, async (req, res) => {
   try {
     if (!user) return res.redirect('/login');
     if (!country || user.country !== country) {
-      return res.render('dashboard', {
-        title: 'Dashboard',
-        user,
-        country: user.country,
-        error: 'Can only create team for your country',
-        hasTeam: false
-      });
+      return res.redirect('/dashboard?error=Invalid country');
     }
 
     const existingTeam = await Team.findOne({ country });
     if (existingTeam) {
-      return res.render('dashboard', {
-        title: 'Dashboard',
-        user,
-        country,
-        error: `Team for ${country} already exists`,
-        hasTeam: true
-      });
+      return res.redirect('/dashboard?error=Team already exists');
     }
 
     const squad = generateDefaultPlayers(country);
@@ -47,19 +34,28 @@ router.post('/autofill', auth, async (req, res) => {
       manager: `${user.username}'s Manager`
     });
 
-    await team.save(); // ← pre-save hook calculates rating & captain_name
+    await team.save(); // pre-save hook sets rating & captain_name
     console.log(`Team created: ${country} | Rating: ${team.rating} | Captain: ${team.captain_name}`);
-    res.redirect('/dashboard');
 
-  } catch (err) {
-    console.error('Autofill error:', err);
-    const hasTeam = await Team.findOne({ country }).then(t => !!t);
+    // RE-FETCH TEAM + RENDER DASHBOARD
+    const freshTeam = await Team.findOne({ representative_id: user._id });
     res.render('dashboard', {
       title: 'Dashboard',
       user,
-      country,
-      error: err.message || 'Failed to create team',
-      hasTeam
+      team: freshTeam,
+      message: 'Team created successfully!',
+      error: null
+    });
+
+  } catch (err) {
+    console.error('Autofill error:', err);
+    const team = await Team.findOne({ country }).catch(() => null);
+    res.render('dashboard', {
+      title: 'Dashboard',
+      user,
+      team,
+      message: null,
+      error: err.message || 'Failed to create team'
     });
   }
 });
@@ -95,7 +91,6 @@ router.get('/', async (req, res) => {
 // PROTECTED: Team management (login + owns team)
 // ————————————————————————————————————————————————
 
-// Middleware: user must own the team
 const ownsTeam = async (req, res, next) => {
   try {
     const team = await Team.findOne({ representative_id: req.user._id });
@@ -108,13 +103,12 @@ const ownsTeam = async (req, res, next) => {
   }
 };
 
-// Apply auth + ownsTeam to all routes below
 router.use(auth, ownsTeam);
 
 // Update Manager
 router.post('/update-manager', async (req, res) => {
   req.team.manager = req.body.manager?.trim() || 'Unnamed Manager';
-  await req.team.save(); // ← rating & captain auto-updated
+  await req.team.save();
   res.redirect('/dashboard?message=Manager updated');
 });
 
@@ -143,7 +137,7 @@ router.post('/add-player', async (req, res) => {
     goals: 0
   });
 
-  await req.team.save(); // ← rating & captain auto-updated
+  await req.team.save();
   res.redirect('/dashboard');
 });
 
@@ -153,7 +147,7 @@ router.post('/remove-player', async (req, res) => {
   if (!playerId) return res.redirect('/dashboard?error=No player selected');
 
   req.team.squad = req.team.squad.filter(p => p._id.toString() !== playerId);
-  await req.team.save(); // ← rating & captain auto-updated
+  await req.team.save();
   res.redirect('/dashboard');
 });
 
@@ -180,17 +174,6 @@ function generateDefaultPlayers(country) {
     is_captain: i === 0,
     goals: 0
   }));
-}
-
-// ————————————————————————————————————————————————
-// OPTIONAL: Manual rating calculator (not needed)
-// ————————————————————————————————————————————————
-function calculateTeamRating(squad) {
-  if (!squad || squad.length === 0) return 0.0;
-  const total = squad.reduce((sum, p) => {
-    return sum + (p.ratings[p.natural_position] || 50);
-  }, 0);
-  return Number((total / squad.length).toFixed(2));
 }
 
 module.exports = router;
