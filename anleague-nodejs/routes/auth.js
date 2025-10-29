@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Team = require('../models/team');
+const auth = require('../middleware/auth').authMiddleware;
 
 // ======================
 // PLACEHOLDER SQUAD GENERATOR (INLINE)
@@ -236,7 +237,7 @@ router.post('/login', async (req, res) => {
 // ======================
 // GET /dashboard — Representative Dashboard
 // ======================
-router.get('/dashboard', async (req, res) => {
+router.get('/dashboard', auth, async (req, res) => {
   try {
     console.log('=== DASHBOARD DEBUG ===');
     console.log('req.user:', req.user);
