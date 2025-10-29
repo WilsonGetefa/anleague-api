@@ -130,29 +130,35 @@ router.post('/signup', async (req, res) => {
     // 5. Create a full Team (only for representatives)
     // -----------------------------------------------------------------
     if (role === 'representative') {
-      const squad = generatePlaceholderSquad(country);   // ← ONE CALL ONLY
-      
+      const squad = generatePlaceholderSquad(country);
 
-      await Team.create({
+      // Flatten each player into a plain object (forces casting)
+      const plainSquad = squad.map(p => ({
+        name: p.name,
+        natural_position: p.natural_position,
+        ratings: {
+          GK: Number(p.ratings.GK),
+          DF: Number(p.ratings.DF),
+          MD: Number(p.ratings.MD),
+          AT: Number(p.ratings.AT),
+        },
+        is_captain: Boolean(p.is_captain),
+        goals: Number(p.goals),
+      }));
+
+      // Use Team.create() + toObject() trick
+      const teamDoc = new Team({
         country,
         manager: `${username} Manager`,
         representative_id: user._id,
-        squad: squad.map(player => ({
-          name: player.name,
-          natural_position: player.natural_position,
-          ratings: {
-            GK: Number(player.ratings.GK),
-            DF: Number(player.ratings.DF),
-            MD: Number(player.ratings.MD),
-            AT: Number(player.ratings.AT),
-          },
-          is_captain: player.is_captain,
-          goals: player.goals,
-        })),
+        squad: plainSquad,
       });
 
-      await team.save();
-      console.log('Team created:', team.country, 'Rating:', team.rating);
+      // Force Mongoose to run validation + hooks
+      await teamDoc.validate(); // This triggers pre-save
+      await teamDoc.save();
+
+      console.log('Team created:', teamDoc.country, 'Rating:', teamDoc.rating, 'Captain:', teamDoc.captain_name);
     }
 
     // -----------------------------------------------------------------
