@@ -12,7 +12,6 @@ const playerSchema = new mongoose.Schema({
   },
   is_captain: { type: Boolean, default: false },
   goals: { type: Number, default: 0 },
-  // DO NOT disable _id — keep it!
 }, { timestamps: false });
 
 const teamSchema = new mongoose.Schema({
@@ -25,6 +24,24 @@ const teamSchema = new mongoose.Schema({
   },
   captain_name: { type: String, required: true },
   rating: { type: Number, required: true },
+});
+
+// ————————————————————————
+// PRE-SAVE HOOK: Auto-fill rating & captain_name
+// ————————————————————————
+teamSchema.pre('save', function (next) {
+  // 1. Calculate team rating
+  const total = this.squad.reduce((sum, player) => {
+    const pos = player.natural_position;
+    return sum + (player.ratings[pos] || 50);
+  }, 0);
+  this.rating = Number((total / this.squad.length).toFixed(2));
+
+  // 2. Set captain name
+  const captain = this.squad.find(p => p.is_captain);
+  this.captain_name = captain ? captain.name : this.squad[0]?.name || 'Unknown';
+
+  next();
 });
 
 module.exports = mongoose.model('Team', teamSchema);
