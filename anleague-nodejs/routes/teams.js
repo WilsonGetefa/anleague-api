@@ -42,12 +42,9 @@ router.post('/autofill', auth, async (req, res) => {
 
     const team = new Team({
       country,
-      userId: user._id,
       representative_id: user._id,
       squad,
-      manager: `${user.username}'s Manager`,
-      players: [], // optional
-      captain_name: '' // will be set in pre-save
+      manager: `${user.username}'s Manager`
     });
 
     await team.save(); // ← pre-save hook calculates rating & captain_name
