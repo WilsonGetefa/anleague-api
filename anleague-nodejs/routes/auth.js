@@ -238,24 +238,29 @@ router.post('/login', async (req, res) => {
 // ======================
 router.get('/dashboard', async (req, res) => {
   try {
-    // Ensure user is logged in and is a representative
+    console.log('=== DASHBOARD DEBUG ===');
+    console.log('req.user:', req.user);
+    console.log('req.user._id:', req.user?._id);
+    console.log('req.user.id:', req.user?.id);
+    console.log('req.user.role:', req.user?.role);
+
     if (!req.user || req.user.role !== 'representative') {
       return res.redirect('/login');
     }
 
-    // Find the team for this representative
-    const team = await Team.findOne({ representative_id: req.user.id });
+    const team = await Team.findOne({ representative_id: req.user._id });
+    console.log('Team found:', team ? team.country : 'NO TEAM');
 
     res.render('dashboard', {
       title: 'Dashboard',
       user: req.user,
-      team,        // ← PASS TEAM TO VIEW
+      team,
       message: req.flash?.('success') || null,
       error: req.flash?.('error') || null
     });
   } catch (err) {
-      console.error('Dashboard error:', err);
-      res.status(500).render('error', { error: 'Server error' });
+    console.error('Dashboard error:', err);
+    res.status(500).render('error', { error: 'Server error' });
   }
 });
 
