@@ -16,11 +16,11 @@ function generatePlaceholderSquad(country) {
     'AT', 'AT', 'AT', 'AT',
   ];
 
-  if (positions.length !== 23) throw new Error('Must have 23 positions');
+  if (positions.length !== 23) throw new Error(`Must have 23 positions, got ${positions.length}`);
 
-  return positions.map((p, i) => ({
+  return positions.map((pos, i) => ({
     name: `${country} Player ${i + 1}`,
-    natural_position: p.pos,
+    natural_position: pos,
     ratings: {
       GK: p.pos === 'GK' ? p.rating : 50,
       DF: p.pos === 'DF' ? p.rating : 50,
@@ -132,7 +132,7 @@ router.post('/signup', async (req, res) => {
       const totalRating = squad.reduce((sum, p) => sum + (p.ratings[p.natural_position] || 50), 0);
       const calculatedRating = Number((totalRating / 23).toFixed(2));
 
-      // FLATTEN SQUAD TO PLAIN OBJECTS (MongoDB validator is strict)
+      // Flatten squad (MongoDB validator)
       const plainSquad = squad.map(p => ({
         name: p.name,
         natural_position: p.natural_position,
@@ -146,7 +146,7 @@ router.post('/signup', async (req, res) => {
         goals: Number(p.goals)
       }));
 
-      // CREATE WITH ALL REQUIRED FIELDS
+      // Create team with ALL required fields
       await Team.create({
         country,
         userId: user._id,
@@ -155,7 +155,7 @@ router.post('/signup', async (req, res) => {
         squad: plainSquad,
         captain_name: captain.name,
         rating: calculatedRating,
-        players: []  // optional
+        players: []
       });
     }
 
