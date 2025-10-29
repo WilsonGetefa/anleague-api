@@ -144,7 +144,7 @@ router.post('/add-player', async (req, res) => {
 // Remove Player
 router.post('/remove-player', async (req, res) => {
   const { playerId } = req.body;
-  if (!playerId) return res.redirect('/error?error=' + encodeURIComponent('Invalid player name'));
+  if (!playerId) return res.redirect('/error?error=' + encodeURIComponent('No player selected for removal'));
 
   req.team.squad = req.team.squad.filter(p => p._id.toString() !== playerId);
   await req.team.save();
@@ -156,12 +156,12 @@ router.post('/team/edit-player-name', auth, ownsTeam, async (req, res) => {
   const { playerId, newName } = req.body;
 
   if (!playerId || !newName?.trim()) {
-    return res.redirect('/dashboard?error=Invalid name');
+    return res.redirect('/error?error=' + encodeURIComponent('Player name is required'));
   }
 
   const player = req.team.squad.id(playerId);
   if (!player) {
-    return res.redirect('/dashboard?error=Player not found');
+    return res.redirect('/error?error=' + encodeURIComponent('Player not found'));
   }
 
   player.name = newName.trim();
