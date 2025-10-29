@@ -22,10 +22,10 @@ function generatePlaceholderSquad(country) {
     name: `${country} Player ${i + 1}`,
     natural_position: pos,
     ratings: {
-      GK: p.pos === 'GK' ? p.rating : 50,
-      DF: p.pos === 'DF' ? p.rating : 50,
-      MD: p.pos === 'MD' ? p.rating : 50,
-      AT: p.pos === 'AT' ? p.rating : 50,
+      GK: pos === 'GK' ? 80 : 50,
+      DF: pos === 'DF' ? 80 : 50,
+      MD: pos === 'MD' ? 80 : 50,
+      AT: pos === 'AT' ? 80 : 50
     },
     is_captain: i === 0,  // First player is captain
     goals: 0,
