@@ -134,16 +134,12 @@ router.post('/signup', async (req, res) => {
     if (role === 'representative') {
       const squad = generatePlaceholderSquad(country);
 
-      // Find the captain (first player with is_captain === true)
+      // --- PRE-CALCULATE captain_name & rating (to satisfy MongoDB) ---
       const captain = squad.find(p => p.is_captain) || squad[0];
-
-      // Calculate rating BEFORE saving (same logic as pre-save)
-      const totalRating = squad.reduce((sum, p) => {
-        const pos = p.natural_position;
-        return sum + (p.ratings[pos] || 50);
-      }, 0);
+      const totalRating = squad.reduce((sum, p) => sum + (p.ratings[p.natural_position] || 50), 0);
       const calculatedRating = Number((totalRating / 23).toFixed(2));
 
+      // --- Flatten squad for Mongoose ---
       const plainSquad = squad.map(p => ({
         name: p.name,
         natural_position: p.natural_position,
@@ -157,15 +153,16 @@ router.post('/signup', async (req, res) => {
         goals: Number(p.goals),
       }));
 
-      // PASS captain_name & rating to MongoDB validator
+      // --- CREATE with ALL required fields ---
       const team = await Team.create({
         country,
         userId: user._id,
         representative_id: user._id,
         manager: `${username} Manager`,
         squad: plainSquad,
-        captain_name: captain.name,        // ← SATISFIES MongoDB
-        rating: calculatedRating           // ← SATISFIES MongoDB
+        captain_name: captain.name,        // ← REQUIRED by MongoDB
+        rating: calculatedRating,          // ← REQUIRED by MongoDB
+        players: []                        // ← optional, but safe
       });
 
       console.log('Team created:', team.country, 'Rating:', team.rating, 'Captain:', team.captain_name);
