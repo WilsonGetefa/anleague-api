@@ -17,9 +17,9 @@
 
 .add-player-section { margin: 30px 0; }
 .btn-toggle {
-  background: #0066cc; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer;
+  background: #2e6b5b; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer;
 }
-.btn-toggle:hover { background: #0055aa; }
+.btn-toggle:hover { background: #3a8c76; }
 
 .form-card {
   background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-top: 10px;
@@ -48,9 +48,9 @@
 .empty { color: #888; font-style: italic; }
 
 .btn-primary {
-  background: #28a745; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer;
+  background: #2e6b5b; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer;
 }
-.btn-primary:hover { background: #218838; }
+.btn-primary:hover { background: #3a8c76; }
 
 .btn-small {
   background: #3a8c76; color: white; padding: 6px 10px; font-size: 0.85em;
@@ -60,7 +60,7 @@
 }
 .btn-danger:hover { background: #c82333; }
 
-.success { color: #28a745; font-weight: 500; }
+.success { color: #3a8c76; font-weight: 500; }
 .error { color: #dc3545; font-weight: 500; }
 
 .back-link a { color: #3a8c76; text-decoration: none; font-weight: 500; }
