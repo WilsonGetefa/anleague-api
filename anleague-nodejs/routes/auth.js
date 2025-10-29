@@ -125,6 +125,7 @@ router.post('/signup', async (req, res) => {
     // 5. Create a full Team (only for representatives)
     // 5. Create a full Team (only for representatives)
     // 5. Create a full Team (only for representatives)
+    // 5. Create a full Team (only for representatives)
     if (role === 'representative') {
       const squad = generatePlaceholderSquad(country);
 
@@ -133,7 +134,7 @@ router.post('/signup', async (req, res) => {
       const totalRating = squad.reduce((sum, p) => sum + (p.ratings[p.natural_position] || 50), 0);
       const calculatedRating = Number((totalRating / 23).toFixed(2));
 
-      // Flatten squad — use `pos` (no `p`)
+      // FLATTEN SQUAD TO PLAIN OBJECTS (MongoDB validator is strict)
       const plainSquad = squad.map(p => ({
         name: p.name,
         natural_position: p.natural_position,
@@ -147,7 +148,7 @@ router.post('/signup', async (req, res) => {
         goals: Number(p.goals)
       }));
 
-      // Create with ALL required fields
+      // CREATE with ALL required fields
       await Team.create({
         country,
         userId: user._id,
