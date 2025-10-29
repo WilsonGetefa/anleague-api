@@ -77,13 +77,7 @@ app.get('/', (req, res) => {
 });
 
 // Login route
-app.get('/login', (req, res) => {
-  if (req.user) {
-    return res.redirect(req.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
-  }
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-  res.render('login', { title: 'Login', error: null });
-});
+
 
 // Signup route
 
