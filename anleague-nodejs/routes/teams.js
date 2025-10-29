@@ -4,6 +4,8 @@ const Team = require('../models/team');
 const User = require('../models/user');
 const auth = require('../middleware/auth').authMiddleware;
 const { ownsTeam } = require('../middleware/ownsTeam');
+const { authMiddleware } = require('../middleware/auth');  // ← ADD
+
 
 // ————————————————————————————————————————————————
 // PUBLIC: Autofill team (protected by login)
