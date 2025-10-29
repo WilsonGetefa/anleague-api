@@ -120,16 +120,8 @@ router.post('/signup', async (req, res) => {
       role,
     });
 
-    // -----------------------------------------------------------------
-    // 5. Create a full Team (only for representatives)
-    // -----------------------------------------------------------------
-    // 5. Create a full Team (only for representatives)
-    // 5. Create a full Team (only for representatives)
-    // 5. Create a full Team (only for representatives)
-    // 5. Create a full Team (only for representatives)
     if (role === 'representative') {
       const squad = generatePlaceholderSquad(country);
-
       const captain = squad.find(p => p.is_captain) || squad[0];
       const totalRating = squad.reduce((sum, p) => sum + (p.ratings[p.natural_position] || 50), 0);
       const calculatedRating = Number((totalRating / 23).toFixed(2));
@@ -137,12 +129,7 @@ router.post('/signup', async (req, res) => {
       const plainSquad = squad.map(p => ({
         name: p.name,
         natural_position: p.natural_position,
-        ratings: {
-          GK: Number(p.ratings.GK),
-          DF: Number(p.ratings.DF),
-          MD: Number(p.ratings.MD),
-          AT: Number(p.ratings.AT)
-        },
+        ratings: { GK: Number(p.ratings.GK), DF: Number(p.ratings.DF), MD: Number(p.ratings.MD), AT: Number(p.ratings.AT) },
         is_captain: Boolean(p.is_captain),
         goals: Number(p.goals)
       }));
