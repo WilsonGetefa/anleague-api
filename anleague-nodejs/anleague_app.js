@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const Team = require('./models/team');
 const { authMiddleware } = require('./middleware/auth');
+const errorRoutes = require('./routes/error');
 
 // Load environment variables
 dotenv.config();
@@ -64,7 +65,8 @@ app.use('/auth', require('./routes/auth'));
 app.use('/teams', require('./routes/teams'));
 app.use('/admin', authMiddleware, adminMiddleware, require('./routes/admin')); // Corrected line
 app.use('/', require('./routes/public')); // Already includes rankings, bracket, match
-app.use('/', require('./routes/index')); // New index route
+app.use('/', require('./routes/index')); 
+app.use('/', errorRoutes);
 
 // In anleague_app.js — add these
 app.get('/signup', (req, res) => res.redirect('/auth/signup'));

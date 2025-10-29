@@ -144,7 +144,7 @@ router.post('/add-player', async (req, res) => {
 // Remove Player
 router.post('/remove-player', async (req, res) => {
   const { playerId } = req.body;
-  if (!playerId) return res.redirect('/dashboard?error=No player selected');
+  if (!playerId) return res.redirect('/error?error=' + encodeURIComponent('Invalid player name'));
 
   req.team.squad = req.team.squad.filter(p => p._id.toString() !== playerId);
   await req.team.save();
