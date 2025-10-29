@@ -133,13 +133,12 @@ router.post('/signup', async (req, res) => {
       const squad = generatePlaceholderSquad(country);   // ← ONE CALL ONLY
       
 
-      const team = new Team({
+      const team = await Team.create({
         country,
         manager: `${username} Manager`,
         representative_id: user._id,
         squad
       });
-      await team.save();
       console.log('Team created via Sign up page:', team.country);
     }
 
