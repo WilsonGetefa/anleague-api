@@ -148,7 +148,6 @@ router.post('/signup', async (req, res) => {
 
       await Team.create({
         country,
-        userId: user._id,
         representative_id: user._id,
         manager: `${username} Manager`,
         squad: plainSquad,

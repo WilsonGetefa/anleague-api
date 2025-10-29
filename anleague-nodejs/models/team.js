@@ -16,7 +16,6 @@ const playerSchema = new mongoose.Schema({
 
 const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   manager: { type: String, required: true },
   representative_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   squad: {
