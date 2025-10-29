@@ -65,7 +65,16 @@ router.get('/signup', (req, res) => {
 router.post('/signup', async (req, res) => {
   const { username, email, password, country, role = 'representative' } = req.body;
 
-  // 1. Validate country
+  // Validate role
+  if (!['representative', 'admin'].includes(role)) {
+    return res.render('signup', {
+      title: 'Sign Up',
+      error: 'Invalid role selected',
+      countries: CAF_COUNTRIES,
+    });
+  }
+
+  // Validate country
   if (!CAF_COUNTRIES.includes(country)) {
     return res.render('signup', {
       title: 'Sign Up',
@@ -75,7 +84,7 @@ router.post('/signup', async (req, res) => {
   }
 
   try {
-    // 2. Check if user exists
+    // Check if user exists
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       return res.render('signup', {
@@ -85,44 +94,47 @@ router.post('/signup', async (req, res) => {
       });
     }
 
-    // 3. Check if country already has a representative
-    const existingRep = await Team.findOne({
-      country,
-      representative_id: { $ne: null },
-    });
-    if (existingRep) {
-      return res.render('signup', {
-        title: 'Sign Up',
-        error: `Team "${country}" already has a representative`,
-        countries: CAF_COUNTRIES,
+    // For representatives: check if country already has a rep
+    if (role === 'representative') {
+      const existingRep = await Team.findOne({
+        country,
+        representative_id: { $ne: null },
       });
+      if (existingRep) {
+        return res.render('signup', {
+          title: 'Sign Up',
+          error: `Team "${country}" already has a representative`,
+          countries: CAF_COUNTRIES,
+        });
+      }
     }
 
-    // 4. Create user
+    // Create user
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
       email,
       password: hashedPassword,
-      country,
+      country: role === 'representative' ? country : null, // admin has no country
       role,
     });
 
-    // 5. Generate 23-player squad
-    const squad = generatePlaceholderSquad(country);
-    const captainName = squad[0].name; // First player is captain
+    // Create team only for representatives
+    if (role === 'representative') {
+      const squad = generatePlaceholderSquad(country);
+      const captainName = squad[0].name;
 
-    // 6. Create full team (satisfies strict validator)
-    await Team.create({
-      country,
-      manager: `${username} Manager`,     // editable later
-      representative_id: user._id,
-      squad,
-      captain_name: captainName,
-      rating: 78,
-    });
+      await Team.create({
+        country,
+        manager: `${username} Manager`,
+        representative_id: user._id,
+        squad,
+        captain_name: captainName,
+        rating: 78,
+      });
+    }
 
-    // 7. Auto-login with JWT
+    // Auto-login with JWT
     const token = jwt.sign(
       { id: user._id, username: user.username, country: user.country, role: user.role },
       process.env.JWT_SECRET,
@@ -136,16 +148,16 @@ router.post('/signup', async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    console.log('Signup & auto-login successful:', username);
-    return res.redirect('/dashboard');
+    console.log('Signup & auto-login successful:', username, 'Role:', role);
+
+    // REDIRECT BASED ON ROLE
+    return res.redirect(role === 'admin' ? '/admin/dashboard' : '/dashboard');
 
   } catch (err) {
     console.error('Signup error:', err);
     return res.render('signup', {
       title: 'Sign Up',
-      error: err.message.includes('validation failed')
-        ? 'Team setup failed – contact admin'
-        : 'Failed to create account',
+      error: 'Failed to create account',
       countries: CAF_COUNTRIES,
     });
   }

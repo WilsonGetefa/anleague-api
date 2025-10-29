@@ -18,32 +18,30 @@
     <% if (error) { %>
       <p class="error"><%= error %></p>
     <% } %>
-
+    <!-- views/signup.ejs -->
     <form action="/auth/signup" method="POST">
-      <label>Username</label>
-      <input type="text" name="username" required>
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
 
-      <label>Email</label>
-      <input type="email" name="email" required>
-
-      <label>Password</label>
-      <input type="password" name="password" required>
-
-      <label>Representing Country</label>
       <select name="country" required>
-        <option value="">Select your team</option>
+        <option value="">Choose your country</option>
         <% countries.forEach(c => { %>
           <option value="<%= c %>"><%= c %></option>
         <% }) %>
       </select>
 
-      <label>Role</label>
+      <!-- NEW: Role Selection -->
       <select name="role" required>
         <option value="representative">Representative</option>
         <option value="admin">Admin</option>
       </select>
 
-      <button type="submit">Create Account</button>
+      <button type="submit">Sign Up</button>
+
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
     </form>
     <p><a href="/login">Already have an account? Log in</a></p>
   </main>
