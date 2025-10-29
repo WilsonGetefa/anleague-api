@@ -146,18 +146,15 @@ router.post('/signup', async (req, res) => {
         goals: Number(p.goals),
       }));
 
-      const teamDoc = new Team({
+      const team = await Team.create({
         country,
-        manager: `${username} Manager`,
+        userId: user._id,
         representative_id: user._id,
-        userId: user._id, // ← ADD THIS (your model requires it)
+        manager: `${username} Manager`,
         squad: plainSquad,
-        rating: 0,        // ← will be overwritten in pre-save
-        captain_name: ''  // ← will be overwritten in pre-save
+        rating: 0,           // ← explicit
+        captain_name: ''     // ← will be overwritten in pre-save
       });
-
-      // ONLY CALL save() → triggers pre('save') → sets rating & captain_name
-      await teamDoc.save();
 
       console.log('Team created:', teamDoc.country, 'Rating:', teamDoc.rating, 'Captain:', teamDoc.captain_name);
     }
