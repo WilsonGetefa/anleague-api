@@ -129,10 +129,10 @@ router.post('/signup', async (req, res) => {
     // -----------------------------------------------------------------
     // 5. Create a full Team (only for representatives)
     // -----------------------------------------------------------------
+    // 5. Create a full Team (only for representatives)
     if (role === 'representative') {
       const squad = generatePlaceholderSquad(country);
 
-      // Flatten each player into a plain object (forces casting)
       const plainSquad = squad.map(p => ({
         name: p.name,
         natural_position: p.natural_position,
@@ -146,16 +146,17 @@ router.post('/signup', async (req, res) => {
         goals: Number(p.goals),
       }));
 
-      // Use Team.create() + toObject() trick
       const teamDoc = new Team({
         country,
         manager: `${username} Manager`,
         representative_id: user._id,
+        userId: user._id, // ← ADD THIS (your model requires it)
         squad: plainSquad,
+        rating: 0,        // ← will be overwritten in pre-save
+        captain_name: ''  // ← will be overwritten in pre-save
       });
 
-      // Force Mongoose to run validation + hooks
-      await teamDoc.validate(); // This triggers pre-save
+      // ONLY CALL save() → triggers pre('save') → sets rating & captain_name
       await teamDoc.save();
 
       console.log('Team created:', teamDoc.country, 'Rating:', teamDoc.rating, 'Captain:', teamDoc.captain_name);
