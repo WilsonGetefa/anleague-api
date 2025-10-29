@@ -9,21 +9,14 @@ const Team = require('../models/team');
 // PLACEHOLDER SQUAD GENERATOR (INLINE)
 // ======================
 function generatePlaceholderSquad(country) {
-  const positions = [
-    // 3 Goalkeepers
-    { pos: 'GK', rating: 80 },
-    { pos: 'GK', rating: 78 },
-    { pos: 'GK', rating: 76 },
-
-    // 8 Defenders
-    ...Array(8).fill({ pos: 'DF', rating: 78 }),
-
-    // 8 Midfielders
-    ...Array(8).fill({ pos: 'MD', rating: 78 }),
-
-    // 4 Attackers
-    ...Array(4).fill({ pos: 'AT', rating: 78 }),
+  const positions =[
+    'GK', 'GK', 'GK',
+    'DF', 'DF', 'DF', 'DF', 'DF', 'DF', 'DF', 'DF',
+    'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD', 'MD',
+    'AT', 'AT', 'AT', 'AT', 'AT'
   ];
+
+  if (positions.length !== 23) throw new Error('Must have 23 positions');
 
   return positions.map((p, i) => ({
     name: `${country} Player ${i + 1}`,
@@ -134,12 +127,12 @@ router.post('/signup', async (req, res) => {
     if (role === 'representative') {
       const squad = generatePlaceholderSquad(country);
 
-      // --- PRE-CALCULATE captain_name & rating (to satisfy MongoDB) ---
+      // Pre-calculate captain & rating
       const captain = squad.find(p => p.is_captain) || squad[0];
       const totalRating = squad.reduce((sum, p) => sum + (p.ratings[p.natural_position] || 50), 0);
       const calculatedRating = Number((totalRating / 23).toFixed(2));
 
-      // --- Flatten squad for Mongoose ---
+      // FLATTEN SQUAD TO PLAIN OBJECTS (MongoDB validator is strict)
       const plainSquad = squad.map(p => ({
         name: p.name,
         natural_position: p.natural_position,
@@ -147,25 +140,23 @@ router.post('/signup', async (req, res) => {
           GK: Number(p.ratings.GK),
           DF: Number(p.ratings.DF),
           MD: Number(p.ratings.MD),
-          AT: Number(p.ratings.AT),
+          AT: Number(p.ratings.AT)
         },
         is_captain: Boolean(p.is_captain),
-        goals: Number(p.goals),
+        goals: Number(p.goals)
       }));
 
-      // --- CREATE with ALL required fields ---
-      const team = await Team.create({
+      // CREATE WITH ALL REQUIRED FIELDS
+      await Team.create({
         country,
         userId: user._id,
         representative_id: user._id,
         manager: `${username} Manager`,
         squad: plainSquad,
-        captain_name: captain.name,        // ← REQUIRED by MongoDB
-        rating: calculatedRating,          // ← REQUIRED by MongoDB
-        players: []                        // ← optional, but safe
+        captain_name: captain.name,
+        rating: calculatedRating,
+        players: []  // optional
       });
-
-      console.log('Team created:', team.country, 'Rating:', team.rating, 'Captain:', team.captain_name);
     }
 
     // -----------------------------------------------------------------
