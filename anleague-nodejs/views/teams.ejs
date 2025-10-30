@@ -17,7 +17,7 @@
       --gray: #6c757d;
       --border: #dee2e6;
       --gold: #d4af37;
-      --empty-star: #ccc;
+      --empty-star: #cccccc;
     }
 
     body { 
@@ -138,7 +138,7 @@
       white-space: nowrap;
     }
 
-    /* RATING: 5 STARS + VALUE */
+    /* 5-STAR RATING */
     .rating {
       display: flex;
       align-items: center;
@@ -153,11 +153,13 @@
     }
     .filled { color: var(--gold); }
     .empty { color: var(--empty-star); }
-    .half { 
+    .half {
       position: relative;
       color: var(--empty-star);
+      width: 1em;
+      overflow: hidden;
     }
-    .half::after {
+    .half::before {
       content: '★';
       color: var(--gold);
       position: absolute;
@@ -349,7 +351,7 @@
               <span><strong>Manager:</strong> <%= team.manager?.slice(0, 15) || 'N/A' %></span>
               <span><strong>Rep:</strong> <%= team.representative_id?.username?.slice(0, 12) || 'N/A' %></span>
               <!-- 5-STAR RATING -->
-              <span class="rating" data-rating="<%= team.rating || 0 %>">
+              <span class="rating" data-rating="<%= team.rating || 0 %>" data-index="<%= index %>">
                 <span class="stars"></span>
                 <span class="rating-value"></span>
               </span>
@@ -393,42 +395,32 @@
       btn.textContent = isOpen ? 'Hide Squad' : `View Squad (${playerCount})`;
     }
 
-    // Render 5-star rating with color
-    function renderStars() {
+    // Render 5 stars ONCE per team
+    function renderAllStars() {
       document.querySelectorAll('.rating').forEach(el => {
         const rating = parseFloat(el.getAttribute('data-rating')) || 0;
         const full = Math.floor(rating);
         const hasHalf = (rating % 1) >= 0.5;
         let starsHTML = '';
 
-        // Filled stars
-        for (let i = 0; i < full; i++) {
-          starsHTML += '<span class="filled">★</span>';
-        }
-        // Half star
-        if (hasHalf) {
-          starsHTML += '<span class="half">★</span>';
-        }
-        // Empty stars (to make 5 total)
-        const emptyCount = 5 - full - (hasHalf ? 1 : 0);
-        for (let i = 0; i < emptyCount; i++) {
-          starsHTML += '<span class="empty">★</span>';
-        }
+        // Filled
+        for (let i = 0; i < full; i++) starsHTML += '<span class="filled">★</span>';
+        // Half
+        if (hasHalf) starsHTML += '<span class="half">☆</span>';
+        // Empty to make 5
+        const empty = 5 - full - (hasHalf ? 1 : 0);
+        for (let i = 0; i < empty; i++) starsHTML += '<span class="empty">☆</span>';
 
         el.querySelector('.stars').innerHTML = starsHTML;
         el.querySelector('.rating-value').textContent = rating.toFixed(1);
       });
     }
 
-    // Run on load
-    document.addEventListener('DOMContentLoaded', renderStars);
+    // Run ONCE on load
+    document.addEventListener('DOMContentLoaded', renderAllStars);
 
-    // Re-run after squad toggle
-    const originalToggle = toggleSquad;
-    toggleSquad = function(btn, index) {
-      originalToggle(btn, index);
-      setTimeout(renderStars, 50);
-    };
+    // NO re-render on toggle
+    // Stars are static — no need
   </script>
 
 </body>
