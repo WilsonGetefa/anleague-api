@@ -77,12 +77,19 @@ router.get('/', async (req, res) => {
       // ————————————————————————————————
     // FIX: UPDATE GOALS FROM MATCHES
     // ————————————————————————————————
+    const allPlayerNames = teams.flatMap(t => t.squad.map(p => p.name));
+
+    const goalCounts = await Match.aggregate([
+      { $unwind: '$goals' },
+      { $match: { 'goals.player': { $in: allPlayerNames } } },
+      { $group: { _id: '$goals.player', goals: { $sum: 1 } } }
+    ]);
+
+    const goalMap = Object.fromEntries(goalCounts.map(g => [g._id, g.goals]));
+
     for (const team of teams) {
       for (const player of team.squad) {
-        const goalCount = await Match.countDocuments({
-          'goals.player': player.name
-        });
-        player.goals = goalCount;
+        player.goals = goalMap[player.name] || 0;
       }
     }
     // ————————————————————————————————
