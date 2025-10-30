@@ -422,7 +422,7 @@
                     <td>
                       <form action="/teams/remove-player" method="POST" class="inline-form"
                             onsubmit="return confirm('Remove <%= player.name %> from the squad?')">
-                        <input type="hidden" name="playerId" value="<%= player._id %>">
+                        <input type="hidden" name="playerId" value="<%= String(player._id) %>">
                         <button type="submit" class="btn-danger">Remove</button>
                       </form>
                     </td>
@@ -449,6 +449,10 @@
 
     function toggleEdit(id) {
       const form = document.getElementById('edit-form-' + id);
+      if (!form) {
+      console.error('Edit form not found for ID:', id);
+      return;
+      }
       form.style.display = form.style.display === 'block' ? 'none' : 'block';
     }
   </script>

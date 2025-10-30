@@ -8,6 +8,60 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
   <style>
+    :root {
+      --primary: #2e6b5b;
+      --primary-dark: #1a3f35;
+      --accent: #e67e22;
+      --light: #f8f9fa;
+      --gray: #6c757d;
+      --border: #dee2e6;
+      --gold: #d4af37;
+    }
+
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      background: #f4f6f9; 
+      color: #333; 
+      margin: 0;
+    }
+
+    .container { 
+      max-width: 1100px; 
+      margin: 2rem auto; 
+      padding: 0 1rem; 
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 0 0 16px 16px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    nav {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    nav a {
+      margin: 0 6px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    nav a:hover { color: var(--accent); }
     .error-box {
         text-align: center;
         margin: 40px auto;
@@ -46,19 +100,41 @@
   <header>
     <h1>Error</h1>
   </header>
+
+  <!-- NAVIGATION (Same Logic as Other Pages) -->
   <nav>
-    <!--a href="/">Home</a> |
+    <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
     <a href="/teams">Teams</a> |
-    <a href="/login">Login</a> |
-    <a href="/signup">Sign Up</a-->
+    <% if (user) { %>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/dashboard">Admin Dashboard</a> |
+      <% } else { %>
+        <a href="/dashboard">Dashboard</a> |
+      <% } %>
+      <a href="/auth/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a> |
+      <a href="/signup">Sign Up</a>
+    <% } %>
   </nav>
+
   <main class="container">
     <div class="error-box">
       <h2>Oops! Something went wrong.</h2>
       <p class="error-message"><%= error %></p>
-      <a href="/dashboard" class="btn-primary">Back to Dashboard</a>
+
+      <!-- SMART RETURN BUTTON -->
+      <% if (user) { %>
+        <% if (user.role === 'admin') { %>
+          <a href="/admin/dashboard" class="btn-primary">Return to Admin Dashboard</a>
+        <% } else { %>
+          <a href="/dashboard" class="btn-primary">Return to Dashboard</a>
+        <% } %>
+      <% } else { %>
+        <a href="/" class="btn-primary">Return to Home</a>
+      <% } %>
     </div>
   </main>
 </body>
