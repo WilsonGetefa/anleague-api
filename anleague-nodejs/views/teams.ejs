@@ -17,6 +17,7 @@
       --gray: #6c757d;
       --border: #dee2e6;
       --gold: #d4af37;
+      --empty-star: #ccc;
     }
 
     body { 
@@ -137,7 +138,7 @@
       white-space: nowrap;
     }
 
-    /* NEW: RATING ON THE RIGHT */
+    /* RATING: 5 STARS + VALUE */
     .rating {
       display: flex;
       align-items: center;
@@ -145,15 +146,30 @@
       font-weight: 600;
     }
     .stars {
-      color: var(--gold);
+      display: flex;
+      gap: 0.1rem;
       font-size: 1.1rem;
       line-height: 1;
-      letter-spacing: 0.05em;
+    }
+    .filled { color: var(--gold); }
+    .empty { color: var(--empty-star); }
+    .half { 
+      position: relative;
+      color: var(--empty-star);
+    }
+    .half::after {
+      content: '★';
+      color: var(--gold);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 50%;
+      overflow: hidden;
     }
     .rating-value {
       color: white;
       font-weight: 700;
-      min-width: 38px;
+      min-width: 42px;
       text-align: right;
     }
 
@@ -332,7 +348,7 @@
             <div class="team-meta">
               <span><strong>Manager:</strong> <%= team.manager?.slice(0, 15) || 'N/A' %></span>
               <span><strong>Rep:</strong> <%= team.representative_id?.username?.slice(0, 12) || 'N/A' %></span>
-              <!-- RATING ON THE RIGHT -->
+              <!-- 5-STAR RATING -->
               <span class="rating" data-rating="<%= team.rating || 0 %>">
                 <span class="stars"></span>
                 <span class="rating-value"></span>
@@ -377,17 +393,29 @@
       btn.textContent = isOpen ? 'Hide Squad' : `View Squad (${playerCount})`;
     }
 
-    // Render stars safely in JS
+    // Render 5-star rating with color
     function renderStars() {
       document.querySelectorAll('.rating').forEach(el => {
         const rating = parseFloat(el.getAttribute('data-rating')) || 0;
         const full = Math.floor(rating);
         const hasHalf = (rating % 1) >= 0.5;
-        let stars = '';
-        for (let i = 0; i < full; i++) stars += '★';
-        if (hasHalf) stars += '½';
-        for (let i = full + (hasHalf ? 1 : 0); i < 5; i++) stars += '☆';
-        el.querySelector('.stars').textContent = stars;
+        let starsHTML = '';
+
+        // Filled stars
+        for (let i = 0; i < full; i++) {
+          starsHTML += '<span class="filled">★</span>';
+        }
+        // Half star
+        if (hasHalf) {
+          starsHTML += '<span class="half">★</span>';
+        }
+        // Empty stars (to make 5 total)
+        const emptyCount = 5 - full - (hasHalf ? 1 : 0);
+        for (let i = 0; i < emptyCount; i++) {
+          starsHTML += '<span class="empty">★</span>';
+        }
+
+        el.querySelector('.stars').innerHTML = starsHTML;
         el.querySelector('.rating-value').textContent = rating.toFixed(1);
       });
     }
