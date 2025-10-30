@@ -149,6 +149,7 @@
       gap: 0.8rem;
       margin-top: 1rem;
       flex-wrap: wrap;
+      align-items: center;
     }
     .audio-btn {
       background: var(--primary);
@@ -168,6 +169,21 @@
     .audio-btn:disabled { background: #ccc; cursor: not-allowed; }
     .audio-btn i { font-size: 1.1rem; }
 
+    .voice-select {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .auto-play-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
     .goals {
       margin-top: 2rem;
       text-align: left;
@@ -186,6 +202,12 @@
       display: flex;
       justify-content: space-between;
       font-size: 0.95rem;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.6s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateY(0); }
     }
     .goal:last-child { border-bottom: none; }
 
@@ -299,17 +321,24 @@
             <strong>Commentary:</strong><br>
             <%= match.commentary %>
 
-            <!-- AUDIO CONTROLS -->
+            <!-- AUDIO CONTROLS + ENHANCEMENTS -->
             <div class="audio-controls">
               <button class="audio-btn" id="play-audio">
-                <i>Play</i> Play Commentary
+                Play Commentary
               </button>
               <button class="audio-btn" id="pause-audio" disabled>
-                <i>Pause</i> Pause
+                Pause
               </button>
               <button class="audio-btn" id="replay-audio">
-                <i>Replay</i> Replay
+                Replay
               </button>
+
+              <select class="voice-select" id="voice-select"></select>
+
+              <label class="auto-play-toggle">
+                <input type="checkbox" id="auto-play" checked>
+                Auto-play
+              </label>
             </div>
           </div>
         <% } %>
@@ -317,8 +346,8 @@
         <% if (match.goal_scorers && match.goal_scorers.length) { %>
           <div class="goals">
             <h3>Goal Scorers</h3>
-            <% match.goal_scorers.forEach(g => { %>
-              <div class="goal">
+            <% match.goal_scorers.forEach((g, i) => { %>
+              <div class="goal" data-minute="<%= g.minute %>" style="animation-delay: <%= i * 0.3 %>s;">
                 <span>
                   <strong><%= g.player_name %></strong>
                   <small>(<%= g.minute %>')</small>
@@ -341,73 +370,106 @@
 
   </main>
 
-  <!-- TTS SCRIPT -->
+  <!-- GOAL SOUND EFFECT -->
+  <audio id="goal-sfx" src="/sfx/goal.mp3" preload="auto"></audio>
+
+  <!-- ENHANCED TTS + GOAL SFX SCRIPT -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // === TTS SETUP ===
       if (!('speechSynthesis' in window)) {
         document.querySelectorAll('.audio-controls').forEach(el => el.style.display = 'none');
         return;
       }
 
       const text = `<%= match?.commentary || '' %>`.trim();
-      if (!text) return;
-
-      let utterance = null;
+      const goalSfx = document.getElementById('goal-sfx');
       const playBtn = document.getElementById('play-audio');
       const pauseBtn = document.getElementById('pause-audio');
       const replayBtn = document.getElementById('replay-audio');
+      const voiceSelect = document.getElementById('voice-select');
+      const autoPlayToggle = document.getElementById('auto-play');
+
+      let utterance = null;
+      let voices = [];
+
+      // Load voices
+      const loadVoices = () => {
+        voices = speechSynthesis.getVoices();
+        voiceSelect.innerHTML = '';
+        voices.forEach((voice, i) => {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = `${voice.name} (${voice.lang})`;
+          if (voice.default) opt.selected = true;
+          voiceSelect.appendChild(opt);
+        });
+      };
+
+      // Some browsers load voices async
+      speechSynthesis.onvoiceschanged = loadVoices;
+      loadVoices();
 
       const speak = () => {
+        if (!text) return;
         utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
+        const voiceIdx = voiceSelect.value;
+        if (voices[voiceIdx]) utterance.voice = voices[voiceIdx];
+        utterance.lang = voices[voiceIdx]?.lang || 'en-US';
         utterance.rate = 0.9;
         utterance.pitch = 1;
 
         utterance.onstart = () => {
           playBtn.disabled = true;
           pauseBtn.disabled = false;
-          playBtn.innerHTML = '<i>Playing</i> Speaking...';
+          playBtn.innerHTML = 'Speaking...';
         };
 
-        utterance.onend = () => {
-          resetButtons();
-        };
+        utterance.onend = () => resetButtons();
+        utterance.onerror = () => resetButtons();
 
-        utterance.onerror = () => {
-          resetButtons();
-        };
-
+        speechSynthesis.cancel();
         speechSynthesis.speak(utterance);
       };
 
       const resetButtons = () => {
         playBtn.disabled = false;
         pauseBtn.disabled = true;
-        playBtn.innerHTML = '<i>Play</i> Play Commentary';
+        playBtn.innerHTML = 'Play Commentary';
       };
 
-      playBtn.addEventListener('click', () => {
-        if (speechSynthesis.speaking) return;
-        speak();
-      });
-
+      playBtn.addEventListener('click', speak);
+      replayBtn.addEventListener('click', () => { speechSynthesis.cancel(); speak(); });
       pauseBtn.addEventListener('click', () => {
-        speechSynthesis.pause();
-        pauseBtn.innerHTML = '<i>Resume</i> Resume';
-        pauseBtn.onclick = () => {
+        if (speechSynthesis.paused) {
           speechSynthesis.resume();
-          pauseBtn.innerHTML = '<i>Pause</i> Pause';
-          pauseBtn.onclick = () => speechSynthesis.pause();
-        };
+          pauseBtn.innerHTML = 'Pause';
+        } else {
+          speechSynthesis.pause();
+          pauseBtn.innerHTML = 'Resume';
+        }
       });
 
-      replayBtn.addEventListener('click', () => {
-        speechSynthesis.cancel();
-        speak();
+      // === AUTO-PLAY ===
+      if (autoPlayToggle.checked && text) {
+        setTimeout(speak, 800);
+      }
+
+      autoPlayToggle.addEventListener('change', () => {
+        if (autoPlayToggle.checked && text && !speechSynthesis.speaking) {
+          speak();
+        }
       });
 
-      // Optional: Auto-play when page loads
-      // speak();
+      // === GOAL SOUND EFFECT ===
+      if (match?.goal_scorers?.length) {
+        match.goal_scorers.forEach((goal, i) => {
+          setTimeout(() => {
+            goalSfx.currentTime = 0;
+            goalSfx.play().catch(() => {});
+          }, i * 1200 + 1000); // Staggered + delay after page load
+        });
+      }
     });
   </script>
 

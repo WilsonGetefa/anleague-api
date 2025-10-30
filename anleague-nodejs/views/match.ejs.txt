@@ -135,11 +135,38 @@
       line-height: 1.6;
       text-align: left;
       font-size: 0.95rem;
+      position: relative;
     }
     .commentary strong {
       color: var(--primary-dark);
       font-style: normal;
     }
+
+    /* === AUDIO CONTROLS === */
+    .audio-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .audio-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .audio-btn:hover { background: var(--primary-dark); }
+    .audio-btn:disabled { background: #ccc; cursor: not-allowed; }
+    .audio-btn i { font-size: 1.1rem; }
 
     .goals {
       margin-top: 2rem;
@@ -209,6 +236,7 @@
       .score { font-size: 2.5rem; }
       .team { font-size: 1.3rem; }
       .match-card { padding: 1.5rem; }
+      .audio-controls { flex-direction: column; align-items: center; }
     }
 
     @media (max-width: 480px) {
@@ -270,6 +298,19 @@
           <div class="commentary">
             <strong>Commentary:</strong><br>
             <%= match.commentary %>
+
+            <!-- AUDIO CONTROLS -->
+            <div class="audio-controls">
+              <button class="audio-btn" id="play-audio">
+                <i>Play</i> Play Commentary
+              </button>
+              <button class="audio-btn" id="pause-audio" disabled>
+                <i>Pause</i> Pause
+              </button>
+              <button class="audio-btn" id="replay-audio">
+                <i>Replay</i> Replay
+              </button>
+            </div>
           </div>
         <% } %>
 
@@ -299,6 +340,76 @@
     <% } %>
 
   </main>
+
+  <!-- TTS SCRIPT -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!('speechSynthesis' in window)) {
+        document.querySelectorAll('.audio-controls').forEach(el => el.style.display = 'none');
+        return;
+      }
+
+      const text = `<%= match?.commentary || '' %>`.trim();
+      if (!text) return;
+
+      let utterance = null;
+      const playBtn = document.getElementById('play-audio');
+      const pauseBtn = document.getElementById('pause-audio');
+      const replayBtn = document.getElementById('replay-audio');
+
+      const speak = () => {
+        utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+
+        utterance.onstart = () => {
+          playBtn.disabled = true;
+          pauseBtn.disabled = false;
+          playBtn.innerHTML = '<i>Playing</i> Speaking...';
+        };
+
+        utterance.onend = () => {
+          resetButtons();
+        };
+
+        utterance.onerror = () => {
+          resetButtons();
+        };
+
+        speechSynthesis.speak(utterance);
+      };
+
+      const resetButtons = () => {
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+        playBtn.innerHTML = '<i>Play</i> Play Commentary';
+      };
+
+      playBtn.addEventListener('click', () => {
+        if (speechSynthesis.speaking) return;
+        speak();
+      });
+
+      pauseBtn.addEventListener('click', () => {
+        speechSynthesis.pause();
+        pauseBtn.innerHTML = '<i>Resume</i> Resume';
+        pauseBtn.onclick = () => {
+          speechSynthesis.resume();
+          pauseBtn.innerHTML = '<i>Pause</i> Pause';
+          pauseBtn.onclick = () => speechSynthesis.pause();
+        };
+      });
+
+      replayBtn.addEventListener('click', () => {
+        speechSynthesis.cancel();
+        speak();
+      });
+
+      // Optional: Auto-play when page loads
+      // speak();
+    });
+  </script>
 
 </body>
 </html>
