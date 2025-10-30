@@ -6,14 +6,305 @@
   <title>Dashboard - <%= team ? team.country : 'Representative' %></title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/dashboard.css">
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
+
+  <style>
+    :root {
+      --primary: #2e6b5b;
+      --primary-dark: #1a3f35;
+      --accent: #e67e22;
+      --light: #f8f9fa;
+      --gray: #6c757d;
+      --border: #dee2e6;
+      --gold: #d4af37;
+    }
+
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      background: #f4f6f9; 
+      color: #333; 
+      margin: 0;
+    }
+
+    .container { 
+      max-width: 1100px; 
+      margin: 2rem auto; 
+      padding: 0 1rem; 
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 0 0 16px 16px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    nav {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    nav a {
+      margin: 0 6px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    nav a:hover { color: var(--accent); }
+
+    .welcome {
+      text-align: center;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary-dark);
+    }
+
+    .message {
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.8rem;
+      margin-bottom: 1.8rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-3px); }
+
+    .card h3, .card h4 {
+      margin: 0 0 1rem;
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    .no-team {
+      text-align: center;
+      padding: 2rem;
+    }
+    .no-team p {
+      margin: 0.8rem 0;
+      font-size: 1.1rem;
+    }
+
+    .btn-primary {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 1.5rem auto 0;
+      padding: 0.9rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .team-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .team-header h3 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    .country {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .inline-form {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .inline-form input {
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .btn-small {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-small.edit { background: #ffc107; color: #212529; }
+    .btn-small.save { background: var(--primary); color: white; }
+    .btn-small.cancel { background: #6c757d; color: white; }
+    .btn-small:hover { opacity: 0.9; }
+
+    .btn-toggle {
+      background: var(--accent);
+      color: white;
+      padding: 0.7rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+    }
+    .btn-toggle:hover {
+      background: #d35400;
+      transform: translateY(-1px);
+    }
+
+    .form-card {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      border: 1px dashed var(--border);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .form-row input,
+    .form-row select {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .ratings input { flex: 1; min-width: 60px; text-align: center; }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      margin: 0.8rem 0;
+    }
+
+    .squad-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+    }
+    .squad-table th {
+      background: var(--primary);
+      color: white;
+      padding: 0.8rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .squad-table td {
+      padding: 0.7rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .squad-table tr:hover {
+      background: #f1f8f5;
+    }
+
+    .captain-badge {
+      background: var(--gold);
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--gray);
+      font-style: italic;
+      padding: 1.5rem;
+    }
+
+    .back-link {
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .back-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+    .back-link a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .team-header { flex-direction: column; align-items: flex-start; }
+      .form-row { flex-direction: column; }
+      .ratings { flex-direction: row; }
+      .squad-table { font-size: 0.9rem; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 0 0.8rem; }
+      nav a { display: block; margin: 0.4rem 0; }
+      header h1 { font-size: 1.7rem; }
+      .card { padding: 1.4rem; }
+    }
+  </style>
 </head>
 <body>
+
+  <!-- HERO HEADER -->
   <header>
     <h1>Team Dashboard</h1>
   </header>
 
+  <!-- NAVIGATION -->
   <nav>
     <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
@@ -23,18 +314,19 @@
   </nav>
 
   <main class="container">
-    <h2>Welcome, <strong><%= user.username %></strong>!</h2>
+
+    <h2 class="welcome">Welcome, <strong><%= user.username %></strong>!</h2>
 
     <% if (message) { %>
-      <p class="success"><%= message %></p>
+      <p class="message success"><%= message %></p>
     <% } %>
     <% if (error) { %>
-      <p class="error"><%= error %></p>
+      <p class="message error"><%= error %></p>
     <% } %>
 
     <!-- No Team Yet -->
     <% if (!team) { %>
-      <div class="no-team">
+      <div class="card no-team">
         <p>You are registered as a <strong>Representative</strong> for <strong><%= user.country %></strong>.</p>
         <p><strong>No team has been created yet.</strong></p>
         <form action="/teams/autofill" method="POST">
@@ -45,16 +337,18 @@
     <% } else { %>
 
       <!-- Team Header -->
-      <section class="team-header">
-        <h3>Managing: <span class="country"><%= team.country %></span></h3>
-        <form action="/team/update-manager" method="POST" class="inline-form">
-          <input type="text" name="manager" value="<%= team.manager %>" placeholder="Manager name" required>
-          <button type="submit" class="btn-small">Update Manager</button>
-        </form>
-      </section>
+      <div class="card">
+        <div class="team-header">
+          <h3>Managing: <span class="country"><%= team.country %></span></h3>
+          <form action="/team/update-manager" method="POST" class="inline-form">
+            <input type="text" name="manager" value="<%= team.manager %>" placeholder="Manager name" required>
+            <button type="submit" class="btn-small save">Update Manager</button>
+          </form>
+        </div>
+      </div>
 
       <!-- Add Player Form -->
-      <section class="add-player-section">
+      <div class="card">
         <button type="button" class="btn-toggle" onclick="toggleAddForm()">Add New Player</button>
         <div id="add-player-form" class="form-card" style="display: none;">
           <form action="/teams/add-player" method="POST">
@@ -80,10 +374,10 @@
             <button type="submit" class="btn-primary">Add Player</button>
           </form>
         </div>
-      </section>
+      </div>
 
       <!-- Squad Table -->
-      <section class="squad-section">
+      <div class="card">
         <h4>Squad (<%= team.squad.length %> players)</h4>
         <% if (team.squad.length === 0) { %>
           <p class="empty">No players added yet.</p>
@@ -105,20 +399,16 @@
               <tbody>
                 <% team.squad.forEach(player => { %>
                   <tr>
-                    <!-- NAME + EDIT -->
                     <td>
                       <strong><%= player.name %></strong>
-                      <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Edit</button>
-
-                      <!--div -->
-                        <form id="edit-form-<%= player._id %>" action="/teams/edit-player-name" method="POST" style="display: none; margin-top: 5px;">
-                          <input type="hidden" name="playerId" value="<%= player._id %>">
-                          <input type="text" name="newName" value="<%= player.name %>" required style="width: 100px;">
-                          <button type="submit" class="btn-small">Save</button>
-                          <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Cancel</button>
-                        </form
+                      <button type="button" class="btn-small edit" onclick="toggleEdit('<%= player._id %>')">Edit</button>
+                      <form id="edit-form-<%= player._id %>" action="/teams/edit-player-name" method="POST" style="display: none; margin-top: 5px;">
+                        <input type="hidden" name="playerId" value="<%= player._id %>">
+                        <input type="text" name="newName" value="<%= player.name %>" required style="width: 100px;">
+                        <button type="submit" class="btn-small save">Save</button>
+                        <button type="button" class="btn-small cancel" onclick="toggleEdit('<%= player._id %>')">Cancel</button>
+                      </form>
                     </td>
-
                     <td><%= player.natural_position %></td>
                     <td><%= player.ratings.GK %></td>
                     <td><%= player.ratings.DF %></td>
@@ -142,11 +432,12 @@
             </table>
           </div>
         <% } %>
-      </section>
+      </div>
 
       <p class="back-link"><a href="/bracket">View Tournament Bracket</a></p>
 
     <% } %>
+
   </main>
 
   <script>
@@ -160,5 +451,6 @@
       form.style.display = form.style.display === 'block' ? 'none' : 'block';
     }
   </script>
+
 </body>
 </html>

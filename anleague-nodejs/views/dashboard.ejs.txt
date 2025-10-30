@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - <%= team ? team.country : 'Representative' %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="icon" type="image/x-icon" href="/images/caf.png">
+</head>
+<body>
+  <header>
+    <h1>Team Dashboard</h1>
+  </header>
+
+  <nav>
+    <a href="/">Home</a> |
+    <a href="/bracket">Bracket</a> |
+    <a href="/rankings">Rankings</a> |
+    <a href="/teams">Teams</a> |
+    <a href="/auth/logout">Logout</a>
+  </nav>
+
+  <main class="container">
+    <h2>Welcome, <strong><%= user.username %></strong>!</h2>
+
+    <% if (message) { %>
+      <p class="success"><%= message %></p>
+    <% } %>
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
+    <!-- No Team Yet -->
+    <% if (!team) { %>
+      <div class="no-team">
+        <p>You are registered as a <strong>Representative</strong> for <strong><%= user.country %></strong>.</p>
+        <p><strong>No team has been created yet.</strong></p>
+        <form action="/teams/autofill" method="POST">
+          <input type="hidden" name="country" value="<%= user.country %>">
+          <button type="submit" class="btn-primary">Create Team Now</button>
+        </form>
+      </div>
+    <% } else { %>
+
+      <!-- Team Header -->
+      <section class="team-header">
+        <h3>Managing: <span class="country"><%= team.country %></span></h3>
+        <form action="/team/update-manager" method="POST" class="inline-form">
+          <input type="text" name="manager" value="<%= team.manager %>" placeholder="Manager name" required>
+          <button type="submit" class="btn-small">Update Manager</button>
+        </form>
+      </section>
+
+      <!-- Add Player Form -->
+      <section class="add-player-section">
+        <button type="button" class="btn-toggle" onclick="toggleAddForm()">Add New Player</button>
+        <div id="add-player-form" class="form-card" style="display: none;">
+          <form action="/teams/add-player" method="POST">
+            <div class="form-row">
+              <input type="text" name="name" placeholder="Player Name" required>
+              <select name="natural_position" required>
+                <option value="">Position</option>
+                <option value="GK">GK</option>
+                <option value="DF">DF</option>
+                <option value="MD">MD</option>
+                <option value="AT">AT</option>
+              </select>
+            </div>
+            <div class="form-row ratings">
+              <input type="number" name="gk" min="1" max="99" placeholder="GK" required>
+              <input type="number" name="df" min="1" max="99" placeholder="DF" required>
+              <input type="number" name="md" min="1" max="99" placeholder="MD" required>
+              <input type="number" name="at" min="1" max="99" placeholder="AT" required>
+            </div>
+            <label class="checkbox-label">
+              <input type="checkbox" name="is_captain"> Set as Captain
+            </label>
+            <button type="submit" class="btn-primary">Add Player</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Squad Table -->
+      <section class="squad-section">
+        <h4>Squad (<%= team.squad.length %> players)</h4>
+        <% if (team.squad.length === 0) { %>
+          <p class="empty">No players added yet.</p>
+        <% } else { %>
+          <div class="table-container">
+            <table class="squad-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Pos</th>
+                  <th>GK</th>
+                  <th>DF</th>
+                  <th>MD</th>
+                  <th>AT</th>
+                  <th>Captain</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% team.squad.forEach(player => { %>
+                  <tr>
+                    <!-- NAME + EDIT -->
+                    <td>
+                      <strong><%= player.name %></strong>
+                      <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Edit</button>
+
+                      <!--div -->
+                        <form id="edit-form-<%= player._id %>" action="/teams/edit-player-name" method="POST" style="display: none; margin-top: 5px;">
+                          <input type="hidden" name="playerId" value="<%= player._id %>">
+                          <input type="text" name="newName" value="<%= player.name %>" required style="width: 100px;">
+                          <button type="submit" class="btn-small">Save</button>
+                          <button type="button" class="btn-small" onclick="toggleEdit('<%= player._id %>')">Cancel</button>
+                        </form
+                    </td>
+
+                    <td><%= player.natural_position %></td>
+                    <td><%= player.ratings.GK %></td>
+                    <td><%= player.ratings.DF %></td>
+                    <td><%= player.ratings.MD %></td>
+                    <td><%= player.ratings.AT %></td>
+                    <td>
+                      <% if (player.is_captain) { %>
+                        <span class="captain-badge">Captain</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <form action="/teams/remove-player" method="POST" class="inline-form"
+                            onsubmit="return confirm('Remove <%= player.name %> from the squad?')">
+                        <input type="hidden" name="playerId" value="<%= player._id %>">
+                        <button type="submit" class="btn-danger">Remove</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </section>
+
+      <p class="back-link"><a href="/bracket">View Tournament Bracket</a></p>
+
+    <% } %>
+  </main>
+
+  <script>
+    function toggleAddForm() {
+      const form = document.getElementById('add-player-form');
+      form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleEdit(id) {
+      const form = document.getElementById('edit-form-' + id);
+      form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
+</body>
+</html>
