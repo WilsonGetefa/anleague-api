@@ -77,21 +77,29 @@ router.get('/', async (req, res) => {
       // ————————————————————————————————
     // FIX: UPDATE GOALS FROM MATCHES
     // ————————————————————————————————
-    const allPlayerNames = teams.flatMap(t => t.squad.map(p => p.name));
+    // ————————————————————
+// FAST & CORRECT GOAL SYNC
+// ————————————————————
+    // ————————————————————
+// FAST & CORRECT GOAL SYNC
+// ————————————————————
+  const Match = require('../models/match');
 
-    const goalCounts = await Match.aggregate([
-      { $unwind: '$goals' },
-      { $match: { 'goals.player': { $in: allPlayerNames } } },
-      { $group: { _id: '$goals.player', goals: { $sum: 1 } } }
-    ]);
+  const allPlayerNames = teams.flatMap(t => t.squad.map(p => p.name));
 
-    const goalMap = Object.fromEntries(goalCounts.map(g => [g._id, g.goals]));
+  const goalCounts = await Match.aggregate([
+    { $unwind: '$goal_scorers' },
+    { $match: { 'goal_scorers.player_name': { $in: allPlayerNames } } },
+    { $group: { _id: '$goal_scorers.player_name', goals: { $sum: 1 } } }
+  ]);
 
-    for (const team of teams) {
-      for (const player of team.squad) {
-        player.goals = goalMap[player.name] || 0;
-      }
+  const goalMap = Object.fromEntries(goalCounts.map(g => [g._id, g.goals]));
+
+  for (const team of teams) {
+    for (const player of team.squad) {
+      player.goals = goalMap[player.name] || 0;
     }
+  }
     // ————————————————————————————————
 
     res.render('teams', {
