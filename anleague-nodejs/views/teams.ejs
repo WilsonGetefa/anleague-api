@@ -221,6 +221,10 @@
       color: var(--gray);
       font-weight: 500;
       font-size: 0.8rem;
+      display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.95rem;
     }
 
     .ratings {
@@ -228,6 +232,16 @@
       color: #2c3e50;
       font-size: 0.8rem;
       white-space: nowrap;
+    }
+    .stars {
+        color: var(--gold);
+        font-size: 1.1rem;
+        line-height: 1;
+        letter-spacing: 0.05em;
+    }
+    .rating-value {
+        font-weight: 600;
+        color: white;
     }
 
     .goals {
@@ -370,6 +384,32 @@
       btn.textContent = isOpen ? 'Hide Squad' : `View Squad (${playerCount})`;
     }
   </script>
+  <script>
+  // Render stars safely in JS
+  function renderStars() {
+    document.querySelectorAll('.rating').forEach(el => {
+      const rating = parseFloat(el.getAttribute('data-rating')) || 0;
+      const full = Math.floor(rating);
+      const hasHalf = (rating % 1) >= 0.5;
+      let stars = '';
+      for (let i = 0; i < full; i++) stars += '★';
+      if (hasHalf) stars += '½';
+      for (let i = full + (hasHalf ? 1 : 0); i < 5; i++) stars += '☆';
+      el.querySelector('.stars').textContent = stars;
+      el.querySelector('.rating-value').textContent = rating.toFixed(1);
+    });
+  }
+
+  // Run on load
+  document.addEventListener('DOMContentLoaded', renderStars);
+
+  // Re-run after squad toggle (in case of dynamic content)
+  const originalToggle = toggleSquad;
+  toggleSquad = function(btn, index) {
+    originalToggle(btn, index);
+    setTimeout(renderStars, 50); // small delay for DOM update
+  };
+</script>
 
 </body>
 </html>
