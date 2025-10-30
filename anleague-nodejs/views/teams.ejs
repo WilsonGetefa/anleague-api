@@ -137,7 +137,7 @@
     .rating {
       display: flex;
       align-items: center;
-      gap: 0.8rem; /* Clear visual separation between stars and rating value */
+      gap: 0.8rem;
       justify-content: flex-start;
       font-weight: 600;
       line-height: 1;
@@ -173,7 +173,7 @@
       color: white;
       font-weight: 700;
       text-align: right;
-      min-width: 40px; /* Ensures consistent column width */
+      min-width: 40px;
     }
 
     .squad-toggle {
@@ -215,6 +215,7 @@
       color: var(--primary-dark);
     }
 
+    /* === PLAYER GRID WITH COLUMN TITLES === */
     .player {
       display: grid;
       grid-template-columns: 1fr auto auto;
@@ -225,6 +226,23 @@
       align-items: center;
     }
     .player:last-child { border-bottom: none; }
+
+    /* Header row for player stats */
+    .player-header {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.8rem;
+      padding: 0.6rem 0;
+      font-weight: 600;
+      color: var(--primary-dark);
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.4rem;
+    }
+    .player-header span {
+      text-align: center;
+    }
+    .player-header .player-name-header { text-align: left; }
 
     .player-name {
       font-weight: 500;
@@ -260,12 +278,13 @@
       color: #2c3e50;
       font-size: 0.8rem;
       white-space: nowrap;
+      text-align: center;
     }
 
     .goals {
       color: var(--accent);
       font-weight: 600;
-      text-align: right;
+      text-align: center;
       white-space: nowrap;
     }
 
@@ -284,10 +303,23 @@
       }
       .rating {
         justify-content: center;
-        gap: 0.5rem; /* Slightly reduced gap on mobile for compactness */
+        gap: 0.5rem;
       }
       .rating-value {
         text-align: center;
+      }
+
+      /* Stack player info vertically on mobile */
+      .player, .player-header {
+        grid-template-columns: 1fr;
+        text-align: left;
+        gap: 0.3rem;
+      }
+      .player-header span, .ratings, .goals {
+        text-align: left;
+      }
+      .ratings, .goals {
+        font-size: 0.78rem;
       }
     }
 
@@ -354,7 +386,7 @@
               <div class="rating-value"></div>
             </div>
 
-            <!-- Column 5: Toggle Button (spans full width on mobile) -->
+            <!-- Column 5: Toggle Button -->
             <button class="squad-toggle" onclick="toggleSquad(this, '<%= index %>')">
               View Squad (<%= team.squad.length %>)
             </button>
@@ -364,6 +396,14 @@
             <div class="captain-info">
               <strong>Captain:</strong> <%= team.captain_name || 'N/A' %>
             </div>
+
+            <!-- === PLAYER LIST WITH COLUMN TITLES === -->
+            <div class="player-header">
+              <span class="player-name-header">Player (Pos)</span>
+              <span>Ratings (GK | DF | MD | AT)</span>
+              <span>Goals</span>
+            </div>
+
             <% team.squad.forEach(player => { %>
               <div class="player">
                 <div class="player-name">
@@ -376,7 +416,7 @@
                 <div class="ratings">
                   <%= player.ratings.GK %> | <%= player.ratings.DF %> | <%= player.ratings.MD %> | <%= player.ratings.AT %>
                 </div>
-                <div class="goals">Goals: <%= player.goals %></div>
+                <div class="goals"><%= player.goals %></div>
               </div>
             <% }) %>
           </div>
@@ -385,7 +425,7 @@
     <% } %>
   </main>
 
-  <!-- SCRIPTS (USING PROVIDED VERSIONS) -->
+  <!-- SCRIPTS -->
   <script>
     function toggleSquad(btn, index) {
       const squad = document.getElementById('squad-' + index);
@@ -397,7 +437,7 @@
     function renderAllStars() {
       document.querySelectorAll('.rating').forEach(el => {
         const rawRating = parseFloat(el.getAttribute('data-rating')) || 0;
-        const rating = Math.min(rawRating / 20, 5); // Convert 0–100 → 0–5 stars
+        const rating = Math.min(rawRating / 20, 5);
         const full = Math.floor(rating);
         const hasHalf = (rating % 1) >= 0.5;
         let starsHTML = '';
@@ -413,7 +453,6 @@
       });
     }
 
-    // Run once on page load
     document.addEventListener('DOMContentLoaded', renderAllStars);
   </script>
 
