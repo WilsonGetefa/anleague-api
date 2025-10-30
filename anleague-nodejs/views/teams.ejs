@@ -398,7 +398,9 @@
     // Render 5 stars ONCE per team
     function renderAllStars() {
       document.querySelectorAll('.rating').forEach(el => {
-        const rating = parseFloat(el.getAttribute('data-rating')) || 0;
+        const rawRating = parseFloat(el.getAttribute('data-rating')) || 0;
+        const rating = Math.min(rawRating / 20, 5); // Adjust formula only!
+
         const full = Math.floor(rating);
         const hasHalf = (rating % 1) >= 0.5;
         let starsHTML = '';
@@ -412,7 +414,7 @@
         for (let i = 0; i < empty; i++) starsHTML += '<span class="empty">☆</span>';
 
         el.querySelector('.stars').innerHTML = starsHTML;
-        el.querySelector('.rating-value').textContent = rating.toFixed(1);
+        el.querySelector('.rating-value').textContent = rawRating.toFixed(1);
       });
     }
 
