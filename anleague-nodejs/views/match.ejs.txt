@@ -4,37 +4,229 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/match.css">   <!-- NEW -->
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
+
   <style>
-    .match-details { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9; font-family: 'Roboto', sans-serif; }
-    .match-header { text-align: center; margin-bottom: 20px; }
-    .team { font-size: 1.4em; font-weight: 600; margin: 0; }
-    .vs { color: #666; margin: 0 8px; }
-    .score { font-size: 2.2em; font-weight: bold; color: #1a1a1a; margin: 12px 0; }
-    .info { margin: 10px 0; font-size: 1em; }
-    .status { font-weight: 600; text-transform: capitalize; }
-    .status.completed { color: #28a745; } /* green */
-    .status.pending, .status.in_progress { color: #FFA500; } /* orange */
-    .commentary { margin: 20px 0; padding: 12px; background: #fff; border-left: 4px solid #d4af37; font-style: italic; color: #444; line-height: 1.5; }
-    .goals { margin-top: 24px; }
-    .goals h3 { margin-bottom: 8px; color: #333; }
-    .goal { padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 0.95em; }
+    :root {
+      --primary: #2e6b5b;
+      --primary-dark: #1a3f35;
+      --accent: #e67e22;
+      --light: #f8f9fa;
+      --gray: #6c757d;
+      --border: #dee2e6;
+      --gold: #d4af37;
+    }
+
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      background: #f4f6f9; 
+      color: #333; 
+      margin: 0;
+    }
+
+    .container { 
+      max-width: 1100px; 
+      margin: 2rem auto; 
+      padding: 0 1rem; 
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 0 0 16px 16px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    nav {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    nav a {
+      margin: 0 6px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    nav a:hover { color: var(--accent); }
+
+    .match-card {
+      background: white;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      text-align: center;
+      border-left: 6px solid var(--primary);
+      transition: transform 0.2s;
+    }
+    .match-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .match-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .team {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin: 0.5rem 0;
+    }
+
+    .vs {
+      color: var(--gray);
+      font-weight: 500;
+      margin: 0 0.8rem;
+    }
+
+    .score {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 1rem 0;
+      letter-spacing: 0.05em;
+    }
+
+    .info {
+      font-size: 1rem;
+      color: #444;
+      margin: 1rem 0;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 0.5rem;
+    }
+    .pending { background: #fff3cd; color: #856404; }
+    .in_progress { background: #fff3cd; color: #856404; }
+    .completed { background: #d4edda; color: #155724; }
+
+    .commentary {
+      background: #fdfdfd;
+      border-left: 5px solid var(--gold);
+      padding: 1.2rem;
+      margin: 1.8rem 0;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: #444;
+      line-height: 1.6;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    .commentary strong {
+      color: var(--primary-dark);
+      font-style: normal;
+    }
+
+    .goals {
+      margin-top: 2rem;
+      text-align: left;
+    }
+    .goals h3 {
+      margin: 0 0 1rem;
+      color: var(--primary-dark);
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .goal {
+      padding: 0.8rem 0;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+    }
     .goal:last-child { border-bottom: none; }
-    .back-link { display: block; text-align: center; margin: 25px 0 10px; color: #0066cc; text-decoration: none; font-weight: 500; }
-    .back-link:hover { text-decoration: underline; }
-    .btn { display: inline-block; padding: 10px 20px; margin: 8px 4px; background-color: #2e6b5b; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; text-align: center; text-decoration: none; transition: background-color 0.2s;}
-    .btn:hover { background-color: #3a8c76;}
-    .btn-inline { padding: 6px 12px; font-size: 1em;}
+
+    .goal strong {
+      color: var(--primary);
+    }
+
+    .goal small {
+      color: var(--gray);
+      font-weight: 500;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 2rem auto 0;
+      padding: 0.9rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .no-match {
+      text-align: center;
+      color: var(--gray);
+      font-style: italic;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    @media (max-width: 768px) {
+      .score { font-size: 2.5rem; }
+      .team { font-size: 1.3rem; }
+      .match-card { padding: 1.5rem; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 0 0.8rem; }
+      nav a { display: block; margin: 0.4rem 0; }
+      header h1 { font-size: 1.7rem; }
+      .goal { flex-direction: column; gap: 0.3rem; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- HERO HEADER -->
   <header>
     <h1>Match Details</h1>
   </header>
 
+  <!-- NAVIGATION -->
   <nav>
     <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
@@ -54,17 +246,22 @@
   </nav>
 
   <main class="container">
+
     <% if (match) { %>
-      <div class="match-details">
+      <div class="match-card">
         <div class="match-header">
-          <p class="team"><%= match.team1_id?.country || 'TBD' %> <span class="vs">vs</span> <%= match.team2_id?.country || 'TBD' %></p>
+          <p class="team">
+            <%= match.team1_id?.country || 'TBD' %> 
+            <span class="vs">vs</span> 
+            <%= match.team2_id?.country || 'TBD' %>
+          </p>
           <div class="score"><%= match.score.team1 %> – <%= match.score.team2 %></div>
 
           <p class="info">
             <strong>Stage:</strong> <%= match.stage.charAt(0).toUpperCase() + match.stage.slice(1) %> |
             <strong>Status:</strong>
-            <span class="status <%= match.status %>">
-              <%= match.status.charAt(0).toUpperCase() + match.status.slice(1) %>
+            <span class="status-badge <%= match.status === 'in_progress' ? 'in_progress' : match.status %>">
+              <%= match.status.charAt(0).toUpperCase() + match.status.slice(1).replace('_', ' ') %>
             </span>
           </p>
         </div>
@@ -81,9 +278,13 @@
             <h3>Goal Scorers</h3>
             <% match.goal_scorers.forEach(g => { %>
               <div class="goal">
-                <strong><%= g.player_name %></strong>
-                (<%= g.minute %>')
-                — <%= g.team === 'team1' ? match.team1_id?.country : match.team2_id?.country %>
+                <span>
+                  <strong><%= g.player_name %></strong>
+                  <small>(<%= g.minute %>')</small>
+                </span>
+                <span>
+                  — <%= g.team === 'team1' ? match.team1_id?.country : match.team2_id?.country %>
+                </span>
               </div>
             <% }); %>
           </div>
@@ -92,8 +293,12 @@
         <a href="/bracket" class="btn">Back to Bracket</a>
       </div>
     <% } else { %>
-      <p>Match not found.</p>
+      <div class="no-match">
+        <p>Match not found.</p>
+      </div>
     <% } %>
+
   </main>
+
 </body>
 </html>
