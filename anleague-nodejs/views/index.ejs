@@ -14,6 +14,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
 
+  <!-- MATCHING TEAMS PAGE STYLE -->
   <style>
     :root {
       --primary: #2e6b5b;
@@ -39,7 +40,7 @@
 
     header {
       text-align: center;
-      padding: 2.5rem 1rem;
+      padding: 2rem 1rem;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
       border-radius: 0 0 16px 16px;
@@ -48,13 +49,8 @@
     }
     header h1 {
       margin: 0;
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 700;
-    }
-    header p {
-      margin: 0.6rem 0 0;
-      font-size: 1.1rem;
-      opacity: 0.95;
     }
 
     nav {
@@ -73,6 +69,23 @@
       font-size: 0.95rem;
     }
     nav a:hover { color: var(--accent); }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease;
+    }
+    .card:hover { transform: translateY(-3px); }
+
+    .card h3 {
+      margin: 0 0 1rem;
+      color: var(--primary-dark);
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
 
     .btn {
       display: inline-block;
@@ -104,24 +117,6 @@
     .btn-inline {
       padding: 7px 14px;
       font-size: 0.9rem;
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-    }
-    .card:hover {
-      transform: translateY(-3px);
-    }
-    .card h3 {
-      margin-top: 0;
-      color: var(--primary-dark);
-      font-size: 1.3rem;
-      font-weight: 600;
     }
 
     .champions-list {
@@ -156,8 +151,7 @@
     }
 
     @media (max-width: 768px) {
-      header h1 { font-size: 1.8rem; }
-      header p { font-size: 1rem; }
+      header h1 { font-size: 1.7rem; }
       .btn { padding: 10px 18px; font-size: 0.95rem; }
       .stats { gap: 1.2rem; }
       .stat-number { font-size: 1.2rem; }
@@ -174,8 +168,7 @@
 
   <!-- HERO HEADER -->
   <header>
-    <h1>African Nations League</h1>
-    <p>Compete. Conquer. Celebrate.</p>
+    <h1><%= title %></h1>
   </header>
 
   <!-- NAVIGATION -->
@@ -203,22 +196,22 @@
     <div class="card">
       <h3>Current Tournament</h3>
       <% if (currentTournament && currentTournament.status) { %>
-        <p><strong>Stage:</strong> <%= currentTournament.status %></p>
-        <div style="margin-top: 1rem;">
-          <a href="/bracket" class="btn">View Bracket</a>
+        <p><strong>Current Stage:</strong> <%= currentTournament.status %></p>
+        <a href="/bracket" class="btn">View Bracket</a>
 
-          <% if (user && user.role === 'admin') { %>
-            <form action="/admin/restart" method="post" style="display:inline; margin-left:10px;">
-              <button type="submit"
-                      class="btn danger"
-                      onclick="return confirm('This will archive the current tournament and start fresh. Continue?');">
-                Restart Tournament
-              </button>
-            </form>
-          <% } %>
-        </div>
+        <% if (user && user.role === 'admin') { %>
+          <form action="/admin/restart" method="post" style="display:inline; margin-left:10px;">
+            <button type="submit"
+                    class="btn danger"
+                    onclick="return confirm('This will archive the current tournament and start fresh. Continue?');">
+              Restart Tournament
+            </button>
+          </form>
+        <% } %>
+
       <% } else { %>
         <p><strong>No active tournament.</strong></p>
+
         <% if (user && user.role === 'admin') { %>
           <a href="/admin/dashboard" class="btn">Start New Tournament</a>
         <% } else { %>
@@ -228,28 +221,6 @@
       <% } %>
     </div>
 
-    <!-- STATS CARD -->
-    <div class="card">
-      <h3>Tournament Stats</h3>
-      <div class="stats">
-        <div class="stat-item">
-          <div class="stat-number"><%= totalGoals %></div>
-          <div>Total Goals</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number"><%= teams ? teams.length : 0 %></div>
-          <div>Teams</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number"><%= pastWinners ? pastWinners.length : 0 %></div>
-          <div>Editions</div>
-        </div>
-      </div>
-      <div style="text-align: center; margin-top: 1rem;">
-        <a href="/rankings" class="btn">See Full Rankings</a>
-      </div>
-    </div>
-
     <!-- PAST CHAMPIONS CARD -->
     <div class="card">
       <h3>Past Champions</h3>
@@ -257,13 +228,21 @@
         <ul class="champions-list">
           <% pastWinners.forEach(winner => { %>
             <li>
-              <%= winner.year %> – <strong><%= winner.country === 'N/A' ? 'No winner recorded' : winner.country %></strong>
+              <%= winner.year %> – <%= winner.country === 'N/A' ? 'No winner recorded' : winner.country %>
             </li>
           <% }); %>
         </ul>
       <% } else { %>
         <p style="color: var(--gray); font-style: italic; margin: 0.5rem 0;">No past champions recorded yet.</p>
       <% } %>
+    </div>
+
+    <!-- TOTAL GOALS & RANKINGS -->
+    <div class="card">
+      <p style="margin: 0 0 1rem;">
+        <strong>Total Goals Scored:</strong> <%= totalGoals %>
+      </p>
+      <a href="/rankings" class="btn">See Full Rankings</a>
     </div>
 
   </main>
