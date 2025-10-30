@@ -5,6 +5,7 @@ const User = require('../models/user');
 const auth = require('../middleware/auth').authMiddleware;
 const { ownsTeam } = require('../middleware/ownsTeam');
 const { authMiddleware } = require('../middleware/auth');  // ← ADD
+const Match = require('../models/match'); // ADD THIS LINE AT TOP
 
 
 // ————————————————————————————————————————————————
@@ -72,6 +73,19 @@ router.get('/', async (req, res) => {
       .select('country manager rating squad captain_name representative_id')
       .populate('representative_id', 'username')
       .sort({ rating: -1 });
+
+      // ————————————————————————————————
+    // FIX: UPDATE GOALS FROM MATCHES
+    // ————————————————————————————————
+    for (const team of teams) {
+      for (const player of team.squad) {
+        const goalCount = await Match.countDocuments({
+          'goals.player': player.name
+        });
+        player.goals = goalCount;
+      }
+    }
+    // ————————————————————————————————
 
     res.render('teams', {
       title: 'Teams',
