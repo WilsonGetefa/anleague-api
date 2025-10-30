@@ -6,7 +6,7 @@
   <title><%= title %></title>
 
   <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
   <!-- Global CSS -->
   <link rel="stylesheet" href="/css/styles.css">
@@ -14,9 +14,8 @@
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
 
-  <!-- Button style (same as admin dashboard) -->
   <style>
-      :root {
+    :root {
       --primary: #2e6b5b;
       --primary-dark: #1a3f35;
       --accent: #e67e22;
@@ -25,48 +24,161 @@
       --border: #dee2e6;
     }
 
-    body { font-family: 'Roboto', sans-serif; background: #f4f6f9; color: #333; }
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      background: #f4f6f9; 
+      color: #333; 
+      margin: 0;
+    }
 
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .container { 
+      max-width: 1100px; 
+      margin: 2rem auto; 
+      padding: 0 1rem; 
+    }
 
-    h1 { color: var(--primary); text-align: center; margin-bottom: 0.5rem; }
-    h2 { color: var(--primary-dark); font-weight: 600; margin-bottom: 1rem; }
+    header {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 0 0 16px 16px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+    header p {
+      margin: 0.6rem 0 0;
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
 
     nav {
-      text-align: center; margin-bottom: 2rem; padding: 1rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    nav a { margin: 0 8px; color: var(--primary); text-decoration: none; font-weight: 500; }
+    nav a {
+      margin: 0 6px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
     nav a:hover { color: var(--accent); }
+
     .btn {
       display: inline-block;
-      padding: 10px 20px;
-      margin: 8px 4px;
-      background-color: #2e6b5b;
+      padding: 11px 22px;
+      margin: 8px 6px;
+      background: var(--primary);
       color: white;
       border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1.1em;
-      text-align: center;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
       text-decoration: none;
-      transition: background-color 0.2s;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     .btn:hover {
-      background-color: #3a8c76;
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .btn.danger {
+      background: #c62828;
+    }
+    .btn.danger:hover {
+      background: #b71c1c;
     }
     .btn-inline {
-      padding: 6px 12px;
-      font-size: 1em;
+      padding: 7px 14px;
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: var(--primary-dark);
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .champions-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.8rem 0 0;
+    }
+    .champions-list li {
+      padding: 0.7rem 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.95rem;
+    }
+    .champions-list li:last-child {
+      border-bottom: none;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-number {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 1.4rem;
+    }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.8rem; }
+      header p { font-size: 1rem; }
+      .btn { padding: 10px 18px; font-size: 0.95rem; }
+      .stats { gap: 1.2rem; }
+      .stat-number { font-size: 1.2rem; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 0 0.8rem; }
+      nav a { display: block; margin: 0.4rem 0; }
+      .btn { display: block; width: 100%; margin: 0.6rem 0; }
     }
   </style>
 </head>
 <body>
 
+  <!-- HERO HEADER -->
   <header>
-    <h1><%= title %></h1>
+    <h1>African Nations League</h1>
+    <p>Compete. Conquer. Celebrate.</p>
   </header>
 
-  <!-- Navigation (plain links – you can convert to .btn later) -->
+  <!-- NAVIGATION -->
   <nav>
     <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
@@ -87,59 +199,72 @@
 
   <main class="container">
 
-    <p>Welcome to the African Nations League! Explore the tournament bracket, check top goal scorers, or sign up to join the competition.</p>
+    <!-- CURRENT TOURNAMENT CARD -->
+    <div class="card">
+      <h3>Current Tournament</h3>
+      <% if (currentTournament && currentTournament.status) { %>
+        <p><strong>Stage:</strong> <%= currentTournament.status %></p>
+        <div style="margin-top: 1rem;">
+          <a href="/bracket" class="btn">View Bracket</a>
 
-    <!-- ==================== CURRENT TOURNAMENT ==================== -->
-    <% if (currentTournament && currentTournament.status) { %>
-      <p><strong>Current Stage:</strong> <%= currentTournament.status %></p>
-      <a href="/bracket" class="btn">View Bracket</a>
-
-      <!-- Admin-only “Restart” button when a tournament is active -->
-      <% if (user && user.role === 'admin') { %>
-        <form action="/admin/restart" method="post" style="display:inline; margin-left:10px;">
-          <button type="submit"
-                  class="btn"
-                  style="background:#c62828;"
-                  onclick="return confirm('This will archive the current tournament and start fresh. Continue?');">
-            Restart Tournament
-          </button>
-        </form>
-      <% } %>
-
-    <% } else { %>
-      <p><strong>No active tournament.</strong></p>
-
-      <% if (user && user.role === 'admin') { %>
-        <a href="/admin/dashboard" class="btn">Start New Tournament</a>
+          <% if (user && user.role === 'admin') { %>
+            <form action="/admin/restart" method="post" style="display:inline; margin-left:10px;">
+              <button type="submit"
+                      class="btn danger"
+                      onclick="return confirm('This will archive the current tournament and start fresh. Continue?');">
+                Restart Tournament
+              </button>
+            </form>
+          <% } %>
+        </div>
       <% } else { %>
-        <p>Log in as <strong>admin</strong> to start one.</p>
-        <a href="/login" class="btn btn-inline">Login as Admin</a>
+        <p><strong>No active tournament.</strong></p>
+        <% if (user && user.role === 'admin') { %>
+          <a href="/admin/dashboard" class="btn">Start New Tournament</a>
+        <% } else { %>
+          <p>Log in as <strong>admin</strong> to start one.</p>
+          <a href="/login" class="btn btn-inline">Login as Admin</a>
+        <% } %>
       <% } %>
-    <% } %>
+    </div>
 
-    <!-- ==================== PAST CHAMPIONS ==================== -->
-    <section style="margin-top:30px;">
+    <!-- STATS CARD -->
+    <div class="card">
+      <h3>Tournament Stats</h3>
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-number"><%= totalGoals %></div>
+          <div>Total Goals</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><%= teams ? teams.length : 0 %></div>
+          <div>Teams</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><%= pastWinners ? pastWinners.length : 0 %></div>
+          <div>Editions</div>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 1rem;">
+        <a href="/rankings" class="btn">See Full Rankings</a>
+      </div>
+    </div>
+
+    <!-- PAST CHAMPIONS CARD -->
+    <div class="card">
       <h3>Past Champions</h3>
       <% if (pastWinners && pastWinners.length) { %>
-        <ul style="list-style:none; padding:0;">
+        <ul class="champions-list">
           <% pastWinners.forEach(winner => { %>
-            <li style="margin:6px 0; padding:8px; background:#f9f9f9; border-radius:4px;">
-              <%= winner.year %> – <%= winner.country === 'N/A' ? 'No winner recorded' : winner.country %>
+            <li>
+              <%= winner.year %> – <strong><%= winner.country === 'N/A' ? 'No winner recorded' : winner.country %></strong>
             </li>
           <% }); %>
         </ul>
       <% } else { %>
-        <p>No past champions recorded yet.</p>
+        <p style="color: var(--gray); font-style: italic; margin: 0.5rem 0;">No past champions recorded yet.</p>
       <% } %>
-    </section>
-
-    <!-- ==================== TOTAL GOALS ==================== -->
-    <p style="margin-top:20px;">
-      <strong>Total Goals Scored:</strong> <%= totalGoals %>
-    </p>
-
-    <!-- ==================== FULL RANKINGS ==================== -->
-    <a href="/rankings" class="btn">See Full Rankings</a>
+    </div>
 
   </main>
 
