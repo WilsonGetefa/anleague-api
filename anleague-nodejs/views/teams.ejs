@@ -133,11 +133,11 @@
       text-overflow: ellipsis;
     }
 
-    /* STAR RATING */
+    /* STAR RATING WITH SPACE BETWEEN STARS AND VALUE */
     .rating {
       display: flex;
       align-items: center;
-      gap: 0.2rem;
+      gap: 0.8rem; /* Increased from 0.2rem to create proper space */
       justify-content: flex-start;
       font-weight: 600;
       line-height: 1;
@@ -173,6 +173,7 @@
       color: white;
       font-weight: 700;
       text-align: right;
+      min-width: 40px; /* Ensures consistent spacing */
     }
 
     .squad-toggle {
@@ -283,6 +284,7 @@
       }
       .rating {
         justify-content: center;
+        gap: 0.5rem; /* Maintain some spacing on mobile */
       }
       .rating-value {
         text-align: center;
