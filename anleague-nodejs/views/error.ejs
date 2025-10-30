@@ -102,23 +102,24 @@
   </header>
 
   <!-- NAVIGATION (Same Logic as Other Pages) -->
-  <nav>
+<!-- NAV -->
+    <nav>
     <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
     <a href="/teams">Teams</a> |
-    <% if (user) { %>
-      <% if (user.role === 'admin') { %>
+    <% if (typeof user !== 'undefined' && user) { %>
+        <% if (user.role === 'admin') { %>
         <a href="/admin/dashboard">Admin Dashboard</a> |
-      <% } else { %>
+        <% } else { %>
         <a href="/dashboard">Dashboard</a> |
-      <% } %>
-      <a href="/auth/logout">Logout</a>
+        <% } %>
+        <a href="/auth/logout">Logout</a>
     <% } else { %>
-      <a href="/login">Login</a> |
-      <a href="/signup">Sign Up</a>
+        <a href="/login">Login</a> |
+        <a href="/signup">Sign Up</a>
     <% } %>
-  </nav>
+    </nav>
 
   <main class="container">
     <div class="error-box">

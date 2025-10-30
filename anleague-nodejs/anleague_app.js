@@ -102,15 +102,30 @@ app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
   });
 });
 
-// 404 → error page
-app.use((req, res) => {
-  res.redirect('/error?error=' + encodeURIComponent('Page not found'));
+// 404 Handler (NOT FOUND)
+app.use((req, res, next) => {
+  const err = new Error('Page not found');
+  err.status = 404;
+  next(err); // Pass to error handler
 });
 
-// Global error handler
+// GLOBAL ERROR HANDLER (500, 404, etc.)
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
-  res.redirect('/error?error=' + encodeURIComponent('Server error. Please try again.'));
+
+  // Get user from session or JWT
+  const user = req.user || req.session?.user || null;
+
+  // Set status
+  const status = err.status || 500;
+  const message = status === 404 ? 'Page not found' : 'Server error. Please try again.';
+
+  // RENDER error.ejs (NOT redirect)
+  res.status(status).render('error', {
+    title: 'Error',
+    error: message,
+    user: user  // ← This fixes "user is not defined"
+  });
 });
 
 // Start server
