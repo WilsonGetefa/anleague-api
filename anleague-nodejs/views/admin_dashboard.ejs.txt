@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/x-icon" href="/images/caf.png">
+  <style>
+    .commentary { font-style: italic; color: #555; margin: 4px 0 12px 20px; font-size: 0.9em; }
+    .winner { font-weight: bold; color: #d4af37; margin-top: 8px; }
+    .match-block { border: 1px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 6px; background: #f9f9f9; }
+    .update-score-form { display: inline-block; margin-top: 8px; }
+    .update-score-form input { width: 60px; padding: 4px; margin: 0 4px; }
+    .update-score-form button { padding: 4px 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><%= title %></h1>
+  </header>
+  <nav>
+    <a href="/">Home</a> |
+    <a href="/bracket">Bracket</a> |
+    <a href="/rankings">Rankings</a> |
+    <a href="/teams">Teams</a> |
+    <% if (user) { %>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/dashboard">Admin Dashboard</a> |
+      <% } else { %>
+        <a href="/dashboard">Dashboard</a> |
+      <% } %>
+      <a href="/auth/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a> |
+      <a href="/signup">Sign Up</a>
+    <% } %>
+  </nav>
+
+  <main class="container">
+    <% if (message) { %>
+      <p style="color: #28a745; font-weight: bold;"><%= message %></p>
+    <% } %>
+    <% if (error) { %>
+      <p style="color: #dc3545; font-weight: bold;"><%= error %></p>
+    <% } %>
+
+    <% if (tournament) { %>
+      <p><strong>Current Status:</strong> <%= tournament.status %></p>
+
+      <!-- QUARTERFINALS -->
+      <h2>Quarterfinals</h2>
+      <% (tournament.bracket.quarterfinals || []).forEach(qf => { %>
+        <div class="match-block">
+          <p>
+            <strong>
+              <%= qf.team1_id?.country || 'Unknown' %> vs <%= qf.team2_id?.country || 'Unknown' %>
+            </strong> - 
+            <%= qf.match_id ? `${qf.match_id.score.team1 || 0}-${qf.match_id.score.team2 || 0} (${qf.match_id.status})` : 'Pending' %>
+          </p>
+          <% if (qf.match_id?.commentary) { %>
+            <p class="commentary"><%= qf.match_id.commentary %></p>
+          <% } %>
+          <% if (qf.match_id?.status === 'completed') { %>
+            <p class="winner">
+              Winner: <%= qf.match_id.score.team1 > qf.match_id.score.team2 ? qf.team1_id?.country : qf.team2_id?.country %>
+            </p>
+          <% } %>
+          <% if (user?.role === 'admin' && qf.match_id?.status === 'pending') { %>
+            <form action="/admin/edit-match" method="post" class="update-score-form">
+              <input type="hidden" name="matchId" value="<%= qf.match_id._id %>">
+              <input type="number" min="0" name="team1Score" placeholder="T1" required>
+              <input type="number" min="0" name="team2Score" placeholder="T2" required>
+              <button type="submit">Update</button>
+            </form>
+          <% } %>
+        </div>
+      <% }); %>
+
+      <!-- SEMIFINALS -->
+      <h2>Semifinals</h2>
+      <% (tournament.bracket.semifinals || []).forEach(sf => { %>
+        <div class="match-block">
+          <p>
+            <strong><%= sf.team1_id?.country || 'TBD' %> vs <%= sf.team2_id?.country || 'TBD' %></strong> - 
+            <%= sf.match_id ? `${sf.match_id.score.team1 || 0}-${sf.match_id.score.team2 || 0} (${sf.match_id.status})` : 'Pending' %>
+          </p>
+          <% if (sf.match_id?.commentary) { %>
+            <p class="commentary"><%= sf.match_id.commentary %></p>
+          <% } %>
+          <% if (sf.match_id?.status === 'completed') { %>
+            <p class="winner">
+              Winner: <%= sf.match_id.score.team1 > sf.match_id.score.team2 ? sf.team1_id?.country : sf.team2_id?.country %>
+            </p>
+          <% } %>
+        </div>
+      <% }); %>
+
+      <!-- FINAL -->
+      <h2>Final</h2>
+      <% (tournament.bracket.final || []).forEach(f => { %>
+        <div class="match-block">
+          <p>
+            <strong><%= f.team1_id?.country || 'TBD' %> vs <%= f.team2_id?.country || 'TBD' %></strong> - 
+            <%= f.match_id ? `${f.match_id.score.team1 || 0}-${f.match_id.score.team2 || 0} (${f.match_id.status})` : 'Pending' %>
+          </p>
+          <% if (f.match_id?.commentary) { %>
+            <p class="commentary"><%= f.match_id.commentary %></p>
+          <% } %>
+          <% if (f.match_id?.status === 'completed') { %>
+            <p class="winner">
+              Winner: <%= f.match_id.score.team1 > f.match_id.score.team2 ? f.team1_id?.country : f.team2_id?.country %>
+            </p>
+          <% } %>
+        </div>
+      <% }); %>
+
+      <!-- ADMIN CONTROLS -->
+      <% if (user?.role === 'admin') { %>
+        <div style="margin: 30px 0; text-align: center;">
+          <form action="/admin/simulate" method="post" style="display:inline; margin:0 10px;">
+            <button type="submit">Simulate Matches</button>
+          </form>
+          <form action="/admin/advance" method="post" style="display:inline; margin:0 10px;">
+            <button type="submit">Advance Stage</button>
+          </form>
+          <form action="/admin/restart" method="post" style="display:inline; margin:0 10px;">
+            <button type="submit" onclick="return confirm('Archive and restart?');" style="background:#dc3545; color:white;">
+              Restart Tournament
+            </button>
+          </form>
+        </div>
+      <% } %>
+
+    <% } else { %>
+      <p>No active tournament.</p>
+      <% if (user?.role === 'admin') { %>
+        <form action="/admin/start" method="post">
+          <button type="submit">Start New Tournament</button>
+        </form>
+      <% } %>
+    <% } %>
+  </main>
+</body>
+</html>

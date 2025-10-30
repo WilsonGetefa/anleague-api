@@ -1,26 +1,229 @@
-<!-- views/rankings.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
+
   <style>
-    .tournament-card { border: 1px solid #ccc; margin: 20px 0; padding: 15px; border-radius: 8px; }
-    .match { background: #f9f9f9; padding: 10px; margin: 8px 0; border-radius: 4px; }
-    .commentary { font-style: italic; color: #555; margin: 5px 0; font-size: 0.9em; }
-    .goals { color: #2e6b5b; font-weight: bold; }
-    details { margin: 10px 0; }
-    summary { cursor: pointer; font-weight: bold; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #2e6b5b; color: white; }
+    :root {
+      --primary: #2e6b5b;
+      --primary-dark: #1a3f35;
+      --accent: #e67e22;
+      --light: #f8f9fa;
+      --gray: #6c757d;
+      --border: #dee2e6;
+    }
+
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      background: #f4f6f9; 
+      color: #333; 
+      margin: 0;
+    }
+
+    .container { 
+      max-width: 1100px; 
+      margin: 2rem auto; 
+      padding: 0 1rem; 
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 0 0 16px 16px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    nav {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    nav a {
+      margin: 0 6px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    nav a:hover { color: var(--accent); }
+
+    .section-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .section-card:hover { transform: translateY(-3px); }
+
+    .section-card h2 {
+      margin: 0 0 1.2rem;
+      color: var(--primary-dark);
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* TABLE */
+    .rankings-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .rankings-table th {
+      background: var(--primary);
+      color: white;
+      padding: 0.9rem 0.8rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .rankings-table td {
+      padding: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .rankings-table tr:hover {
+      background: #f1f8f5;
+    }
+    .goals {
+      color: var(--primary);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* PAST TOURNAMENTS */
+    .tournament-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .tournament-card:hover { transform: translateY(-3px); }
+
+    .tournament-card h3 {
+      margin: 0 0 1rem;
+      color: var(--primary-dark);
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    details {
+      margin-top: 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    summary {
+      background: #f8f9fa;
+      padding: 0.8rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--primary-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    summary::after {
+      content: '▼';
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+    details[open] summary::after {
+      transform: rotate(180deg);
+    }
+
+    .match {
+      padding: 1rem;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.95rem;
+    }
+    .match:last-child { border-bottom: none; }
+
+    .match strong {
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+    .match em {
+      color: var(--gray);
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+    }
+
+    .commentary {
+      font-style: italic;
+      color: #555;
+      margin: 0.5rem 0 0.8rem;
+      font-size: 0.9rem;
+    }
+
+    .goal-scorers {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0 0;
+    }
+    .goal-scorers li {
+      font-size: 0.9rem;
+      color: var(--primary);
+      margin: 0.3rem 0;
+    }
+    .goal-scorers small {
+      color: var(--gray);
+      font-weight: normal;
+    }
+
+    .no-data {
+      text-align: center;
+      color: var(--gray);
+      font-style: italic;
+      padding: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .rankings-table {
+        font-size: 0.9rem;
+      }
+      .rankings-table th,
+      .rankings-table td {
+        padding: 0.6rem 0.5rem;
+      }
+      .tournament-card h3 { font-size: 1.2rem; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 0 0.8rem; }
+      nav a { display: block; margin: 0.4rem 0; }
+      .section-card { padding: 1.4rem; }
+      header h1 { font-size: 1.7rem; }
+    }
   </style>
 </head>
 <body>
-  <header><h1><%= title %></h1></header>
+
+  <!-- HERO HEADER -->
+  <header>
+    <h1><%= title %></h1>
+  </header>
+
+  <!-- NAVIGATION -->
   <nav>
     <a href="/">Home</a> |
     <a href="/bracket">Bracket</a> |
@@ -42,29 +245,37 @@
   <main class="container">
 
     <!-- ALL-TIME GOAL SCORERS -->
-    <section>
+    <div class="section-card">
       <h2>All-Time Top Scorers</h2>
       <% if (rankings.length) { %>
-        <table>
-          <tr><th>Player</th><th>Team</th><th>Goals</th></tr>
-          <% rankings.forEach(r => { %>
+        <table class="rankings-table">
+          <thead>
             <tr>
-              <td><%= r.name %></td>
-              <td><%= r.team %></td>
-              <td class="goals"><%= r.goals %></td>
+              <th>Player</th>
+              <th>Team</th>
+              <th>Goals</th>
             </tr>
-          <% }); %>
+          </thead>
+          <tbody>
+            <% rankings.forEach(r => { %>
+              <tr>
+                <td><%= r.name %></td>
+                <td><%= r.team %></td>
+                <td class="goals"><%= r.goals %></td>
+              </tr>
+            <% }); %>
+          </tbody>
         </table>
       <% } else { %>
-        <p>No goals recorded yet.</p>
+        <p class="no-data">No goals recorded yet.</p>
       <% } %>
-    </section>
+    </div>
 
     <!-- PAST TOURNAMENTS -->
-    <section style="margin-top: 40px;">
+    <div class="section-card">
       <h2>Past Tournaments</h2>
       <% if (pastTournaments.length === 0) { %>
-        <p>No past tournaments recorded.</p>
+        <p class="no-data">No past tournaments recorded.</p>
       <% } else { %>
         <% pastTournaments.forEach(pt => { %>
           <div class="tournament-card">
@@ -86,7 +297,7 @@
                   <% } %>
 
                   <% if (match.goal_scorers?.length) { %>
-                    <ul>
+                    <ul class="goal-scorers">
                       <% match.goal_scorers.forEach(g => { %>
                         <li>
                           <%= g.player_name %> 
@@ -101,8 +312,9 @@
           </div>
         <% }); %>
       <% } %>
-    </section>
+    </div>
 
   </main>
+
 </body>
 </html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/x-icon" href="/images/caf.png">
+</head>
+<body>
+  <header><h1><%= title %></h1></header>
+  <nav>
+    <a href="/">Home</a> | <a href="/bracket">Bracket</a> | <a href="/rankings">Rankings</a> | <a href="/teams">Teams</a> |
+    <a href="/login">Login</a> | <a href="/signup">Sign Up</a>
+  </nav>
+  <main class="container">
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+    <!-- views/signup.ejs -->
+    <form action="/auth/signup" method="POST">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+
+      <select name="country" required>
+        <option value="">Choose your country</option>
+        <% countries.forEach(c => { %>
+          <option value="<%= c %>"><%= c %></option>
+        <% }) %>
+      </select>
+
+      <!-- NEW: Role Selection -->
+      <select name="role" required>
+        <option value="representative">Representative</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <button type="submit">Sign Up</button>
+
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
+    </form>
+    <p class="link"><a href="/login">Already have an account? Log in</a></p>
+  </main>
+</body>
+</html>
