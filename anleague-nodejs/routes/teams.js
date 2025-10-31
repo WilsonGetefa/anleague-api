@@ -135,56 +135,72 @@ router.post('/update-manager', auth, ownsTeam, async (req, res) => {
 });
 
 // Add Player
-router.post('/add-player', auth, ownsTeam, async (req, res) => {
+router.post('/add-player', authMiddleware, ownsTeam, async (req, res) => {
   const { name, natural_position, gk, df, md, at, is_captain } = req.body;
 
-  if (!name || !natural_position) {
-    return res.redirect('/dashboard?error=Missing player data');
+  if (!name?.trim() || !natural_position) {
+    return res.redirect('/dashboard?error=Name and position required');
   }
 
+  // ---- NEW: keep captain flag consistent ----
   if (is_captain) {
     req.team.squad.forEach(p => p.is_captain = false);
   }
 
+  // ---- NEW: assign index (next available) ----
+  const nextIndex = req.team.squad.length;   // 0-based
+
   req.team.squad.push({
     name: name.trim(),
     natural_position,
-    ratings: {
-      GK: +gk || 50,
-      DF: +df || 50,
-      MD: +md || 50,
-      AT: +at || 50
-    },
+    index: nextIndex,                         // <-- added
+    ratings: { GK: +gk || 50, DF: +df || 50, MD: +md || 50, AT: +at || 50 },
     is_captain: !!is_captain,
     goals: 0
   });
 
   await req.team.save();
-  res.redirect('/dashboard');
+  res.redirect('/dashboard?message=Player added');
 });
 
 // EDIT
-router.post('/edit-player-name',auth, ownsTeam, async (req, res) => {
-  const { playerId, newName } = req.body;
-  if (!playerId || !newName?.trim()) {
-    return res.redirect('/error?error=' + encodeURIComponent('Name required'));
+router.post('/edit-player-name', authMiddleware, ownsTeam, async (req, res) => {
+  const { playerIndex, newName } = req.body;   // <-- renamed from playerId
+
+  if (!playerIndex || !newName?.trim()) {
+    return res.redirect('/dashboard?error=Name required');
   }
-  const player = req.team.squad.id(playerId);
-  if (!player) return res.redirect('/error?error=' + encodeURIComponent('Player not found'));
+
+  const idx = Number(playerIndex);
+  const player = req.team.squad[idx];
+
+  if (!player) {
+    return res.redirect('/dashboard?error=Player not found');
+  }
+
   player.name = newName.trim();
   await req.team.save();
-  res.redirect('/dashboard?message=Name updated');
+
+  res.redirect('/dashboard?message=Player name updated');
 });
 
 // REMOVE
-router.post('/remove-player', auth, ownsTeam, async (req, res) => {
-  const { playerId } = req.body;
-  if (!playerId) return res.redirect('/error?error=' + encodeURIComponent('No player selected'));
-  req.team.squad = req.team.squad.filter(p => p._id.toString() !== playerId);
-  await req.team.save();
-  res.redirect('/dashboard');
-});
+router.post('/remove-player', authMiddleware, ownsTeam, async (req, res) => {
+  const { playerIndex } = req.body;
+  if (!playerIndex) return res.redirect('/dashboard?error=No player selected');
 
+  const idx = Number(playerIndex);
+  if (idx < 0 || idx >= req.team.squad.length) {
+    return res.redirect('/dashboard?error=Invalid player');
+  }
+
+  req.team.squad.splice(idx, 1);   // removes exactly that slot
+  // Re-index the remaining players so gaps are closed (optional but clean)
+  req.team.squad.forEach((p, i) => p.index = i);
+
+  await req.team.save();
+  res.redirect('/dashboard?message=Player removed');
+});
 // ————————————————————————————————————————————————
 // UTILS: Generate 23 default players
 // ————————————————————————————————————————————————

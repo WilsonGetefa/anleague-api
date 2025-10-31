@@ -401,12 +401,12 @@
                   <tr>
                     <td>
                       <strong><%= player.name %></strong>
-                      <button type="button" class="btn-small edit" onclick="toggleEdit('<%= String(player._id) %>')">Edit</button>
-                      <form id="edit-form-<%= String(player._id) %>" action="/teams/edit-player-name" method="POST" style="display: none; margin-top: 5px;">
-                        <input type="hidden" name="playerId" value="<%= String(player._id) %>">
-                        <input type="text" name="newName" value="<%= player.name %>" required style="width: 100px;">
+                      <button type="button" class="btn-small edit" onclick="toggleEdit(<%= player.index %>)">Edit</button>
+                      <form id="edit-form-<%= player.index %>" action="/teams/edit-player-name" method="POST" style="display:none; margin-top:5px;">
+                        <input type="hidden" name="playerIndex" value="<%= player.index %>">
+                        <input type="text" name="newName" value="<%= player.name %>" required style="width:110px;">
                         <button type="submit" class="btn-small save">Save</button>
-                        <button type="button" class="btn-small cancel" onclick="toggleEdit('<%= String(player._id) %>')">Cancel</button>
+                        <button type="button" class="btn-small cancel" onclick="toggleEdit(<%= player.index %>)">Cancel</button>
                       </form>
                     </td>
                     <td><%= player.natural_position %></td>
