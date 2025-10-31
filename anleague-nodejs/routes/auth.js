@@ -70,7 +70,8 @@ router.post('/signup', async (req, res) => {
     });
   }
 
-  if (!CAF_COUNTRIES.includes(country)) {
+  if (role === 'representative' && !CAF_COUNTRIES.includes(country)) {
+  //if (!CAF_COUNTRIES.includes(country)) {
     return res.render('signup', {
       title: 'Sign Up',
       error: 'Invalid country selected',
