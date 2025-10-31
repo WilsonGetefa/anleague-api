@@ -135,7 +135,7 @@ router.post('/update-manager', auth, ownsTeam, async (req, res) => {
 });
 
 // Add Player
-router.post('/add-player', async (req, res) => {
+router.post('/add-player', auth, ownsTeam, async (req, res) => {
   const { name, natural_position, gk, df, md, at, is_captain } = req.body;
 
   if (!name || !natural_position) {
@@ -164,7 +164,7 @@ router.post('/add-player', async (req, res) => {
 });
 
 // EDIT
-router.post('/teams/edit-player-name', authMiddleware, ownsTeam, async (req, res) => {
+router.post('/edit-player-name',auth, ownsTeam, async (req, res) => {
   const { playerId, newName } = req.body;
   if (!playerId || !newName?.trim()) {
     return res.redirect('/error?error=' + encodeURIComponent('Name required'));
@@ -177,7 +177,7 @@ router.post('/teams/edit-player-name', authMiddleware, ownsTeam, async (req, res
 });
 
 // REMOVE
-router.post('/teams/remove-player', authMiddleware, ownsTeam, async (req, res) => {
+router.post('/remove-player', auth, ownsTeam, async (req, res) => {
   const { playerId } = req.body;
   if (!playerId) return res.redirect('/error?error=' + encodeURIComponent('No player selected'));
   req.team.squad = req.team.squad.filter(p => p._id.toString() !== playerId);
