@@ -340,7 +340,7 @@
       <div class="card">
         <div class="team-header">
           <h3>Managing: <span class="country"><%= team.country %></span></h3>
-          <form action="/update-manager" method="POST" class="inline-form">
+          <form action="/teams/update-manager" method="POST" class="inline-form">
             <input type="text" name="manager" value="<%= team.manager %>" placeholder="Manager name" required>
             <button type="submit" class="btn-small save">Update Manager</button>
           </form>

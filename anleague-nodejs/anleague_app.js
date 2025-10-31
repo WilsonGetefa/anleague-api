@@ -78,15 +78,6 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'African Nations League', user: req.user });
 });
 
-// Login route
-
-
-// Signup route
-
-
-// Dashboard route
-
-
 // Admin dashboard route
 app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
   const { username } = req.user;
@@ -127,6 +118,8 @@ app.use((err, req, res, next) => {
     user: user  // ← This fixes "user is not defined"
   });
 });
+
+console.log('Team routes mounted: /update-manager → /teams/update-manager');
 
 // Start server
 const PORT = process.env.PORT || 3000;

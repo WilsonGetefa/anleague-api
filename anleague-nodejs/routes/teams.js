@@ -124,8 +124,12 @@ router.get('/', async (req, res) => {
 // ————————————————————————————————————————————————
 
 // Update Manager
-router.post('/update-manager', async (req, res) => {
-  req.team.manager = req.body.manager?.trim() || 'Unnamed Manager';
+router.post('/update-manager', auth, ownsTeam, async (req, res) => {
+  const newManagerName = req.body.manager?.trim();
+  if (!newManagerName) {
+    return res.redirect('/dashboard?error=Manager name required');
+  }
+  req.team.manager = newManagerName;
   await req.team.save();
   res.redirect('/dashboard?message=Manager updated');
 });
