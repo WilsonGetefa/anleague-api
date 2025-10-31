@@ -4,18 +4,8 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  country: { type: String }, // Allow null, but must be string or absent
-  role: { 
-    type: String, 
-    enum: ['representative', 'admin'], 
-    required: true 
-  }
-});
-
-// Ensure role is always set
-userSchema.pre('save', function(next) {
-  if (!this.role) this.role = 'representative';
-  next();
+  country: { type: String },
+  role: { type: String, enum: ['representative', 'admin'], default: 'representative' }
 });
 
 module.exports = mongoose.model('User', userSchema);
