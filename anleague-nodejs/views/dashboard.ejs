@@ -449,7 +449,7 @@
                     <td>
                       <form action="/teams/remove-player" method="POST" class="inline-form"
                             onsubmit="return confirm('Remove <%= player.name %> from the squad?')">
-                        <input type="hidden" name="playerId" value="<%= String(player._id) %>">
+                        <input type="hidden" name="playerIndex" value=" i %>">
                         <button type="submit" class="btn-danger">Remove</button>
                       </form>
                     </td>
