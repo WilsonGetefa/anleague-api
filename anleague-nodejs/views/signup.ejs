@@ -187,7 +187,7 @@
         <p class="error"><%= error %></p>
       <% } %>
 
-      <form action="/auth/signup" method="POST">
+      <form action="/auth/signup" method="POST" id="signupForm">
         <div class="form-group">
           <label for="username">Username</label>
           <input type="text" id="username" name="username" placeholder="Choose a username" required autofocus>
@@ -203,9 +203,12 @@
           <input type="password" id="password" name="password" placeholder="Enter strong password" required>
         </div>
 
+        <!-- COUNTRY – REQUIRED ONLY FOR REPRESENTATIVE -->
         <div class="form-group">
-          <label for="country">Country</label>
-          <select id="country" name="country" required>
+          <label for="country">
+            Country <span id="country-required" style="color:red; display:none;">*</span>
+          </label>
+          <select id="country" name="country">
             <option value="">Choose your country</option>
             <% countries.forEach(c => { %>
               <option value="<%= c %>"><%= c %></option>
@@ -213,9 +216,10 @@
           </select>
         </div>
 
+        <!-- ROLE -->
         <div class="form-group">
           <label for="role">Role</label>
-          <select id="role" name="role" required>
+          <select id="role" name="role" required onchange="toggleCountryRequired()">
             <option value="representative">Representative</option>
             <option value="admin">Admin</option>
           </select>
@@ -229,6 +233,29 @@
       </p>
     </div>
   </main>
+
+  <!-- -------------------------------------------------
+       JavaScript – toggle country requirement
+       ------------------------------------------------- -->
+  <script>
+    function toggleCountryRequired() {
+      const role = document.getElementById('role').value;
+      const countrySelect = document.getElementById('country');
+      const requiredMark = document.getElementById('country-required');
+
+      if (role === 'representative') {
+        countrySelect.setAttribute('required', 'required');
+        requiredMark.style.display = 'inline';
+      } else {
+        countrySelect.removeAttribute('required');
+        requiredMark.style.display = 'none';
+        countrySelect.value = '';   // clear selection for admin
+      }
+    }
+
+    // Run on page load (in case a role is pre‑selected via query string, etc.)
+    document.addEventListener('DOMContentLoaded', toggleCountryRequired);
+  </script>
 
 </body>
 </html>

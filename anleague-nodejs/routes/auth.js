@@ -116,7 +116,7 @@ router.post('/signup', async (req, res) => {
       username,
       email,
       password: hashedPassword,
-      country: role === 'representative' ? country : null,
+      country: role === 'representative' ? country : undefined,
       role,
     });
 
