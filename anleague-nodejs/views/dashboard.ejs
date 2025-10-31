@@ -428,12 +428,12 @@
                   <tr>
                     <td>
                       <strong><%= player.name %></strong>
-                      <button type="button" class="btn-small edit" onclick="toggleEdit(<%= player.index %>)">Edit</button>
-                      <form id="edit-form-<%= player.index %>" action="/teams/edit-player-name" method="POST" style="display:none; margin-top:5px;">
-                        <input type="hidden" name="playerIndex" value="<%= player.index %>">
+                      <button type="button" class="btn-small edit" onclick="toggleEdit(<%= i %>)">Edit</button>
+                      <form id="edit-form-<%= i %>" action="/teams/edit-player-name" method="POST" style="display:none; margin-top:5px;">
+                        <input type="hidden" name="playerIndex" value="<%= i %>">
                         <input type="text" name="newName" value="<%= player.name %>" required style="width:110px;">
                         <button type="submit" class="btn-small save">Save</button>
-                        <button type="button" class="btn-small cancel" onclick="toggleEdit(<%= player.index %>)">Cancel</button>
+                        <button type="button" class="btn-small cancel" onclick="toggleEdit(<%= i %>)">Cancel</button>
                       </form>
                     </td>
                     <td><%= player.natural_position %></td>
@@ -447,11 +447,12 @@
                       <% } %>
                     </td>
                     <td>
-                      <form action="/teams/remove-player" method="POST" class="inline-form"
+                      <!--form action="/teams/remove-player" method="POST" class="inline-form"
                             onsubmit="return confirm('Remove <%= player.name %> from the squad?')">
                         <input type="hidden" name="playerIndex" value=" i %>">
                         <button type="submit" class="btn-danger">Remove</button>
-                      </form>
+                      </form-->
+                      <button class="btn-danger" disabled style="opacity:0.5; cursor:not-allowed; font-size:0.7rem;">Remove</button>
                     </td>
                     <!--td style="font-size: 0.7rem; color: #999;">
                       ID: <%= String(player._id) %>
