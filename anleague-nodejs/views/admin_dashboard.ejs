@@ -150,6 +150,7 @@
       gap: 0.5rem;
       align-items: center;
       flex-wrap: wrap;
+      justify-content: center;
     }
     .update-score-form input {
       width: 60px;
@@ -157,6 +158,7 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 0.9rem;
+      text-align: center;
     }
     .update-score-form button {
       padding: 0.5rem 1rem;
@@ -222,7 +224,7 @@
 </head>
 <body>
   <header>
-      <div style="
+    <div style="
       display: flex;
       align-items: center;
       justify-content: center;
@@ -233,12 +235,11 @@
       <!-- LOGO (clickable to home) -->
       <a href="/" style="display: block; line-height: 0;">
         <img src="/images/caf.png" 
-            alt="ANL Logo" 
-            style="
-              height: 40px;
-              width: auto;
-              /*filter: brightness(0) invert(1);  makes dark logo white */
-            ">
+             alt="ANL Logo" 
+             style="
+               height: 40px;
+               width: auto;
+             ">
       </a>
 
       <!-- TITLE (centered) -->
@@ -261,7 +262,7 @@
     <a href="/bracket">Bracket</a> |
     <a href="/rankings">Rankings</a> |
     <a href="/teams">Teams</a> |
-    <% if (user) { %>
+    <% if (typeof user !== 'undefined' && user) { %>
       <% if (user.role === 'admin') { %>
         <a href="/admin/dashboard">Admin Dashboard</a> |
       <% } else { %>
@@ -276,7 +277,9 @@
 
   <main class="container">
 
-    <h2 class="welcome">Welcome, <strong><%= user.username %></strong>!</h2>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <h2 class="welcome">Welcome, <strong><%= user.username %></strong>!</h2>
+    <% } %>
 
     <% if (message) { %>
       <p class="message success"><%= message %></p>
@@ -319,7 +322,7 @@
               Winner: <%= m.score.team1 > m.score.team2 ? qf.team1_id?.country : qf.team2_id?.country %>
             </p>
           <% } %>
-          <% if (user?.role === 'admin' && m?.status === 'pending') { %>
+          <% if (typeof user !== 'undefined' && user?.role === 'admin' && m?.status === 'pending') { %>
             <form action="/admin/edit-match" method="post" class="update-score-form">
               <input type="hidden" name="matchId" value="<%= m._id %>">
               <input type="number" min="0" name="team1Score" placeholder="T1" required>
@@ -354,6 +357,14 @@
               Winner: <%= m.score.team1 > m.score.team2 ? sf.team1_id?.country : sf.team2_id?.country %>
             </p>
           <% } %>
+          <% if (typeof user !== 'undefined' && user?.role === 'admin' && m?.status === 'pending') { %>
+            <form action="/admin/edit-match" method="post" class="update-score-form">
+              <input type="hidden" name="matchId" value="<%= m._id %>">
+              <input type="number" min="0" name="team1Score" placeholder="T1" required>
+              <input type="number" min="0" name="team2Score" placeholder="T2" required>
+              <button type="submit">Update Score</button>
+            </form>
+          <% } %>
         </div>
       <% }); %>
 
@@ -381,11 +392,19 @@
               Winner: <%= m.score.team1 > m.score.team2 ? f.team1_id?.country : f.team2_id?.country %>
             </p>
           <% } %>
+          <% if (typeof user !== 'undefined' && user?.role === 'admin' && m?.status === 'pending') { %>
+            <form action="/admin/edit-match" method="post" class="update-score-form">
+              <input type="hidden" name="matchId" value="<%= m._id %>">
+              <input type="number" min="0" name="team1Score" placeholder="T1" required>
+              <input type="number" min="0" name="team2Score" placeholder="T2" required>
+              <button type="submit">Update Score</button>
+            </form>
+          <% } %>
         </div>
       <% }); %>
 
       <!-- ADMIN CONTROLS -->
-      <% if (user?.role === 'admin') { %>
+      <% if (typeof user !== 'undefined' && user?.role === 'admin') { %>
         <div class="admin-controls">
           <form action="/admin/simulate" method="post">
             <button type="submit" class="btn-simulate">Simulate Matches</button>
@@ -404,7 +423,7 @@
     <% } else { %>
       <div class="no-tournament">
         <p>No active tournament.</p>
-        <% if (user?.role === 'admin') { %>
+        <% if (typeof user !== 'undefined' && user?.role === 'admin') { %>
           <form action="/admin/start" method="post" style="margin-top: 1rem;">
             <button type="submit" style="padding: 0.8rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
               Start New Tournament

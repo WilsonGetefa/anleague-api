@@ -692,67 +692,62 @@ router.post('/restart', async (req, res) => {
   }
 });
 
+// routes/admin.js
 router.post('/edit-match', async (req, res) => {
   try {
     const { matchId, team1Score, team2Score } = req.body;
-    const match = await Match.findById(matchId);
-    if (!match) {
-      return res.render('admin_dashboard', {
-        title: 'Admin Dashboard',
-        username: req.user.username,
-        role: req.user.role,
-        error: 'Match not found',
-        message: null,
-        tournament: await Tournament.findOne()
-            .populate({path: 'bracket.quarterfinals.match_id'})
-            .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-            .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
 
-            .populate({path: 'bracket.semifinals.match_id'})
-            .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-            .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-            .populate({path: 'bracket.final.match_id'})
-            .populate({path: 'bracket.final.team1_id',select: 'country'})
-            .populate({path: 'bracket.final.team2_id',select: 'country'})
-      });
+    // Validate input
+    if (!matchId || !mongoose.Types.ObjectId.isValid(matchId)) {
+      return renderAdminError(res, req, 'Invalid match ID');
     }
 
-    match.score.team1 = parseInt(team1Score);
-    match.score.team2 = parseInt(team2Score);
+    const team1ScoreNum = parseInt(team1Score);
+    const team2ScoreNum = parseInt(team2Score);
+    if (isNaN(team1ScoreNum) || isNaN(team2ScoreNum) || team1ScoreNum < 0 || team2ScoreNum < 0) {
+      return renderAdminError(res, req, 'Invalid scores');
+    }
+
+    // Find and update match
+    const match = await Match.findById(matchId);
+    if (!match) {
+      return renderAdminError(res, req, 'Match not found');
+    }
+
+    match.score.team1 = team1ScoreNum;
+    match.score.team2 = team2ScoreNum;
     match.status = 'completed';
-    match.commentary = `Score updated manually: ${team1Score}-${team2Score}`;
+    match.commentary = `Score updated manually: ${team1ScoreNum}–${team2ScoreNum}`;
+    match.type = 'played'; // or 'simulated' — your choice
+
     await match.save();
 
+    // Reload tournament with full population
+    const tournament = await Tournament.findOne()
+      .populate({ path: 'bracket.quarterfinals.match_id' })
+      .populate({ path: 'bracket.quarterfinals.team1_id', select: 'country' })
+      .populate({ path: 'bracket.quarterfinals.team2_id', select: 'country' })
+      .populate({ path: 'bracket.semifinals.match_id' })
+      .populate({ path: 'bracket.semifinals.team1_id', select: 'country' })
+      .populate({ path: 'bracket.semifinals.team2_id', select: 'country' })
+      .populate({ path: 'bracket.final.match_id' })
+      .populate({ path: 'bracket.final.team1_id', select: 'country' })
+      .populate({ path: 'bracket.final.team2_id', select: 'country' });
+
+    // Success render
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
-      username: req.user.username,
-      role: req.user.role,
+      username: req.user?.username || 'Guest',
+      role: req.user?.role || 'N/A',
       message: 'Match score updated successfully',
       error: null,
-      tournament: await Tournament.findOne()
-          .populate({path: 'bracket.quarterfinals.match_id'})
-        .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.semifinals.match_id'})
-        .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.final.match_id'})
-        .populate({path: 'bracket.final.team1_id',select: 'country'})
-        .populate({path: 'bracket.final.team2_id',select: 'country'})
+      tournament,
+      user: req.user
     });
+
   } catch (err) {
-    console.error('Edit match error:', err.message);
-    res.render('admin_dashboard', {
-      title: 'Admin Dashboard',
-      username: req.user.username,
-      role: req.user.role,
-      error: 'Failed to update match score',
-      message: null,
-      tournament: null
-    });
+    console.error('Edit match error:', err.message, err.stack);
+    renderAdminError(res, req, 'Failed to update match: ' + err.message);
   }
 });
 
