@@ -270,10 +270,38 @@
   </style>
 </head>
 <body>
-
-  <!-- HERO HEADER -->
   <header>
-    <h1>Match Details</h1>
+      <div style="
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      max-width: 100%;
+      padding: 0 1rem;
+    ">
+      <!-- LOGO (clickable to home) -->
+      <a href="/" style="display: block; line-height: 0;">
+        <img src="/images/caf.png" 
+            alt="ANL Logo" 
+            style="
+              height: 40px;
+              width: auto;
+              /*filter: brightness(0) invert(1);  makes dark logo white */
+            ">
+      </a>
+
+      <!-- TITLE (centered) -->
+      <h1 style="
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        text-align: center;
+        flex: 1;
+      ">
+        <%= title %>
+      </h1>
+    </div>
   </header>
 
   <!-- NAVIGATION -->
