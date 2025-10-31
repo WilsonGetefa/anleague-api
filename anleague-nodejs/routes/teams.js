@@ -165,23 +165,28 @@ router.post('/add-player', authMiddleware, ownsTeam, async (req, res) => {
 
 // EDIT
 router.post('/edit-player-name', authMiddleware, ownsTeam, async (req, res) => {
-  const { playerIndex, newName } = req.body;   // <-- renamed from playerId
-
-  if (!playerIndex || !newName?.trim()) {
-    return res.redirect('/dashboard?error=Name required');
-  }
-
+  const { playerIndex, newName } = req.body;
   const idx = Number(playerIndex);
-  const player = req.team.squad[idx];
 
-  if (!player) {
-    return res.redirect('/dashboard?error=Player not found');
+  // Validate index
+  if (isNaN(idx) || idx < 0 || idx >= req.team.squad.length) {
+    return res.redirect('/dashboard?error=Invalid player selected');
   }
 
-  player.name = newName.trim();
-  await req.team.save();
+  if (!newName?.trim()) {
+    return res.redirect('/dashboard?error=Name cannot be empty');
+  }
 
-  res.redirect('/dashboard?message=Player name updated');
+  // Update name
+  req.team.squad[idx].name = newName.trim();
+
+  try {
+    await req.team.save();  // ← This will pass: still 23 players
+    res.redirect('/dashboard?message=Player name updated');
+  } catch (err) {
+    console.error('Save error:', err);
+    res.redirect('/dashboard?error=Failed to update name');
+  }
 });
 
 // REMOVE
