@@ -5,6 +5,8 @@ const Team = require('../models/team');
 const Match = require('../models/match');
 const PastTournament = require('../models/pastTournament'); // For archiving
 const mongoose = require('mongoose'); // ← ADD THIS AT TOP OF FILE
+const authMiddleware = require('../middleware/auth');
+const adminOnly = require('../middleware/adminOnly');
 
 // Add this at the top with other routes in routes/admin.js
 router.get('/dashboard', async (req, res) => {
