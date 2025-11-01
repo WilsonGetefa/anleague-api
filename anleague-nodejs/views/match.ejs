@@ -25,16 +25,18 @@
       color: #333; 
       margin: 0;
     }
-
-    .container {
-      max-width: 1100px;
-      margin: 2rem auto;
-      padding: 2rem 1rem;
+    .page-center {
       min-height: 80vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
+      padding: 2rem 1rem;
+    }
+
+    .container { 
+      max-width: 1100px; 
+      margin: 2rem auto; 
+      padding: 0 1rem;
     }
     header h1 {
       margin: 0;
@@ -343,10 +345,12 @@
     <% } %>
   </nav>
   </div>
-  <main class="container" style="padding-bottom: 5rem; min-height: 70vh;">
+<div class="page-center">
+  <main class="container">
 
     <% if (match) { %>
       <div class="match-card">
+        <!-- ALL YOUR MATCH CONTENT (unchanged) -->
         <div class="match-header">
           <p class="team">
             <%= match.team1_id?.country || 'TBD' %> 
@@ -354,7 +358,6 @@
             <%= match.team2_id?.country || 'TBD' %>
           </p>
           <div class="score"><%= match.score.team1 %> – <%= match.score.team2 %></div>
-
           <p class="info">
             <strong>Stage:</strong> <%= match.stage.charAt(0).toUpperCase() + match.stage.slice(1) %> |
             <strong>Status:</strong>
@@ -368,21 +371,11 @@
           <div class="commentary">
             <strong>Commentary:</strong><br>
             <%= match.commentary %>
-
-            <!-- AUDIO CONTROLS + ENHANCEMENTS -->
             <div class="audio-controls">
-              <button class="audio-btn" id="play-audio">
-                Play Commentary
-              </button>
-              <button class="audio-btn" id="pause-audio" disabled>
-                Pause
-              </button>
-              <button class="audio-btn" id="replay-audio">
-                Replay
-              </button>
-
+              <button class="audio-btn" id="play-audio">Play Commentary</button>
+              <button class="audio-btn" id="pause-audio" disabled>Pause</button>
+              <button class="audio-btn" id="replay-audio">Replay</button>
               <select class="voice-select" id="voice-select"></select>
-
               <label class="auto-play-toggle">
                 <input type="checkbox" id="auto-play" checked>
                 Auto-play
@@ -417,6 +410,7 @@
     <% } %>
 
   </main>
+</div>
 
   <!-- GOAL SOUND EFFECT -->
   <audio id="goal-sfx" src="/sfx/goal.mp3" preload="auto"></audio>
