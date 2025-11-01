@@ -751,4 +751,65 @@ router.post('/edit-match', async (req, res) => {
   }
 });
 
+// ADMIN DATA ROUTES
+router.get('/data', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const [users, teams, tournaments, matches] = await Promise.all([
+      User.find().populate('team', 'country'),
+      Team.find().populate('representative_id', 'username'),
+      Tournament.find(),
+      Match.find().populate('team1_id team2_id', 'country')
+    ]);
+
+    res.render('admin_data', {
+      title: 'Admin Data',
+      users, teams, tournaments, matches,
+      user: req.user
+    });
+  } catch (err) {
+    res.render('admin_data', { title: 'Admin Data', error: 'Failed to load data', user: req.user });
+  }
+});
+
+// DELETE ROUTES
+router.post('/delete-user/:id', authMiddleware, adminOnly, async (req, res) => {
+  await User.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/data?message=User deleted');
+});
+
+router.post('/delete-all-users', authMiddleware, adminOnly, async (req, res) => {
+  await User.deleteMany({});
+  res.redirect('/admin/data?message=All users deleted');
+});
+
+router.post('/delete-team/:id', authMiddleware, adminOnly, async (req, res) => {
+  await Team.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/data?message=Team deleted');
+});
+
+router.post('/delete-all-teams', authMiddleware, adminOnly, async (req, res) => {
+  await Team.deleteMany({});
+  res.redirect('/admin/data?message=All teams deleted');
+});
+
+router.post('/delete-tournament/:id', authMiddleware, adminOnly, async (req, res) => {
+  await Tournament.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/data?message=Tournament deleted');
+});
+
+router.post('/delete-all-tournaments', authMiddleware, adminOnly, async (req, res) => {
+  await Tournament.deleteMany({});
+  res.redirect('/admin/data?message=All tournaments deleted');
+});
+
+router.post('/delete-match/:id', authMiddleware, adminOnly, async (req, res) => {
+  await Match.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/data?message=Match deleted');
+});
+
+router.post('/delete-all-matches', authMiddleware, adminOnly, async (req, res) => {
+  await Match.deleteMany({});
+  res.redirect('/admin/data?message=All matches deleted');
+});
+
 module.exports = router;
