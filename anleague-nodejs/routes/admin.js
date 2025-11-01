@@ -7,6 +7,7 @@ const PastTournament = require('../models/pastTournament'); // For archiving
 const mongoose = require('mongoose'); // ← ADD THIS AT TOP OF FILE
 const { authMiddleware } = require('../middleware/auth');     // ← Pull function out
 const adminOnly = require('../middleware/adminOnly');
+const User = require('../models/user');
 
 // Add this at the top with other routes in routes/admin.js
 router.get('/dashboard', async (req, res) => {
@@ -754,8 +755,7 @@ router.post('/edit-match', async (req, res) => {
 });
 
 // ADMIN DATA ROUTES
-// routes/admin.js
-router.get('/data', authMiddleware, adminOnly, async (req, res) => {
+router.get('/admin/data', authMiddleware, adminOnly, async (req, res) => {
   try {
     const [users, teams, tournaments, matches] = await Promise.all([
       User.find().populate('team', 'country').lean(),
@@ -764,7 +764,6 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
       Match.find().populate('team1_id team2_id', 'country').lean()
     ]);
 
-    // Ensure arrays are always defined
     res.render('admin_data', {
       title: 'Admin Data Overview',
       user: req.user,
