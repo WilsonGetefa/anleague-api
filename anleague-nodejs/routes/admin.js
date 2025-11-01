@@ -754,22 +754,39 @@ router.post('/edit-match', async (req, res) => {
 });
 
 // ADMIN DATA ROUTES
+// routes/admin.js
 router.get('/data', authMiddleware, adminOnly, async (req, res) => {
   try {
     const [users, teams, tournaments, matches] = await Promise.all([
-      User.find().populate('team', 'country'),
-      Team.find().populate('representative_id', 'username'),
-      Tournament.find(),
-      Match.find().populate('team1_id team2_id', 'country')
+      User.find().populate('team', 'country').lean(),
+      Team.find().populate('representative_id', 'username').lean(),
+      Tournament.find().lean(),
+      Match.find().populate('team1_id team2_id', 'country').lean()
     ]);
 
+    // Ensure arrays are always defined
     res.render('admin_data', {
-      title: 'Admin Data',
-      users, teams, tournaments, matches,
-      user: req.user
+      title: 'Admin Data Overview',
+      user: req.user,
+      users: users || [],
+      teams: teams || [],
+      tournaments: tournaments || [],
+      matches: matches || [],
+      message: req.query.message || null,
+      error: null
     });
+
   } catch (err) {
-    res.render('admin_data', { title: 'Admin Data', error: 'Failed to load data', user: req.user });
+    console.error('Admin Data Error:', err);
+    res.render('admin_data', {
+      title: 'Admin Data Overview',
+      user: req.user,
+      users: [],
+      teams: [],
+      tournaments: [],
+      matches: [],
+      error: 'Failed to load data: ' + err.message
+    });
   }
 });
 
