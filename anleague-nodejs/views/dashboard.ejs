@@ -31,16 +31,6 @@
       margin: 2rem auto; 
       padding: 0 1rem; 
     }
-
-    header {
-      text-align: center;
-      padding: 2rem 1rem;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border-radius: 0 0 16px 16px;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
     header h1 {
       margin: 0;
       font-size: 2rem;
@@ -63,7 +53,29 @@
       font-size: 0.95rem;
     }
     nav a:hover { color: var(--accent); }
+    
+    .sticky-top {
+        position: sticky; top: 0; z-index: 1000; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 
+    .sticky-top header {
+        text-align: center; padding: 1rem 1rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white; border-radius: 0 0 16px 16px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .sticky-top nav {
+        background: white; padding: 1rem 1rem; text-align: center;
+        border-bottom: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .sticky-top nav a {
+        margin: 0 10px; color: var(--primary); text-decoration: none;
+        font-weight: 500; font-size: 0.95rem; transition: color 0.2s;
+    }
+
+    .sticky-top nav a:hover {
+        color: var(--accent);
+    }
     .welcome {
       text-align: center;
       font-size: 1.3rem;
@@ -298,6 +310,7 @@
   </style>
 </head>
 <body>
+  <div class="sticky-top">
   <header>
       <div style="
       display: flex;
@@ -339,7 +352,7 @@
     <a href="/teams">Teams</a> |
     <a href="/auth/logout">Logout</a>
   </nav>
-
+  </div>
   <main class="container">
 
     <h2 class="welcome">Welcome, <strong><%= user.username %></strong>!</h2>
@@ -462,6 +475,32 @@
     <% } %>
 
   </main>
+    <footer style="
+  background: linear-gradient(135deg, #1a3f35, #2e6b5b); color: white; padding: 2rem 1rem; margin-top: 3rem; 
+  border-radius: 16px 16px 0 0; box-shadow: 0 -4px 12px rgba(0,0,0,0.1);font-family: 'Roboto', sans-serif;">
+  <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
+      <div>
+        <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
+        <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
+      </div>
+    </div>
+
+    <div style="text-align: center; flex: 1; min-width: 200px;">
+      <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
+      <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
+      <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
+      <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
+    </div>
+
+    <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
+      © <%= new Date().getFullYear() %> ANL<br>
+      <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
+    </div>
+  </div>
+</footer>
 
   <script>
     function toggleAddForm() {
