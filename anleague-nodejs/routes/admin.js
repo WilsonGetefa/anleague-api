@@ -755,7 +755,7 @@ router.post('/edit-match', async (req, res) => {
 });
 
 // ADMIN DATA ROUTES
-router.get('/admin/data', authMiddleware, adminOnly, async (req, res) => {
+router.get('/data', authMiddleware, adminOnly, async (req, res) => {
   try {
     const [users, teams, tournaments, matches] = await Promise.all([
       User.find().populate('team', 'country').lean(),
