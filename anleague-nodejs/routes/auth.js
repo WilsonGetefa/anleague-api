@@ -36,10 +36,67 @@ function generatePlaceholderSquad(country) {
 // ======================
 // CAF COUNTRIES
 // ======================
+//const CAF_COUNTRIES = [
+//  'Algeria', 'Angola', 'Cameroon', "Côte d'Ivoire", 'DR Congo', 'Egypt',
+//  'Ghana', 'Guinea', 'Mali', 'Morocco', 'Nigeria', 'Senegal',
+//  'South Africa', 'Tunisia', 'Zambia'
+//];
+
 const CAF_COUNTRIES = [
-  'Algeria', 'Angola', 'Cameroon', "Côte d'Ivoire", 'DR Congo', 'Egypt',
-  'Ghana', 'Guinea', 'Mali', 'Morocco', 'Nigeria', 'Senegal',
-  'South Africa', 'Tunisia', 'Zambia'
+  'Algeria',
+  'Angola',
+  'Benin',
+  'Botswana',
+  'Burkina Faso',
+  'Burundi',
+  'Cameroon',
+  'Cape Verde',
+  'Central African Republic',
+  'Chad',
+  'Comoros',
+  'Congo',
+  'DR Congo',
+  'Djibouti',
+  'Egypt',
+  'Equatorial Guinea',
+  'Eritrea',
+  'Eswatini',
+  'Ethiopia',
+  'Gabon',
+  'Gambia',
+  'Ghana',
+  'Guinea',
+  'Guinea-Bissau',
+  'Côte d\'Ivoire',
+  'Kenya',
+  'Lesotho',
+  'Liberia',
+  'Libya',
+  'Madagascar',
+  'Malawi',
+  'Mali',
+  'Mauritania',
+  'Mauritius',
+  'Morocco',
+  'Mozambique',
+  'Namibia',
+  'Niger',
+  'Nigeria',
+  'Rwanda',
+  'São Tomé and Príncipe',
+  'Senegal',
+  'Seychelles',
+  'Sierra Leone',
+  'Somalia',
+  'South Africa',
+  'South Sudan',
+  'Sudan',
+  'Tanzania',
+  'Togo',
+  'Tunisia',
+  'Uganda',
+  'Zambia',
+  'Zimbabwe'
 ];
 
 // ======================
