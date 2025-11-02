@@ -17,27 +17,31 @@
       --gray: #6c757d;
       --border: #dee2e6;
     }
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        /* → Makes body a full-height column */
+        }
 
-    body { 
-      font-family: 'Roboto', sans-serif; 
-      background: #f4f6f9; 
-      color: #333; 
-      margin: 0;
-      display: flex; 
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    main {  display: flex; justify-content: center; align-items: center; padding: 2rem 1rem; }
-    /**html, body { height: 100%; margin: 0; }**/
-    /**main { flex: 1 0 auto; display: flex; justify-content: center;} align-items: center;} padding: 2rem 1rem; }**/
+        main {
+        flex: 1 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* → Grows to fill space, centers content */
+        }
+
+        .container {
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 1rem;
+        /* → Limits width, centers horizontally */
+        }
     
     footer { flex-shrink: 0; }
 
-    .container { 
-      max-width: 1100px; 
-      margin: 2rem auto; 
-      padding: 0 1rem; 
-    }
     header h1 {
       margin: 0;
       font-size: 2rem;
