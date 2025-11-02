@@ -4,10 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
+
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Global CSS -->
   <link rel="stylesheet" href="/css/styles.css">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
 
+  <!-- CONSISTENT PAGE STYLES (MATCHES HOME, MATCH, SIGNUP) -->
   <style>
     :root {
       --primary: #2e6b5b;
@@ -17,30 +24,36 @@
       --gray: #6c757d;
       --border: #dee2e6;
     }
-    body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        /* → Makes body a full-height column */
-        }
 
-    main {
-        flex: 1 0 auto;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0;
-        background: #f8f9fa;
-        /* → Grows to fill space, centers content */
-        }
-
-    .container { 
-      max-width: 1100px; 
-      margin: 2rem auto; 
-      padding: 0 1rem; 
+    /* === STICKY FOOTER + FULL HEIGHT === */
+    html, body {
+      height: 100%;
+      margin: 0;
     }
-    
-    footer { flex-shrink: 0; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f6f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    main {
+      flex: 1 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    footer {
+      flex-shrink: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      width: 100%;
+      padding: 0 1rem;
+    }
 
     header h1 {
       margin: 0;
@@ -48,123 +61,139 @@
       font-weight: 700;
     }
 
-    nav {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 1rem;
+    /* === STICKY HEADER (NO RED LINE) === */
+    .sticky-top {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: none; /* ← REMOVES RED LINE */
+      border-bottom: 1px solid #eee;
     }
-    nav a {
-      margin: 0 6px;
+    .sticky-top header {
+      text-align: center;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .sticky-top nav {
+      background: white;
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .sticky-top nav a {
+      margin: 0 10px;
       color: var(--primary);
       text-decoration: none;
       font-weight: 500;
       font-size: 0.95rem;
+      transition: color 0.2s;
     }
-    nav a:hover { color: var(--accent); }
-    
-    .sticky-top {
-      position: sticky; 
-      top: 0; 
-      z-index: 1000; 
-      background: white; 
-      box-shadow: 0 none;
-      border-bottom: 1px solid #eee;
+    .sticky-top nav a:hover {
+      color: var(--accent);
     }
-    .sticky-top header {
-        text-align: center; padding: 1rem 1rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        color: white; border-radius: 0 0 16px 16px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    .sticky-top nav {
-        background: white; 
-	padding: 1rem 1rem; 
-	text-align: center;
-        border-bottom: 1px solid #eee; 
-	box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .sticky-top nav a {
-        margin: 0 10px; color: var(--primary); text-decoration: none;
-        font-weight: 500; font-size: 0.95rem; transition: color 0.2s;
-    }
-    .sticky-top nav a:hover { 
-    color: var(--accent); }
 
+    /* === LOGIN CARD (460px, MATCHES SIGNUP) === */
     .login-card {
       background: white;
       max-width: 460px;
-      margin: 0 auto;
+      width: 100%;
       padding: 2rem;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
       text-align: center;
     }
     .login-card h2 {
-      margin: 0 0 1.5rem; 
-      color: var(--primary-dark); 
-      font-weight: 600; 
+      margin: 0 0 1.5rem;
+      color: var(--primary-dark);
+      font-weight: 600;
       font-size: 1.5rem;
     }
+
     .form-group {
-      margin-bottom: 1.2rem; 
+      margin-bottom: 1.2rem;
       text-align: left;
     }
     .form-group label {
-      display: block; 
-      margin-bottom: 0.5rem; 
-      font-weight: 500; 
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
       color: #444;
     }
     .form-group input {
-      width: 100%; 
-      padding: 0.75rem 1rem; 
-      border: 1px solid var(--border); 
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 1rem; 
-      transition: border 0.2s, 
-      box-shadow 0.2s;
+      font-size: 1rem;
       background: white;
+      transition: border 0.2s, box-shadow 0.2s;
     }
     .form-group input:focus {
-      outline: none; 
-      border-color: var(--primary); 
+      outline: none;
+      border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(46, 107, 91, 0.15);
     }
+
     .btn {
-      display: block; width: 100%; padding: 0.9rem; margin: 1.5rem 0 1rem;
-      background: var(--primary); color: white; border: none; border-radius: 8px;
-      font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+      display: block;
+      width: 100%;
+      padding: 0.9rem;
+      margin: 1.5rem 0 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     .btn:hover {
       background: var(--primary-dark);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* ← FIXED */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
+
     .error {
-      background: #f8d7da; color: #721c24; padding: 0.8rem 1rem; border-radius: 8px;
-      margin-bottom: 1.5rem; font-size: 0.95rem; border: 1px solid #f5c6cb;
+      background: #f8d7da;
+      color: #721c24;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      border: 1px solid #f5c6cb;
     }
+
     .link {
-      margin-top: 1.2rem; font-size: 0.95rem;
+      margin-top: 1.2rem;
+      font-size: 0.95rem;
     }
     .link a {
-      color: var(--primary); text-decoration: none; font-weight: 500;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
     }
     .link a:hover {
-      color: var(--accent); text-decoration: underline;
+      color: var(--accent);
+      text-decoration: underline;
     }
 
     @media (max-width: 480px) {
       .container { padding: 0 0.8rem; }
-      nav a { display: block; margin: 0.4rem 0; }
       .login-card { padding: 1.5rem; }
       header h1 { font-size: 1.7rem; }
     }
   </style>
 </head>
 <body>
+
+  <!-- === STICKY HEADER === -->
   <div class="sticky-top">
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 1rem;">
@@ -176,6 +205,8 @@
         </h1>
       </div>
     </header>
+
+    <!-- NAVIGATION -->
     <nav>
       <a href="/">Home</a> |
       <a href="/bracket">Bracket</a> |
@@ -186,7 +217,8 @@
     </nav>
   </div>
 
-  <main >
+  <!-- === CENTERED LOGIN CARD === -->
+  <main>
     <div class="container">
       <div class="login-card">
         <h2>Login to Your Account</h2>
@@ -200,24 +232,27 @@
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="Enter username" required autofocus>
           </div>
+
           <div class="form-group">
             <label for="password">Password</label>
             <input type="password" id="password" name="password" placeholder="Enter password" required>
           </div>
+
           <button type="submit" class="btn">Login</button>
         </form>
+
         <p class="link">
           <a href="/signup">Need an account? Sign up</a>
         </p>
       </div>
-      </div>
+    </div>
   </main>
 
+  <!-- === FOOTER (STICKY AT BOTTOM) === -->
   <footer style="
     background: linear-gradient(135deg, #1a3f35, #2e6b5b);
     color: white;
     padding: 2rem 1rem;
-    margin-top: 3rem;
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
     font-family: 'Roboto', sans-serif;
@@ -230,17 +265,20 @@
           <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
         </div>
       </div>
+
       <div style="text-align: center; flex: 1; min-width: 200px;">
         <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
         <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
         <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
         <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
       </div>
+
       <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
         © <%= new Date().getFullYear() %> ANL<br>
         <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
       </div>
     </div>
   </footer>
+
 </body>
 </html>
