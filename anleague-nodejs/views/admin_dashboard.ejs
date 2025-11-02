@@ -78,13 +78,6 @@
         color: var(--accent);
     }
 
-    .bracket-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
     .message {
       text-align: center;
       padding: 1rem;
@@ -299,7 +292,7 @@
         </nav>
   </div>
 
-  <main class="container bracket-container">
+  <main class="container">
 
     <% if (typeof user !== 'undefined' && user) { %>
       <h2 class="welcome">Welcome, <strong><%= user.username %></strong>!</h2>

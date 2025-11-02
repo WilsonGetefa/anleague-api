@@ -77,13 +77,6 @@
         color: var(--accent);
     }
 
-    .bracket-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
     .bracket-round {
       display: flex;
       gap: 2rem;
@@ -267,7 +260,7 @@
     <% } %>
   </nav>
   </div>
-  <main class="container bracket-container">
+  <main class="container">
 
     <% if (message) { %>
       <p class="message success"><%= message %></p>
