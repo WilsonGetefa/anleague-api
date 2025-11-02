@@ -108,6 +108,13 @@
     .btn-primary:hover {
         background: #1a252f;
     }
+        @media (max-width:768px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
+      td { border: none; position: relative; padding-left: 50%; }
+      td::before { content: attr(data-label); position: absolute; left: 1rem; width: 45%; font-weight: 600; }
+    }
   </style>
 </head>
 <body>
