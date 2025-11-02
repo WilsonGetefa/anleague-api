@@ -345,72 +345,72 @@
     <% } %>
   </nav>
   </div>
-<div class="page-center">
-  <main class="container">
+  <div class="page-center">
+    <main class="container">
 
-    <% if (match) { %>
-      <div class="match-card">
-        <!-- ALL YOUR MATCH CONTENT (unchanged) -->
-        <div class="match-header">
-          <p class="team">
-            <%= match.team1_id?.country || 'TBD' %> 
-            <span class="vs">vs</span> 
-            <%= match.team2_id?.country || 'TBD' %>
-          </p>
-          <div class="score"><%= match.score.team1 %> – <%= match.score.team2 %></div>
-          <p class="info">
-            <strong>Stage:</strong> <%= match.stage.charAt(0).toUpperCase() + match.stage.slice(1) %> |
-            <strong>Status:</strong>
-            <span class="status-badge <%= match.status === 'in_progress' ? 'in_progress' : match.status %>">
-              <%= match.status.charAt(0).toUpperCase() + match.status.slice(1).replace('_', ' ') %>
-            </span>
-          </p>
-        </div>
-
-        <% if (match.commentary) { %>
-          <div class="commentary">
-            <strong>Commentary:</strong><br>
-            <%= match.commentary %>
-            <div class="audio-controls">
-              <button class="audio-btn" id="play-audio">Play Commentary</button>
-              <button class="audio-btn" id="pause-audio" disabled>Pause</button>
-              <button class="audio-btn" id="replay-audio">Replay</button>
-              <select class="voice-select" id="voice-select"></select>
-              <label class="auto-play-toggle">
-                <input type="checkbox" id="auto-play" checked>
-                Auto-play
-              </label>
-            </div>
+      <% if (match) { %>
+        <div class="match-card">
+          <!-- ALL YOUR MATCH CONTENT (unchanged) -->
+          <div class="match-header">
+            <p class="team">
+              <%= match.team1_id?.country || 'TBD' %> 
+              <span class="vs">vs</span> 
+              <%= match.team2_id?.country || 'TBD' %>
+            </p>
+            <div class="score"><%= match.score.team1 %> – <%= match.score.team2 %></div>
+            <p class="info">
+              <strong>Stage:</strong> <%= match.stage.charAt(0).toUpperCase() + match.stage.slice(1) %> |
+              <strong>Status:</strong>
+              <span class="status-badge <%= match.status === 'in_progress' ? 'in_progress' : match.status %>">
+                <%= match.status.charAt(0).toUpperCase() + match.status.slice(1).replace('_', ' ') %>
+              </span>
+            </p>
           </div>
-        <% } %>
 
-        <% if (match.goal_scorers && match.goal_scorers.length) { %>
-          <div class="goals">
-            <h3>Goal Scorers</h3>
-            <% match.goal_scorers.forEach((g, i) => { %>
-              <div class="goal" data-minute="<%= g.minute %>" style="animation-delay: <%= i * 0.3 %>s;">
-                <span>
-                  <strong><%= g.player_name %></strong>
-                  <small>(<%= g.minute %>')</small>
-                </span>
-                <span>
-                  — <%= g.team === 'team1' ? match.team1_id?.country : match.team2_id?.country %>
-                </span>
+          <% if (match.commentary) { %>
+            <div class="commentary">
+              <strong>Commentary:</strong><br>
+              <%= match.commentary %>
+              <div class="audio-controls">
+                <button class="audio-btn" id="play-audio">Play Commentary</button>
+                <button class="audio-btn" id="pause-audio" disabled>Pause</button>
+                <button class="audio-btn" id="replay-audio">Replay</button>
+                <select class="voice-select" id="voice-select"></select>
+                <label class="auto-play-toggle">
+                  <input type="checkbox" id="auto-play" checked>
+                  Auto-play
+                </label>
               </div>
-            <% }); %>
-          </div>
-        <% } %>
+            </div>
+          <% } %>
 
-        <a href="/bracket" class="btn">Back to Bracket</a>
-      </div>
-    <% } else { %>
-      <div class="no-match">
-        <p>Match not found.</p>
-      </div>
-    <% } %>
+          <% if (match.goal_scorers && match.goal_scorers.length) { %>
+            <div class="goals">
+              <h3>Goal Scorers</h3>
+              <% match.goal_scorers.forEach((g, i) => { %>
+                <div class="goal" data-minute="<%= g.minute %>" style="animation-delay: <%= i * 0.3 %>s;">
+                  <span>
+                    <strong><%= g.player_name %></strong>
+                    <small>(<%= g.minute %>')</small>
+                  </span>
+                  <span>
+                    — <%= g.team === 'team1' ? match.team1_id?.country : match.team2_id?.country %>
+                  </span>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
 
-  </main>
-</div>
+          <a href="/bracket" class="btn">Back to Bracket</a>
+        </div>
+      <% } else { %>
+        <div class="no-match">
+          <p>Match not found.</p>
+        </div>
+      <% } %>
+
+    </main>
+  </div>
 
   <!-- GOAL SOUND EFFECT -->
   <audio id="goal-sfx" src="/sfx/goal.mp3" preload="auto"></audio>
