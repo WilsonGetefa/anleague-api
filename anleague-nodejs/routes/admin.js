@@ -459,12 +459,20 @@ router.post('/advance', async (req, res) => {
     if (tournament.status === 'quarterfinals') {
       const qfs = tournament.bracket.quarterfinals;
       if (qfs.length < 4) {
-        return res.render('admin_dashboard', { error: 'Not enough quarterfinals', tournament, user: req.user });
+        return res.render('admin_dashboard', { 
+        error: 'Not enough quarterfinals', 
+        tournament, 
+        user: req.user 
+        });
       }
 
       const allCompleted = qfs.every(qf => qf.match_id?.status === 'completed');
       if (!allCompleted) {
-        return res.render('admin_dashboard', { error: 'All quarterfinals must be completed', tournament, user: req.user });
+        return res.render('admin_dashboard', { 
+        error: 'All quarterfinals must be completed', 
+        tournament, 
+        user: req.user 
+        });
       }
 
       const semifinalPairs = [];
@@ -478,7 +486,11 @@ router.post('/advance', async (req, res) => {
         const winner2 = await resolveWinner(m2, t3, t4);
 
         if (!winner1 || !winner2) {
-          return res.render('admin_dashboard', { error: 'Could not determine semifinalists', tournament, user: req.user });
+          return res.render('admin_dashboard', { 
+          error: 'Could not determine semifinalists', 
+          tournament, 
+          user: req.user 
+          });
         }
 
         const match = new Match({
@@ -510,12 +522,20 @@ router.post('/advance', async (req, res) => {
     else if (tournament.status === 'semifinals') {
       const sfs = tournament.bracket.semifinals;
       if (sfs.length < 2) {
-        return res.render('admin_dashboard', { error: 'Not enough semifinals', tournament, user: req.user });
+        return res.render('admin_dashboard', { 
+        error: 'Not enough semifinals', 
+        tournament, 
+        user: req.user 
+        });
       }
 
       const allCompleted = sfs.every(sf => sf.match_id?.status === 'completed');
       if (!allCompleted) {
-        return res.render('admin_dashboard', { error: 'All semifinals must be completed', tournament, user: req.user });
+        return res.render('admin_dashboard', { 
+        error: 'All semifinals must be completed', 
+        tournament, 
+        user: req.user 
+        });
       }
 
       const m1 = sfs[0].match_id, m2 = sfs[1].match_id;
@@ -526,7 +546,11 @@ router.post('/advance', async (req, res) => {
       const finalist2 = await resolveWinner(m2, t3, t4);
 
       if (!finalist1 || !finalist2) {
-        return res.render('admin_dashboard', { error: 'Could not determine finalists', tournament, user: req.user });
+        return res.render('admin_dashboard', { 
+        error: 'Could not determine finalists', 
+        tournament, 
+        user: req.user 
+        });
       }
 
       const finalMatch = new Match({
@@ -555,7 +579,11 @@ router.post('/advance', async (req, res) => {
     else if (tournament.status === 'final') {
       const final = tournament.bracket.final[0];
       if (!final?.match_id || final.match_id.status !== 'completed') {
-        return res.render('admin_dashboard', { error: 'Final match must be completed', tournament, user: req.user });
+        return res.render('admin_dashboard', { 
+        error: 'Final match must be completed', 
+        tournament, 
+        user: req.user 
+        });
       }
 
       // Build clean bracket for archiving (no populated objects)
@@ -589,7 +617,15 @@ router.post('/advance', async (req, res) => {
     }
 
     else {
-      return res.render('admin_dashboard', { error: 'No stage to advance', tournament, user: req.user });
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        role: req.user.role,
+        error: 'No stage to advance',
+        message: null,
+        tournament,
+        user: req.user
+      });
     }
 
     // === RELOAD WITH FRESH POPULATION ===
@@ -631,63 +667,67 @@ router.post('/advance', async (req, res) => {
 });
 
 // routes/admin.js
-// routes/admin.js – /restart
 router.post('/restart', async (req, res) => {
   try {
     const tournament = await Tournament.findOne().sort({ createdAt: -1 });
+
     let archived = null;
 
     if (tournament) {
-      // Remove _id and any populated refs before saving
+      // === ARCHIVE FIRST ===
       const { _id, ...cleanData } = tournament.toObject();
 
       const pastTournament = new PastTournament({
         ...cleanData,
         year: new Date().getFullYear(),
-        // Optionally clean up populated refs
         bracket: {
-          quarterfinals: cleanData.bracket?.quarterfinals?.map(qf => ({
+          quarterfinals: (cleanData.bracket?.quarterfinals || []).map(qf => ({
             team1_id: qf.team1_id?._id || qf.team1_id,
             team2_id: qf.team2_id?._id || qf.team2_id,
             match_id: qf.match_id?._id || qf.match_id
-          })) || [],
-          semifinals: cleanData.bracket?.semifinals?.map(sf => ({
+          })),
+          semifinals: (cleanData.bracket?.semifinals || []).map(sf => ({
             team1_id: sf.team1_id?._id || sf.team1_id,
             team2_id: sf.team2_id?._id || sf.team2_id,
             match_id: sf.match_id?._id || sf.match_id
-          })) || [],
-          final: cleanData.bracket?.final?.map(f => ({
+          })),
+          final: (cleanData.bracket?.final || []).map(f => ({
             team1_id: f.team1_id?._id || f.team1_id,
             team2_id: f.team2_id?._id || f.team2_id,
             match_id: f.match_id?._id || f.match_id
-          })) || []
+          }))
         }
       });
 
       archived = await pastTournament.save();
       console.log('Archived tournament:', archived._id);
-    }
 
-    // Delete ALL non-completed tournaments
-    const deleteResult = await Tournament.deleteMany({ status: { $ne: 'completed' } });
-    console.log('Deleted active tournaments:', deleteResult.deletedCount);
+      // === NOW DELETE THE ORIGINAL ===
+      const deleteResult = await Tournament.deleteOne({ _id: tournament._id });
+      console.log('Deleted active tournament:', deleteResult.deletedCount); // Should be 1
+    } else {
+      console.log('No tournament to restart');
+    }
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
-      message: 'Tournament reset and archived successfully',
+      message: archived 
+        ? 'Tournament archived and fully reset'
+        : 'No tournament to restart',
       error: null,
       tournament: null,
       user: req.user
     });
+
   } catch (err) {
-    console.error('Restart tournament error:', err.message, err.stack);
-    res.render('admin_dashboard', {
+    console.error('Restart error:', err);
+    res.status(500).render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
-      error: 'Failed to reset tournament: ' + err.message,
+      error: 'Restart failed: ' + err.message,
       message: null,
       tournament: null,
       user: req.user
