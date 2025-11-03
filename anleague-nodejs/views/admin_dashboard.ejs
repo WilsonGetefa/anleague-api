@@ -19,22 +19,11 @@
       --gold:  #d4af37;
     }
 
-    html, body {
-      height: 100%;
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      background: #f4f6f9; 
+      color: #333; 
       margin: 0;
-    }
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: #f4f6f9;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    main {
-      flex: 1;
     }
 
     .container { 
@@ -43,47 +32,52 @@
       padding: 0 1rem; 
     }
 
-    /* HEADER + NAV */
-    .sticky-top {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: white;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
     }
 
-    .sticky-top header {
+    nav {
       text-align: center;
-      padding: 1rem 1rem;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border-radius: 0 0 16px 16px;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .sticky-top nav {
+      margin-bottom: 2rem;
+      padding: 1rem;
       background: white;
-      padding: 1rem 1rem;
-      text-align: center;
-      border-bottom: 1px solid #eee;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-
-    .sticky-top nav a {
-      margin: 0 10px;
+    nav a {
+      margin: 0 6px;
       color: var(--primary);
       text-decoration: none;
       font-weight: 500;
       font-size: 0.95rem;
-      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--accent); }
+    
+    .sticky-top {
+        position: sticky; top: 0; z-index: 1000; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .sticky-top header {
+        text-align: center; padding: 1rem 1rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white; border-radius: 0 0 16px 16px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .sticky-top nav {
+        background: white; padding: 1rem 1rem; text-align: center;
+        border-bottom: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .sticky-top nav a {
+        margin: 0 10px; color: var(--primary); text-decoration: none;
+        font-weight: 500; font-size: 0.95rem; transition: color 0.2s;
     }
 
     .sticky-top nav a:hover {
-      color: var(--accent);
+        color: var(--accent);
     }
 
-    /* CONTENT STYLES */
     .message {
       text-align: center;
       padding: 1rem;
@@ -118,7 +112,6 @@
       transition: transform 0.2s;
       border-left: 5px solid var(--primary);
     }
-
     .match-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.12);
@@ -146,7 +139,6 @@
       text-transform: uppercase;
       margin-top: 0.5rem;
     }
-
     .pending { background: #fff3cd; color: #856404; }
     .in-progress { background: #fff3cd; color: #856404; }
     .completed { background: #d4edda; color: #155724; }
@@ -174,7 +166,6 @@
       flex-wrap: wrap;
       justify-content: center;
     }
-
     .update-score-form input {
       width: 60px;
       padding: 0.5rem;
@@ -183,7 +174,6 @@
       font-size: 0.9rem;
       text-align: center;
     }
-
     .update-score-form button {
       padding: 0.5rem 1rem;
       background: var(--primary);
@@ -194,7 +184,6 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-
     .update-score-form button:hover {
       background: var(--primary-dark);
     }
@@ -206,7 +195,6 @@
       flex-wrap: wrap;
       margin: 2.5rem 0;
     }
-
     .admin-controls button {
       padding: 0.8rem 1.5rem;
       border: none;
@@ -216,11 +204,9 @@
       transition: all 0.2s;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-
     .btn-simulate { background: var(--primary); color: white; }
     .btn-advance { background: #17a2b8; color: white; }
     .btn-restart { background: #dc3545; color: white; }
-
     .admin-controls button:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -236,7 +222,7 @@
       box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     }
 
-    /* MODAL */
+    /* MODAL STYLES */
     .modal {
       display: none;
       position: fixed;
@@ -248,7 +234,6 @@
       z-index: 2000;
       backdrop-filter: blur(3px);
     }
-
     .modal-content {
       background: white;
       padding: 2rem;
@@ -258,25 +243,21 @@
       width: 90%;
       text-align: center;
     }
-
     .modal-content h3 {
       margin: 0 0 1rem;
       color: #721c24;
       font-size: 1.4rem;
     }
-
     .modal-content p {
       margin: 0 0 1.5rem;
       color: #333;
       line-height: 1.5;
     }
-
     .modal-actions {
       display: flex;
       justify-content: center;
       gap: 1rem;
     }
-
     .modal-actions button {
       padding: 0.6rem 1.2rem;
       border: none;
@@ -285,76 +266,228 @@
       font-weight: 600;
       min-width: 100px;
     }
-
     #cancel-action { background: #6c757d; color: white; }
     #confirm-action { background: #dc3545; color: white; }
-
     .modal-actions button:hover { opacity: .9; }
 
-    /* FOOTER */
-    footer {
-      background: linear-gradient(135deg, #1a3f35, #2e6b5b);
-      color: white;
-      padding: 2rem 1rem;
-      border-radius: 16px 16px 0 0;
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-      font-family: 'Roboto', sans-serif;
-    }
-
-    footer .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
     @media (max-width:768px) {
-      main { padding-bottom: 2rem; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
+      td { border: none; position: relative; padding-left: 50%; }
+      td::before { content: attr(data-label); position: absolute; left: 1rem; width: 45%; font-weight: 600; }
     }
   </style>
 </head>
-
 <body>
-  <div class="sticky-top">
-    <header>
-      <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:0 1rem;">
-        <a href="/" style="line-height:0;">
-          <img src="/images/caf.png" alt="ANL Logo" style="height:40px;width:auto;">
-        </a>
-        <h1 style="margin:0;font-size:2rem;font-weight:700;color:white;flex:1;text-align:center;">
-          <%= title %>
-        </h1>
-      </div>
-    </header>
-    <nav>
-      <a href="/">Home</a> |
-      <a href="/bracket">Bracket</a> |
-      <a href="/rankings">Rankings</a> |
-      <a href="/teams">Teams</a> |
-      <% if (user) { %>
-        <% if (user.role === 'admin') { %>
-          <a href="/admin/dashboard">Admin Dashboard</a> |
-          <a href="/admin/data">Data Overview</a> |
-        <% } else { %>
-          <a href="/dashboard">Dashboard</a> |
-        <% } %>
-        <a href="/auth/logout">Logout</a>
-      <% } else { %>
-        <a href="/login">Login</a> |
-        <a href="/signup">Sign Up</a>
-      <% } %>
-    </nav>
-  </div>
+    <div class="sticky-top">
+        <header>
+            <div style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            max-width: 100%;
+            padding: 0 1rem;
+            ">
+            <a href="/" style="display: block; line-height: 0;">
+                <img src="/images/caf.png" 
+                    alt="ANL Logo" 
+                    style="height: 40px; width: auto;">
+            </a>
+            <h1 style="margin: 0; font-size: 2rem; font-weight: 700; color: white; text-align: center; flex: 1;">
+                <%= title %>
+            </h1>
+            </div>
+        </header>
+
+        <nav>
+            <a href="/">Home</a> |
+            <a href="/bracket">Bracket</a> |
+            <a href="/rankings">Rankings</a> |
+            <a href="/teams">Teams</a> |
+            <% if (typeof user !== 'undefined' && user) { %>
+            <% if (user.role === 'admin') { %>
+                <a href="/admin/dashboard">Admin Dashboard</a> |
+                <a href="/admin/data">Data Overview</a> |
+            <% } else { %>
+                <a href="/dashboard">Dashboard</a> |
+            <% } %>
+            <a href="/auth/logout">Logout</a>
+            <% } else { %>
+            <a href="/login">Login</a> |
+            <a href="/signup">Sign Up</a>
+            <% } %>
+        </nav>
+    </div>
 
   <main class="container">
-    <!-- all your tournament / rounds / admin controls markup unchanged -->
-    <%- body %>
+
+    <% if (typeof user !== 'undefined' && user) { %>
+      <h2 class="welcome">Welcome, <strong><%= user.username %></strong>!</h2>
+    <% } %>
+
+    <% if (message) { %>
+      <p class="message success"><%= message %></p>
+    <% } %>
+    <% if (error) { %>
+      <p class="message error"><%= error %></p>
+    <% } %>
+
+    <% if (tournament) { %>
+      <p class="status"><strong>Current Status:</strong> <%= tournament.status %></p>
+
+      <% const getStatusClass = (status) => {
+        if (status === 'completed') return 'completed';
+        if (status === 'in_progress') return 'in-progress';
+        return 'pending';
+      }; %>
+
+      <!-- QUARTERFINALS -->
+      <h2 class="round-title">Quarterfinals</h2>
+      <% (tournament.bracket.quarterfinals || []).forEach(qf => { %>
+        <% const m = qf.match_id; %>
+        <div class="match-card">
+          <div class="match-teams">
+            <%= qf.team1_id?.country || 'Unknown' %> vs <%= qf.team2_id?.country || 'Unknown' %>
+          </div>
+          <div class="match-score">
+            <%= m ? `${m.score.team1 || 0} - ${m.score.team2 || 0}` : 'Pending' %>
+          </div>
+          <% if (m) { %>
+            <span class="status-badge <%= getStatusClass(m.status) %>">
+              <%= m.status.replace('_', ' ') %>
+            </span>
+          <% } %>
+          <% if (m?.commentary) { %>
+            <p class="commentary"><%= m.commentary %></p>
+          <% } %>
+          <% if (m?.status === 'completed') { %>
+            <p class="winner">
+              Winner: <%= m.score.team1 > m.score.team2 ? qf.team1_id?.country : qf.team2_id?.country %>
+            </p>
+          <% } %>
+          <% if (typeof user !== 'undefined' && user?.role === 'admin' && m?.status === 'pending') { %>
+            <form action="/admin/edit-match" method="post" class="update-score-form">
+              <input type="hidden" name="matchId" value="<%= m._id %>">
+              <input type="number" min="0" name="team1Score" placeholder="T1" required>
+              <input type="number" min="0" name="team2Score" placeholder="T2" required>
+              <button type="submit">Update Score</button>
+            </form>
+          <% } %>
+        </div>
+      <% }); %>
+
+      <!-- SEMIFINALS -->
+      <h2 class="round-title">Semifinals</h2>
+      <% (tournament.bracket.semifinals || []).forEach(sf => { %>
+        <% const m = sf.match_id; %>
+        <div class="match-card">
+          <div class="match-teams">
+            <%= sf.team1_id?.country || 'TBD' %> vs <%= sf.team2_id?.country || 'TBD' %>
+          </div>
+          <div class="match-score">
+            <%= m ? `${m.score.team1 || 0} - ${m.score.team2 || 0}` : 'Pending' %>
+          </div>
+          <% if (m) { %>
+            <span class="status-badge <%= getStatusClass(m.status) %>">
+              <%= m.status.replace('_', ' ') %>
+            </span>
+          <% } %>
+          <% if (m?.commentary) { %>
+            <p class="commentary"><%= m.commentary %></p>
+          <% } %>
+          <% if (m?.status === 'completed') { %>
+            <p class="winner">
+              Winner: <%= m.score.team1 > m.score.team2 ? sf.team1_id?.country : sf.team2_id?.country %>
+            </p>
+          <% } %>
+          <% if (typeof user !== 'undefined' && user?.role === 'admin' && m?.status === 'pending') { %>
+            <form action="/admin/edit-match" method="post" class="update-score-form">
+              <input type="hidden" name="matchId" value="<%= m._id %>">
+              <input type="number" min="0" name="team1Score" placeholder="T1" required>
+              <input type="number" min="0" name="team2Score" placeholder="T2" required>
+              <button type="submit">Update Score</button>
+            </form>
+          <% } %>
+        </div>
+      <% }); %>
+
+      <!-- FINAL -->
+      <h2 class="round-title">Final</h2>
+      <% (tournament.bracket.final || []).forEach(f => { %>
+        <% const m = f.match_id; %>
+        <div class="match-card">
+          <div class="match-teams">
+            <%= f.team1_id?.country || 'TBD' %> vs <%= f.team2_id?.country || 'TBD' %>
+          </div>
+          <div class="match-score">
+            <%= m ? `${m.score.team1 || 0} - ${m.score.team2 || 0}` : 'Pending' %>
+          </div>
+          <% if (m) { %>
+            <span class="status-badge <%= getStatusClass(m.status) %>">
+              <%= m.status.replace('_', ' ') %>
+            </span>
+          <% } %>
+          <% if (m?.commentary) { %>
+            <p class="commentary"><%= m.commentary %></p>
+          <% } %>
+          <% if (m?.status === 'completed') { %>
+            <p class="winner">
+              Winner: <%= m.score.team1 > m.score.team2 ? f.team1_id?.country : f.team2_id?.country %>
+            </p>
+          <% } %>
+          <% if (typeof user !== 'undefined' && user?.role === 'admin' && m?.status === 'pending') { %>
+            <form action="/admin/edit-match" method="post" class="update-score-form">
+              <input type="hidden" name="matchId" value="<%= m._id %>">
+              <input type="number" min="0" name="team1Score" placeholder="T1" required>
+              <input type="number" min="0" name="team2Score" placeholder="T2" required>
+              <button type="submit">Update Score</button>
+            </form>
+          <% } %>
+        </div>
+      <% }); %>
+
+      <!-- ADMIN CONTROLS -->
+      <% if (typeof user !== 'undefined' && user?.role === 'admin') { %>
+        <div class="admin-controls">
+          <button type="button" class="btn-simulate action-btn"
+                  data-url="/admin/simulate"
+                  data-message="Simulate all pending matches?">
+            Simulate Matches
+          </button>
+
+          <button type="button" class="btn-advance action-btn"
+                  data-url="/admin/advance"
+                  data-message="Advance to the next stage?">
+            Advance Stage
+          </button>
+
+          <button type="button" class="btn-restart action-btn"
+                  data-url="/admin/restart"
+                  data-message="Archive current tournament and restart from scratch?">
+            Restart Tournament
+          </button>
+        </div>
+      <% } %>
+
+    <% } else { %>
+      <div class="no-tournament">
+        <p>No active tournament.</p>
+        <% if (typeof user !== 'undefined' && user?.role === 'admin') { %>
+          <button type="button" class="action-btn"
+                  data-url="/admin/start"
+                  data-message="Start a new tournament with all teams?"
+                  style="margin-top: 1rem; padding: 0.8rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Start New Tournament
+          </button>
+        <% } %>
+      </div>
+    <% } %>
+
   </main>
 
-  <!-- ✅ CONFIRMATION MODAL -->
+  <!-- ACTION CONFIRMATION MODAL -->
   <div id="action-modal" class="modal">
     <div class="modal-content">
       <h3>Confirm Action</h3>
@@ -368,30 +501,33 @@
     </div>
   </div>
 
-  <!-- ✅ FOOTER STICKS TO BOTTOM -->
-  <footer>
-    <div class="container">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <img src="/images/caf.png" alt="ANL Logo" style="height:36px;width:auto;">
+  <footer style="
+  background: linear-gradient(135deg, #1a3f35, #2e6b5b); color: white; padding: 2rem 1rem; margin-top: 3rem; 
+  border-radius: 16px 16px 0 0; box-shadow: 0 -4px 12px rgba(0,0,0,0.1);font-family: 'Roboto', sans-serif;">
+    <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
         <div>
-          <div style="font-weight:700;font-size:1.1rem;">African Nations League</div>
-          <div style="font-size:0.85rem;opacity:0.9;">Official Platform</div>
+          <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
+          <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
         </div>
       </div>
-      <div style="text-align:center;flex:1;min-width:200px;">
-        <a href="/" style="color:white;text-decoration:none;margin:0 8px;opacity:0.9;">Home</a>
-        <a href="/bracket" style="color:white;text-decoration:none;margin:0 8px;opacity:0.9;">Bracket</a>
-        <a href="/rankings" style="color:white;text-decoration:none;margin:0 8px;opacity:0.9;">Rankings</a>
-        <a href="/teams" style="color:white;text-decoration:none;margin:0 8px;opacity:0.9;">Teams</a>
+
+      <div style="text-align: center; flex: 1; min-width: 200px;">
+        <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
+        <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
+        <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
+        <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
       </div>
-      <div style="text-align:right;font-size:0.8rem;opacity:0.8;">
+
+      <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
         © <%= new Date().getFullYear() %> ANL<br>
-        <span style="font-size:0.75rem;">Powered by WGS - UCT</span>
+        <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
       </div>
     </div>
   </footer>
 
-  <!-- ✅ MODAL SCRIPT -->
+  <!-- MODAL SCRIPT -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('action-modal');
@@ -410,9 +546,19 @@
         });
       });
 
-      cancelBtn.addEventListener('click', () => modal.style.display = 'none');
-      modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
-      document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.style.display = 'none'; });
+      cancelBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+          modal.style.display = 'none';
+        }
+      });
     });
   </script>
 </body>
