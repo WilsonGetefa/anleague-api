@@ -267,20 +267,20 @@
       <% } %>
     </div>
 
-    <!-- TOURNAMENTS -->
+    <!-- pasttournaments -->
     <div class="section">
-      <h3>Tournaments (<%= tournaments.length %>)</h3>
+      <h3>pasttournaments (<%= pasttournaments.length %>)</h3>
       <div class="controls">
-        <form action="/admin/delete-all-tournaments" method="POST" onsubmit="return confirm('Delete ALL tournaments?')">
+        <form action="/admin/delete-all-pasttournaments" method="POST" onsubmit="return confirm('Delete ALL pasttournaments?')">
           <button type="submit" class="btn-delete-all">Delete All</button>
         </form>
-        <button class="btn-download" onclick="downloadExcel('tournaments', <%= JSON.stringify(tournaments) %>)">
+        <button class="btn-download" onclick="downloadExcel('pasttournaments', <%= JSON.stringify(pasttournaments) %>)">
           Download Excel
         </button>
       </div>
 
-      <% if (tournaments.length === 0) { %>
-        <div class="no-data">No tournaments found.</div>
+      <% if (pasttournaments.length === 0) { %>
+        <div class="no-data">No pasttournaments found.</div>
       <% } else { %>
         <table>
           <thead>
@@ -293,7 +293,7 @@
             </tr>
           </thead>
           <tbody>
-            <% tournaments.forEach(t => { %>
+            <% pasttournaments.forEach(t => { %>
               <tr>
                 <td data-label="Status"><%= t.status || 'Unknown' %></td>
                 <td data-label="Teams"><%= Array.isArray(t.teams) ? t.teams.length : 0 %></td>
@@ -409,7 +409,7 @@
           t.rating?.toFixed(1) || '0.0',
           t.squad?.length || 0
         ]);
-      } else if (type === 'tournaments') {
+      } else if (type === 'pasttournaments') {
         headers = ['Status', 'Teams', 'Stage', 'Created'];
         rows = data.map(t => [
           t.status || '—',
