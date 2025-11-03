@@ -441,6 +441,7 @@ router.post('/advance', async (req, res) => {
         return match.score.team1 > match.score.team2 ? team1Doc : team2Doc;
       }
 
+      // Tie → extra time or penalties
       const isExtraTime = Math.random() < 0.5;
       const winner = Math.random() < 0.5 ? team1Doc : team2Doc;
       const winnerName = winner?.country || 'Unknown';
@@ -458,28 +459,12 @@ router.post('/advance', async (req, res) => {
     if (tournament.status === 'quarterfinals') {
       const qfs = tournament.bracket.quarterfinals;
       if (qfs.length < 4) {
-        return res.render('admin_dashboard', {
-          title: 'Admin Dashboard',
-          username: req.user.username,
-          role: req.user.role,
-          error: 'Not enough quarterfinals',
-          message: null,
-          tournament,
-          user: req.user
-        });
+        return res.render('admin_dashboard', { error: 'Not enough quarterfinals', tournament, user: req.user });
       }
 
       const allCompleted = qfs.every(qf => qf.match_id?.status === 'completed');
       if (!allCompleted) {
-        return res.render('admin_dashboard', {
-          title: 'Admin Dashboard',
-          username: req.user.username,
-          role: req.user.role,
-          error: 'All quarterfinals must be completed',
-          message: null,
-          tournament,
-          user: req.user
-        });
+        return res.render('admin_dashboard', { error: 'All quarterfinals must be completed', tournament, user: req.user });
       }
 
       const semifinalPairs = [];
@@ -493,15 +478,7 @@ router.post('/advance', async (req, res) => {
         const winner2 = await resolveWinner(m2, t3, t4);
 
         if (!winner1 || !winner2) {
-          return res.render('admin_dashboard', {
-            title: 'Admin Dashboard',
-            username: req.user.username,
-            role: req.user.role,
-            error: 'Could not determine semifinalists',
-            message: null,
-            tournament,
-            user: req.user
-          });
+          return res.render('admin_dashboard', { error: 'Could not determine semifinalists', tournament, user: req.user });
         }
 
         const match = new Match({
@@ -533,28 +510,12 @@ router.post('/advance', async (req, res) => {
     else if (tournament.status === 'semifinals') {
       const sfs = tournament.bracket.semifinals;
       if (sfs.length < 2) {
-        return res.render('admin_dashboard', {
-          title: 'Admin Dashboard',
-          username: req.user.username,
-          role: req.user.role,
-          error: 'Not enough semifinals',
-          message: null,
-          tournament,
-          user: req.user
-        });
+        return res.render('admin_dashboard', { error: 'Not enough semifinals', tournament, user: req.user });
       }
 
       const allCompleted = sfs.every(sf => sf.match_id?.status === 'completed');
       if (!allCompleted) {
-        return res.render('admin_dashboard', {
-          title: 'Admin Dashboard',
-          username: req.user.username,
-          role: req.user.role,
-          error: 'All semifinals must be completed',
-          message: null,
-          tournament,
-          user: req.user
-        });
+        return res.render('admin_dashboard', { error: 'All semifinals must be completed', tournament, user: req.user });
       }
 
       const m1 = sfs[0].match_id, m2 = sfs[1].match_id;
@@ -565,15 +526,7 @@ router.post('/advance', async (req, res) => {
       const finalist2 = await resolveWinner(m2, t3, t4);
 
       if (!finalist1 || !finalist2) {
-        return res.render('admin_dashboard', {
-          title: 'Admin Dashboard',
-          username: req.user.username,
-          role: req.user.role,
-          error: 'Could not determine finalists',
-          message: null,
-          tournament,
-          user: req.user
-        });
+        return res.render('admin_dashboard', { error: 'Could not determine finalists', tournament, user: req.user });
       }
 
       const finalMatch = new Match({
@@ -602,17 +555,10 @@ router.post('/advance', async (req, res) => {
     else if (tournament.status === 'final') {
       const final = tournament.bracket.final[0];
       if (!final?.match_id || final.match_id.status !== 'completed') {
-        return res.render('admin_dashboard', {
-          title: 'Admin Dashboard',
-          username: req.user.username,
-          role: req.user.role,
-          error: 'Final match must be completed',
-          message: null,
-          tournament,
-          user: req.user
-        });
+        return res.render('admin_dashboard', { error: 'Final match must be completed', tournament, user: req.user });
       }
 
+      // Build clean bracket for archiving (no populated objects)
       const cleanBracket = {
         quarterfinals: tournament.bracket.quarterfinals.map(qf => ({
           team1_id: qf.team1_id?._id,
@@ -643,15 +589,7 @@ router.post('/advance', async (req, res) => {
     }
 
     else {
-      return res.render('admin_dashboard', {
-        title: 'Admin Dashboard',
-        username: req.user.username,
-        role: req.user.role,
-        error: 'No stage to advance',
-        message: null,
-        tournament,
-        user: req.user
-      });
+      return res.render('admin_dashboard', { error: 'No stage to advance', tournament, user: req.user });
     }
 
     // === RELOAD WITH FRESH POPULATION ===
