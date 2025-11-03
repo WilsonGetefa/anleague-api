@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= title %></title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="icon" type="image/x-icon" href="/images/caf.png">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="icon" type="image/x-icon" href="/images/caf.png" />
 
   <style>
     :root {
@@ -16,34 +16,19 @@
       --light: #f8f9fa;
       --gray: #6c757d;
       --border: #dee2e6;
-      --gold:  #d4af37;
+      --gold: #d4af37;
     }
-
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-
-    body { 
-      font-family: 'Roboto', sans-serif; 
-      background: #f4f6f9; 
-      color: #333; 
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f6f9;
+      color: #333;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
-
-    .container { 
-      max-width: 1100px; 
-      margin: 2rem auto; 
-      padding: 0 1rem; 
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-      font-weight: 700;
-    }
+    .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    header h1 { margin: 0; font-size: 2rem; font-weight: 700; }
 
     nav {
       text-align: center;
@@ -61,44 +46,29 @@
       font-size: 0.95rem;
     }
     nav a:hover { color: var(--accent); }
-    
+
     .sticky-top {
-      position: sticky; 
-      top: 0; 
-      z-index: 1000; 
-      background: white; 
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: white;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-
     .sticky-top header {
-      text-align: center; 
-      padding: 1rem 1rem; 
+      text-align: center;
+      padding: 1rem;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; 
-      border-radius: 0 0 16px 16px; 
-      margin-bottom: 1rem; 
+      color: white;
+      border-radius: 0 0 16px 16px;
+      margin-bottom: 1rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-
     .sticky-top nav {
-      background: white; 
-      padding: 1rem 1rem; 
+      background: white;
+      padding: 1rem;
       text-align: center;
-      border-bottom: 1px solid #eee; 
+      border-bottom: 1px solid #eee;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-    .sticky-top nav a {
-      margin: 0 10px; 
-      color: var(--primary); 
-      text-decoration: none;
-      font-weight: 500; 
-      font-size: 0.95rem; 
-      transition: color 0.2s;
-    }
-
-    .sticky-top nav a:hover {
-      color: var(--accent);
     }
 
     .message {
@@ -111,12 +81,7 @@
     .success { background: #d4edda; color: #155724; }
     .error { background: #f8d7da; color: #721c24; }
 
-    .status {
-      text-align: center;
-      font-weight: 600;
-      color: var(--primary-dark);
-      margin-bottom: 1.5rem;
-    }
+    .status { text-align: center; font-weight: 600; color: var(--primary-dark); margin-bottom: 1.5rem; }
 
     .round-title {
       color: var(--primary-dark);
@@ -139,19 +104,10 @@
       transform: translateY(-3px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     }
-
-    .match-teams {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--primary-dark);
-      margin-bottom: 0.4rem;
-    }
-
-    .match-score {
-      font-weight: 600;
-      color: #333;
-      margin: 0.4rem 0;
-    }
+    .match-teams { font-size: 1.1rem; font-weight: 600; color: var(--primary-dark); margin-bottom: 0.4rem; }
+    .match-score { font-weight: 600; color: #333; margin: 0.4rem 0; }
+    .commentary { font-style: italic; color: #555; margin: 0.6rem 0; font-size: 0.9rem; }
+    .winner { font-weight: bold; color: var(--gold); margin-top: 0.6rem; text-align: center; }
 
     .status-badge {
       display: inline-block;
@@ -166,28 +122,12 @@
     .in-progress { background: #fff3cd; color: #856404; }
     .completed { background: #d4edda; color: #155724; }
 
-    .commentary {
-      font-style: italic;
-      color: #555;
-      margin: 0.6rem 0;
-      font-size: 0.9rem;
-    }
-
-    .winner {
-      font-weight: bold;
-      color: var(--gold);
-      margin-top: 0.6rem;
-      font-size: 1rem;
-      text-align: center;
-    }
-
     .update-score-form {
       margin-top: 0.8rem;
       display: flex;
       gap: 0.5rem;
-      align-items: center;
-      flex-wrap: wrap;
       justify-content: center;
+      flex-wrap: wrap;
     }
     .update-score-form input {
       width: 60px;
@@ -205,11 +145,8 @@
       border-radius: 6px;
       font-size: 0.9rem;
       cursor: pointer;
-      transition: background 0.2s;
     }
-    .update-score-form button:hover {
-      background: var(--primary-dark);
-    }
+    .update-score-form button:hover { background: var(--primary-dark); }
 
     .admin-controls {
       display: flex;
@@ -224,16 +161,11 @@
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     .btn-simulate { background: var(--primary); color: white; }
     .btn-advance { background: #17a2b8; color: white; }
     .btn-restart { background: #dc3545; color: white; }
-    .admin-controls button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
 
     .no-tournament {
       text-align: center;
@@ -245,7 +177,6 @@
       box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     }
 
-    /* MODAL STYLES */
     .modal {
       display: none;
       position: fixed;
@@ -266,16 +197,6 @@
       width: 90%;
       text-align: center;
     }
-    .modal-content h3 {
-      margin: 0 0 1rem;
-      color: #721c24;
-      font-size: 1.4rem;
-    }
-    .modal-content p {
-      margin: 0 0 1.5rem;
-      color: #333;
-      line-height: 1.5;
-    }
     .modal-actions {
       display: flex;
       justify-content: center;
@@ -291,40 +212,17 @@
     }
     #cancel-action { background: #6c757d; color: white; }
     #confirm-action { background: #dc3545; color: white; }
-    .modal-actions button:hover { opacity: .9; }
 
-    @media (max-width:768px) {
-      table, thead, tbody, th, td, tr { display: block; }
-      thead tr { position: absolute; top: -9999px; left: -9999px; }
-      tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
-      td { border: none; position: relative; padding-left: 50%; }
-      td::before { content: attr(data-label); position: absolute; left: 1rem; width: 45%; font-weight: 600; }
-    }
-
-    main {
-      flex: 1;
-    }
+    main { flex: 1; }
   </style>
 </head>
+
 <body>
   <div class="sticky-top">
     <header>
-      <div style="
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        max-width: 100%;
-        padding: 0 1rem;
-      ">
-        <a href="/" style="display: block; line-height: 0;">
-          <img src="/images/caf.png" 
-              alt="ANL Logo" 
-              style="height: 40px; width: auto;">
-        </a>
-        <h1 style="margin: 0; font-size: 2rem; font-weight: 700; color: white; text-align: center; flex: 1;">
-          <%= title %>
-        </h1>
+      <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
+        <a href="/"><img src="/images/caf.png" alt="ANL Logo" style="height:40px;width:auto;"></a>
+        <h1 style="margin:0;font-size:2rem;font-weight:700;flex:1;color:white;"><%= title %></h1>
       </div>
     </header>
 
@@ -333,7 +231,7 @@
       <a href="/bracket">Bracket</a> |
       <a href="/rankings">Rankings</a> |
       <a href="/teams">Teams</a> |
-      <% if (typeof user !== 'undefined' && user) { %>
+      <% if (user) { %>
         <% if (user.role === 'admin') { %>
           <a href="/admin/dashboard">Admin Dashboard</a> |
           <a href="/admin/data">Data Overview</a> |
@@ -349,16 +247,12 @@
   </div>
 
   <main class="container">
-    <% if (typeof user !== 'undefined' && user) { %>
+    <% if (user) { %>
       <h2 class="welcome">Welcome, <strong><%= user.username %></strong>!</h2>
     <% } %>
 
-    <% if (message) { %>
-      <p class="message success"><%= message %></p>
-    <% } %>
-    <% if (error) { %>
-      <p class="message error"><%= error %></p>
-    <% } %>
+    <% if (message) { %><p class="message success"><%= message %></p><% } %>
+    <% if (error) { %><p class="message error"><%= error %></p><% } %>
 
     <% if (tournament) { %>
       <p class="status"><strong>Current Status:</strong> <%= tournament.status %></p>
@@ -369,38 +263,56 @@
         return 'pending';
       }; %>
 
-      <!-- TOURNAMENT ROUNDS OMITTED FOR BREVITY (UNCHANGED FROM YOUR VERSION) -->
+      <!-- QUARTERFINALS -->
+      <h2 class="round-title">Quarterfinals</h2>
+      <% (tournament.bracket.quarterfinals || []).forEach(qf => { %>
+        <div class="match-card">
+          <div class="match-teams"><%= qf.teamA %> vs <%= qf.teamB %></div>
+          <div class="match-score"><%= qf.scoreA %> - <%= qf.scoreB %></div>
+          <div class="status-badge <%= getStatusClass(qf.status) %>"><%= qf.status %></div>
+          <% if (qf.commentary) { %><div class="commentary"><%= qf.commentary %></div><% } %>
+          <% if (qf.winner) { %><div class="winner">Winner: <%= qf.winner %></div><% } %>
+        </div>
+      <% }); %>
 
-      <% if (typeof user !== 'undefined' && user?.role === 'admin') { %>
+      <!-- SEMIFINALS -->
+      <h2 class="round-title">Semifinals</h2>
+      <% (tournament.bracket.semifinals || []).forEach(sf => { %>
+        <div class="match-card">
+          <div class="match-teams"><%= sf.teamA %> vs <%= sf.teamB %></div>
+          <div class="match-score"><%= sf.scoreA %> - <%= sf.scoreB %></div>
+          <div class="status-badge <%= getStatusClass(sf.status) %>"><%= sf.status %></div>
+          <% if (sf.commentary) { %><div class="commentary"><%= sf.commentary %></div><% } %>
+          <% if (sf.winner) { %><div class="winner">Winner: <%= sf.winner %></div><% } %>
+        </div>
+      <% }); %>
+
+      <!-- FINAL -->
+      <h2 class="round-title">Final</h2>
+      <% (tournament.bracket.final || []).forEach(f => { %>
+        <div class="match-card">
+          <div class="match-teams"><%= f.teamA %> vs <%= f.teamB %></div>
+          <div class="match-score"><%= f.scoreA %> - <%= f.scoreB %></div>
+          <div class="status-badge <%= getStatusClass(f.status) %>"><%= f.status %></div>
+          <% if (f.commentary) { %><div class="commentary"><%= f.commentary %></div><% } %>
+          <% if (f.winner) { %><div class="winner">Champion: <%= f.winner %></div><% } %>
+        </div>
+      <% }); %>
+
+      <% if (user?.role === 'admin') { %>
         <div class="admin-controls">
-          <button type="button" class="btn-simulate action-btn"
-                  data-url="/admin/simulate"
-                  data-message="Simulate all pending matches?">
-            Simulate Matches
-          </button>
-
-          <button type="button" class="btn-advance action-btn"
-                  data-url="/admin/advance"
-                  data-message="Advance to the next stage?">
-            Advance Stage
-          </button>
-
-          <button type="button" class="btn-restart action-btn"
-                  data-url="/admin/restart"
-                  data-message="Archive current tournament and restart from scratch?">
-            Restart Tournament
-          </button>
+          <button class="btn-simulate action-btn" data-url="/admin/simulate" data-message="Simulate all pending matches?">Simulate Matches</button>
+          <button class="btn-advance action-btn" data-url="/admin/advance" data-message="Advance to next stage?">Advance Stage</button>
+          <button class="btn-restart action-btn" data-url="/admin/restart" data-message="Restart the tournament?">Restart Tournament</button>
         </div>
       <% } %>
 
     <% } else { %>
       <div class="no-tournament">
         <p>No active tournament.</p>
-        <% if (typeof user !== 'undefined' && user?.role === 'admin') { %>
-          <button type="button" class="action-btn"
-                  data-url="/admin/start"
-                  data-message="Start a new tournament with all teams?"
-                  style="margin-top: 1rem; padding: 0.8rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+        <% if (user?.role === 'admin') { %>
+          <button class="action-btn" data-url="/admin/start" data-message="Start a new tournament with all teams?"
+            style="margin-top:1rem;padding:0.8rem 1.5rem;background:var(--primary);color:white;border:none;border-radius:8px;font-weight:600;">
             Start New Tournament
           </button>
         <% } %>
@@ -408,7 +320,7 @@
     <% } %>
   </main>
 
-  <!-- ✅ RESTORED MODAL -->
+  <!-- MODAL RESTORED -->
   <div id="action-modal" class="modal">
     <div class="modal-content">
       <h3>Confirm Action</h3>
@@ -421,39 +333,29 @@
       </div>
     </div>
   </div>
-  <!-- END RESTORED MODAL -->
 
-  <footer style="
-    background: linear-gradient(135deg, #1a3f35, #2e6b5b); 
-    color: white; 
-    padding: 2rem 1rem; 
-    border-radius: 16px 16px 0 0; 
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-    font-family: 'Roboto', sans-serif;">
-    <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
+  <footer style="background:linear-gradient(135deg,#1a3f35,#2e6b5b);color:white;padding:2rem 1rem;border-radius:16px 16px 0 0;">
+    <div class="container" style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img src="/images/caf.png" alt="ANL Logo" style="height:36px;">
         <div>
-          <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
-          <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
+          <div style="font-weight:700;">African Nations League</div>
+          <div style="font-size:0.85rem;opacity:0.9;">Official Platform</div>
         </div>
       </div>
-
-      <div style="text-align: center; flex: 1; min-width: 200px;">
-        <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
-        <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
-        <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
-        <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
+      <div style="text-align:center;flex:1;">
+        <a href="/" style="color:white;margin:0 8px;">Home</a>
+        <a href="/bracket" style="color:white;margin:0 8px;">Bracket</a>
+        <a href="/rankings" style="color:white;margin:0 8px;">Rankings</a>
+        <a href="/teams" style="color:white;margin:0 8px;">Teams</a>
       </div>
-
-      <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
-        © <%= new Date().getFullYear() %> ANL<br>
-        <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
+      <div style="text-align:right;font-size:0.8rem;opacity:0.8;">
+        © <%= new Date().getFullYear() %> ANL<br />
+        <span style="font-size:0.75rem;">Powered by WGS - UCT</span>
       </div>
     </div>
   </footer>
 
-  <!-- MODAL SCRIPT -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('action-modal');
@@ -465,20 +367,14 @@
         btn.addEventListener('click', () => {
           const url = btn.dataset.url;
           const msg = btn.dataset.message;
-
           messageEl.innerHTML = `<strong>${msg}</strong>`;
           form.action = url;
           modal.style.display = 'flex';
         });
       });
 
-      cancelBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-      });
-
-      window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-      });
+      cancelBtn.addEventListener('click', () => modal.style.display = 'none');
+      window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
     });
   </script>
 </body>
