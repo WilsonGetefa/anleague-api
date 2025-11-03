@@ -18,18 +18,11 @@
       --border: #dee2e6;
     }
 
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-
     body { 
       font-family: 'Roboto', sans-serif; 
       background: #f4f6f9; 
       color: #333; 
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      margin: 0;
     }
 
     .container { 
@@ -62,42 +55,26 @@
     nav a:hover { color: var(--accent); }
     
     .sticky-top {
-      position: sticky; 
-      top: 0; 
-      z-index: 1000; 
-      background: white; 
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        position: sticky; top: 0; z-index: 1000; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
     .sticky-top header {
-      text-align: center; 
-      padding: 1rem 1rem; 
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; 
-      border-radius: 0 0 16px 16px; 
-      margin-bottom: 1rem; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        text-align: center; padding: 1rem 1rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white; border-radius: 0 0 16px 16px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     .sticky-top nav {
-      background: white; 
-      padding: 1rem 1rem; 
-      text-align: center;
-      border-bottom: 1px solid #eee; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        background: white; padding: 1rem 1rem; text-align: center;
+        border-bottom: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
     .sticky-top nav a {
-      margin: 0 10px; 
-      color: var(--primary); 
-      text-decoration: none;
-      font-weight: 500; 
-      font-size: 0.95rem; 
-      transition: color 0.2s;
+        margin: 0 10px; color: var(--primary); text-decoration: none;
+        font-weight: 500; font-size: 0.95rem; transition: color 0.2s;
     }
 
     .sticky-top nav a:hover {
-      color: var(--accent);
+        color: var(--accent);
     }
 
     .bracket-round {
@@ -220,73 +197,72 @@
       td { border: none; position: relative; padding-left: 50%; }
       td::before { content: attr(data-label); position: absolute; left: 1rem; width: 45%; font-weight: 600; }
     }
-
-    main {
-      flex: 1;
-    }
   </style>
 </head>
 <body>
   <div class="sticky-top">
-    <header>
+  <header>
       <div style="
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        max-width: 100%;
-        padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      max-width: 100%;
+      padding: 0 1rem;
+    ">
+      <!-- LOGO (clickable to home) -->
+      <a href="/" style="display: block; line-height: 0;">
+        <img src="/images/caf.png" 
+            alt="ANL Logo" 
+            style="
+              height: 40px;
+              width: auto;
+              /*filter: brightness(0) invert(1);  makes dark logo white */
+            ">
+      </a>
+
+      <!-- TITLE (centered) -->
+      <h1 style="
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        text-align: center;
+        flex: 1;
       ">
-        <!-- LOGO (clickable to home) -->
-        <a href="/" style="display: block; line-height: 0;">
-          <img src="/images/caf.png" 
-              alt="ANL Logo" 
-              style="
-                height: 40px;
-                width: auto;
-              ">
-        </a>
+        <%= title %>
+      </h1>
+    </div>
+  </header>
 
-        <!-- TITLE (centered) -->
-        <h1 style="
-          margin: 0;
-          font-size: 2rem;
-          font-weight: 700;
-          color: white;
-          text-align: center;
-          flex: 1;
-        ">
-          <%= title %>
-        </h1>
-      </div>
-    </header>
-
-    <!-- NAVIGATION -->
-    <nav>
-      <a href="/">Home</a> |
-      <a href="/bracket">Bracket</a> |
-      <a href="/rankings">Rankings</a> |
-      <a href="/teams">Teams</a> |
-      <% if (user) { %>
-        <% if (user.role === 'admin') { %>
-          <a href="/admin/dashboard">Admin Dashboard</a> |
-          <a href="/admin/data">Data Overview</a> |
-        <% } else { %>
-          <a href="/dashboard">Dashboard</a> |
-        <% } %>
-        <a href="/auth/logout">Logout</a>
+  <!-- NAVIGATION -->
+  <nav>
+    <a href="/">Home</a> |
+    <a href="/bracket">Bracket</a> |
+    <a href="/rankings">Rankings</a> |
+    <a href="/teams">Teams</a> |
+    <% if (user) { %>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/dashboard">Admin Dashboard</a> |
+        <a href="/admin/data">Data Overview</a> |
       <% } else { %>
-        <a href="/login">Login</a> |
-        <a href="/signup">Sign Up</a>
+        <a href="/dashboard">Dashboard</a> |
       <% } %>
-    </nav>
+      <a href="/auth/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a> |
+      <a href="/signup">Sign Up</a>
+    <% } %>
+  </nav>
   </div>
   <main class="container">
+
     <% if (message) { %>
       <p class="message success"><%= message %></p>
     <% } else if (error) { %>
       <p class="message error"><%= error %></p>
     <% } else if (tournament) { %>
+
       <h2 style="text-align: center; color: var(--primary-dark); margin: 1.5rem 0;">Current Tournament Bracket</h2>
 
       <!-- WINNER HELPER -->
@@ -443,33 +419,39 @@
     <% } else { %>
       <p style="text-align: center; color: var(--gray); font-style: italic;">No tournament data available</p>
     <% } %>
+
   </main>
-  <footer style="
-    background: linear-gradient(135deg, #1a3f35, #2e6b5b); 
-    color: white; 
-    padding: 2rem 1rem; 
-    border-radius: 16px 16px 0 0; 
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-    font-family: 'Roboto', sans-serif;">
-    <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
-        <div>
-          <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
-          <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
-        </div>
-      </div>
-      <div style="text-align: center; flex: 1; min-width: 200px;">
-        <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
-        <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
-        <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
-        <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
-      </div>
-      <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
-        © <%= new Date().getFullYear() %> ANL<br>
-        <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
+      <footer style="
+  background: linear-gradient(135deg, #1a3f35, #2e6b5b); 
+  color: white; 
+  padding: 2rem 1rem; 
+  margin-top: 3rem; 
+  border-radius: 16px 16px 0 0; 
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+  font-family: 'Roboto', sans-serif;">
+  <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
+      <div>
+        <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
+        <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
       </div>
     </div>
-  </footer>
+
+    <div style="text-align: center; flex: 1; min-width: 200px;">
+      <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
+      <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
+      <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
+      <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
+    </div>
+
+    <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
+      © <%= new Date().getFullYear() %> ANL<br>
+      <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
