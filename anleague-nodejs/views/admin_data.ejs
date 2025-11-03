@@ -269,7 +269,7 @@
 
     <!-- pasttournaments -->
     <div class="section">
-      <h3>pasttournaments (<%= pasttournaments.length %>)</h3>
+      <h3>Past-tournaments (<%= pasttournaments.length %>)</h3>
       <div class="controls">
         <form action="/admin/delete-all-pasttournaments" method="POST" onsubmit="return confirm('Delete ALL pasttournaments?')">
           <button type="submit" class="btn-delete-all">Delete All</button>
@@ -280,7 +280,7 @@
       </div>
 
       <% if (pasttournaments.length === 0) { %>
-        <div class="no-data">No pasttournaments found.</div>
+        <div class="no-data">No Past-tournaments found.</div>
       <% } else { %>
         <table>
           <thead>
@@ -329,7 +329,7 @@
         <table>
           <thead>
             <tr>
-              <th>Stage</th>
+              <!--th>Stage</th-->
               <th>Team 1</th>
               <th>Score</th>
               <th>Team 2</th>
