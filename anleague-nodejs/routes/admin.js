@@ -757,10 +757,11 @@ router.post('/edit-match', async (req, res) => {
 // ADMIN DATA ROUTES
 router.get('/data', authMiddleware, adminOnly, async (req, res) => {
   try {
-    const [users, teams, tournaments, matches] = await Promise.all([
+    const [users, teams, tournaments, matches, pasttournaments] = await Promise.all([
       User.find().lean(),
       Team.find().populate('representative_id', 'username').lean(),
       Tournament.find().lean(),
+      PastTournament.find().lean(),
       Match.find().populate('team1_id team2_id', 'country').lean()
     ]);
 
@@ -771,6 +772,7 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
       teams: teams || [],
       tournaments: tournaments || [],
       matches: matches || [],
+      pasttournaments: pasttournaments || [],
       message: req.query.message || null,
       error: null
     });
@@ -783,6 +785,7 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
       users: [],
       teams: [],
       tournaments: [],
+      pasttournaments: [],
       matches: [],
       error: 'Failed to load data: ' + err.message
     });
@@ -818,6 +821,11 @@ router.post('/delete-tournament/:id', authMiddleware, adminOnly, async (req, res
 router.post('/delete-all-tournaments', authMiddleware, adminOnly, async (req, res) => {
   await Tournament.deleteMany({});
   res.redirect('/admin/data?message=All tournaments deleted');
+});
+
+router.post('/delete-all-pasttournaments', authMiddleware, adminOnly, async (req, res) => {
+  await pasttournaments.deleteMany({});
+  res.redirect('/admin/data?message=All pasttournaments deleted');
 });
 
 router.post('/delete-match/:id', authMiddleware, adminOnly, async (req, res) => {
