@@ -132,7 +132,7 @@
       td::before { content: attr(data-label); position: absolute; left: 1rem; width: 45%; font-weight: 600; }
     }
 
-    /* ---------- MODAL ---------- */
+    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -176,9 +176,17 @@
       font-weight: 600;
       min-width: 100px;
     }
-    #cancel-delete { background: #6c757d; color: white; }
-    #confirm-delete { background: #dc3545; color: white; }
-    .modal-actions button:hover { opacity: .9; }
+    #cancel-delete {
+      background: #6c757d;
+      color: white;
+    }
+    #confirm-delete {
+      background: #dc3545;
+      color: white;
+    }
+    .modal-actions button:hover {
+      opacity: 0.9;
+    }
   </style>
 </head>
 <body>
@@ -224,17 +232,13 @@
       <p class="success"><%= message %></p>
     <% } %>
 
-    <!-- ==================== USERS ==================== -->
+    <!-- USERS -->
     <div class="section">
       <h3>Users (<%= users.length %>)</h3>
       <div class="controls">
-        <!-- Delete-All button (opens modal) -->
-        <button type="button" class="btn-delete-all delete-all-btn"
-                data-url="/admin/delete-all-users"
-                data-message="Delete ALL users?">
-          Delete All Users
-        </button>
-
+        <form action="/admin/delete-all-users" method="POST" onsubmit="return confirm('Delete ALL users?')">
+          <button type="submit" class="btn-delete-all">Delete All Users</button>
+        </form>
         <button class="btn-download" onclick="downloadExcel('users', <%= JSON.stringify(users.map(u => ({ ...u, team: u.team ? u.team.toString() : null }))) %>)">
           Download Users Excel
         </button>
@@ -267,9 +271,9 @@
                   <%= teamObj ? teamObj.country : 'None' %>
                 </td>
                 <td data-label="Actions" class="actions">
-                  <button type="button" class="delete-btn"
-                          data-id="<%= u._id %>"
-                          data-name="<%= u.username %>"
+                  <button type="button" class="delete-btn" 
+                          data-id="<%= u._id %>" 
+                          data-name="<%= u.username %>" 
                           data-type="user"
                           data-url="/admin/delete-user/<%= u._id %>">
                     Delete
@@ -282,16 +286,13 @@
       <% } %>
     </div>
 
-    <!-- ==================== TEAMS ==================== -->
+    <!-- TEAMS -->
     <div class="section">
       <h3>Teams (<%= teams.length %>)</h3>
       <div class="controls">
-        <button type="button" class="btn-delete-all delete-all-btn"
-                data-url="/admin/delete-all-teams"
-                data-message="Delete ALL teams?">
-          Delete All Teams
-        </button>
-
+        <form action="/admin/delete-all-teams" method="POST" onsubmit="return confirm('Delete ALL teams?')">
+          <button type="submit" class="btn-delete-all">Delete All Teams</button>
+        </form>
         <button class="btn-download" onclick="downloadExcel('teams', <%= JSON.stringify(teams) %>)">
           Download Teams Excel
         </button>
@@ -320,9 +321,9 @@
                 <td data-label="Rating"><%= isNaN(t.rating) ? '0.0' : t.rating.toFixed(1) %></td>
                 <td data-label="Squad"><%= Array.isArray(t.squad) ? t.squad.length : 0 %> players</td>
                 <td data-label="Actions" class="actions">
-                  <button type="button" class="delete-btn"
-                          data-id="<%= t._id %>"
-                          data-name="<%= t.country %>"
+                  <button type="button" class="delete-btn" 
+                          data-id="<%= t._id %>" 
+                          data-name="<%= t.country %>" 
                           data-type="team"
                           data-url="/admin/delete-team/<%= t._id %>">
                     Delete
@@ -335,16 +336,13 @@
       <% } %>
     </div>
 
-    <!-- ==================== PAST TOURNAMENTS ==================== -->
+    <!-- PAST TOURNAMENTS -->
     <div class="section">
       <h3>Past-tournaments (<%= pasttournaments.length %>)</h3>
       <div class="controls">
-        <button type="button" class="btn-delete-all delete-all-btn"
-                data-url="/admin/delete-all-pasttournaments"
-                data-message="Delete ALL past-tournaments?">
-          Delete All
-        </button>
-
+        <form action="/admin/delete-all-pasttournaments" method="POST" onsubmit="return confirm('Delete ALL pasttournaments?')">
+          <button type="submit" class="btn-delete-all">Delete All</button>
+        </form>
         <button class="btn-download" onclick="downloadExcel('pasttournaments', <%= JSON.stringify(pasttournaments) %>)">
           Download Excel
         </button>
@@ -371,8 +369,8 @@
                 <td data-label="Stage"><%= t.status || '—' %></td>
                 <td data-label="Created"><%= t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—' %></td>
                 <td data-label="Actions" class="actions">
-                  <button type="button" class="delete-btn"
-                          data-id="<%= t._id %>"
+                  <button type="button" class="delete-btn" 
+                          data-id="<%= t._id %>" 
                           data-name="Tournament #<%= t._id %>"
                           data-type="tournament"
                           data-url="/admin/delete-tournament/<%= t._id %>">
@@ -386,16 +384,13 @@
       <% } %>
     </div>
 
-    <!-- ==================== MATCHES ==================== -->
+    <!-- MATCHES -->
     <div class="section">
       <h3>Matches (<%= matches.length %>)</h3>
       <div class="controls">
-        <button type="button" class="btn-delete-all delete-all-btn"
-                data-url="/admin/delete-all-matches"
-                data-message="Delete ALL matches?">
-          Delete All
-        </button>
-
+        <form action="/admin/delete-all-matches" method="POST" onsubmit="return confirm('Delete ALL matches?')">
+          <button type="submit" class="btn-delete-all">Delete All</button>
+        </form>
         <button class="btn-download" onclick="downloadExcel('matches', <%= JSON.stringify(matches) %>)">
           Download Excel
         </button>
@@ -422,8 +417,8 @@
                 <td data-label="Team 2"><%= m.team2_id?.country || 'TBD' %></td>
                 <td data-label="Status"><%= m.status || '—' %></td>
                 <td data-label="Actions" class="actions">
-                  <button type="button" class="delete-btn"
-                          data-id="<%= m._id %>"
+                  <button type="button" class="delete-btn" 
+                          data-id="<%= m._id %>" 
                           data-name="<%= (m.team1_id?.country || 'TBD') %> vs <%= (m.team2_id?.country || 'TBD') %>"
                           data-type="match"
                           data-url="/admin/delete-match/<%= m._id %>">
@@ -438,48 +433,48 @@
     </div>
   </main>
 
-  <!-- ==================== DELETE MODAL (shared) ==================== -->
+  <!-- DELETE CONFIRMATION MODAL (Shared for all delete actions) -->
   <div id="delete-modal" class="modal">
     <div class="modal-content">
       <h3>Confirm Deletion</h3>
-      <p id="modal-message"></p>
+      <p>Are you sure you want to delete <strong id="modal-item-name"></strong>?</p>
       <div class="modal-actions">
         <button id="cancel-delete">Cancel</button>
-        <form id="delete-form" action="" method="POST" style="display:inline;">
+        <form id="delete-form" action="" method="POST" style="display: inline;">
           <button type="submit" id="confirm-delete">Confirm Delete</button>
         </form>
       </div>
     </div>
   </div>
 
-  <footer style="background: linear-gradient(135deg, #1a3f35, #2e6b5b); color: white; padding: 2rem 1rem; margin-top: 3rem; 
+  <footer style="
+  background: linear-gradient(135deg, #1a3f35, #2e6b5b); color: white; padding: 2rem 1rem; margin-top: 3rem; 
   border-radius: 16px 16px 0 0; box-shadow: 0 -4px 12px rgba(0,0,0,0.1);font-family: 'Roboto', sans-serif;">
-    <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
-        <div>
-          <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
-          <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
-        </div>
-      </div>
-
-      <div style="text-align: center; flex: 1; min-width: 200px;">
-        <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
-        <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
-        <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
-        <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
-      </div>
-
-      <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
-        © <%= new Date().getFullYear() %> ANL<br>
-        <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
+  <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
+      <div>
+        <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
+        <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
       </div>
     </div>
-  </footer>
 
-  <!-- ==================== SCRIPTS ==================== -->
+    <div style="text-align: center; flex: 1; min-width: 200px;">
+      <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
+      <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
+      <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
+      <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
+    </div>
+
+    <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
+      © <%= new Date().getFullYear() %> ANL<br>
+      <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
+    </div>
+  </div>
+</footer>
+
   <script>
-    /* ---------- Excel Export (unchanged) ---------- */
     async function downloadExcel(type, data) {
       const wb = new ExcelJS.Workbook();
       const ws = wb.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
@@ -546,49 +541,37 @@
       saveAs(new Blob([buf]), `${type}_report_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    /* ---------- DELETE MODAL LOGIC ---------- */
+    // DELETE MODAL LOGIC
     document.addEventListener('DOMContentLoaded', () => {
-      const modal      = document.getElementById('delete-modal');
-      const msgSpan    = document.getElementById('modal-message');
+      const modal = document.getElementById('delete-modal');
+      const itemNameSpan = document.getElementById('modal-item-name');
       const deleteForm = document.getElementById('delete-form');
-      const cancelBtn  = document.getElementById('cancel-delete');
+      const cancelBtn = document.getElementById('cancel-delete');
 
-      /* ---- Single-row delete buttons ---- */
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const name = btn.dataset.name;
-          const url  = btn.dataset.url;
+          const url = btn.dataset.url;
 
-          msgSpan.innerHTML = `Are you sure you want to delete <strong>${name}</strong>?`;
+          itemNameSpan.textContent = name;
           deleteForm.action = url;
           modal.style.display = 'flex';
         });
       });
 
-      /* ---- "Delete All" buttons ---- */
-      document.querySelectorAll('.delete-all-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const url     = btn.dataset.url;
-          const message = btn.dataset.message;
-
-          msgSpan.innerHTML = `<strong>${message}</strong>`;
-          deleteForm.action = url;
-          modal.style.display = 'flex';
-        });
-      });
-
-      /* ---- Cancel ---- */
       cancelBtn.addEventListener('click', () => {
         modal.style.display = 'none';
       });
 
-      /* ---- Click outside modal ---- */
-      modal.addEventListener('click', e => {
-        if (e.target === modal) modal.style.display = 'none';
+      // Close modal when clicking outside
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
       });
 
-      /* ---- Escape key ---- */
-      document.addEventListener('keydown', e => {
+      // Optional: Close with Escape key
+      document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.style.display === 'flex') {
           modal.style.display = 'none';
         }
