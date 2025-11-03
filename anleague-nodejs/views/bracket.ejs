@@ -421,36 +421,28 @@
     <% } %>
 
   </main>
-      <footer style="
-  background: linear-gradient(135deg, #1a3f35, #2e6b5b); 
-  color: white; 
-  padding: 2rem 1rem; 
-  margin-top: 3rem; 
-  border-radius: 16px 16px 0 0; 
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-  font-family: 'Roboto', sans-serif;">
-  <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-    
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
-      <div>
-        <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
-        <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
+      <footer>
+            <div class="container">
+      <div class="logo-section">
+        <img src="/images/caf.png" alt="ANL Logo">
+        <div>
+          <div><strong>African Nations League</strong></div>
+          <small>Official Platform</small>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/bracket">Bracket</a>
+        <a href="/rankings">Rankings</a>
+        <a href="/teams">Teams</a>
+      </div>
+
+      <div class="copyright">
+        © <%= new Date().getFullYear() %> ANL<br>
+        <span>Powered by WGS - UCT</span>
       </div>
     </div>
-
-    <div style="text-align: center; flex: 1; min-width: 200px;">
-      <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
-      <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
-      <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
-      <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
-    </div>
-
-    <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
-      © <%= new Date().getFullYear() %> ANL<br>
-      <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
-    </div>
-  </div>
 </footer>
 
 </body>
