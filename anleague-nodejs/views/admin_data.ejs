@@ -340,7 +340,7 @@
           <tbody>
             <% matches.forEach(m => { %>
               <tr>
-                <td data-label="Stage"><%= m.stage || '—' %></td>
+                <!--td data-label="Stage"><%= m.stage || '—' %></td-->
                 <td data-label="Team 1"><%= m.team1_id?.country || 'TBD' %></td>
                 <td data-label="Score"><%= m.score?.team1 ?? 0 %>–<%= m.score?.team2 ?? 0 %></td>
                 <td data-label="Team 2"><%= m.team2_id?.country || 'TBD' %></td>
