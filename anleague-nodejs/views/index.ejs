@@ -94,22 +94,34 @@
       color: var(--accent);
     }
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-      transition: transform 0.2s ease;
-      font-size: 1.05rem;
+      padding: 2rem;           /* Increased from 1.5rem */
+      margin-bottom: 2rem;     /* Increased from 1.5rem */
     }
-    .card:hover { 
-      transform: translateY(-3px); 
-    }
+
     .card h3 {
-      margin: 0 0 1.2rem;
-      color: var(--primary-dark);
-      font-size: 1.45rem;
-      font-weight: 600;
+      font-size: 1.5rem;       /* Increased from 1.3rem */
+      margin-bottom: 1.2rem;   /* Slightly more breathing room */
+    }
+
+    .card p,
+    .card ul,
+    .card .btn {
+      font-size: 1.05rem;      /* Subtle increase in body text */
+      line-height: 1.6;        /* Improved readability */
+    }
+
+    .champions-list li {
+      padding: 0.85rem 0;      /* Increased from 0.7rem */
+      font-size: 1rem;         /* Increased from 0.95rem */
+    }
+
+    .stats {
+      gap: 2.5rem;             /* Slightly more space between stat items */
+      font-size: 1.15rem;      /* Base stat text */
+    }
+
+    .stat-number {
+      font-size: 1.6rem;       /* Increased from 1.4rem */
     }
     .btn {
       display: inline-block;
