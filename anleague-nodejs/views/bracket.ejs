@@ -35,7 +35,7 @@
     .container { 
       max-width: 1100px; 
       margin: 2rem auto; 
-      padding: 0 1rem; 
+      padding: 0 3rem; 
     }
 
     header h1 {
@@ -122,15 +122,21 @@
       font-size: 1.2rem;
     }
 
-    .match-card {
-      background: white;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-      border-left: 4px solid var(--primary);
-    }
+     .match-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+    
+    /* NEW: Make card wider */
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    max-width: none;
+  }
     .match-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.12);
