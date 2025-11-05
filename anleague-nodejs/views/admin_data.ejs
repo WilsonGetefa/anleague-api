@@ -6,6 +6,7 @@
     <title><%= title %></title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin_page/styles.css">
     <link rel="icon" type="image/x-icon" href="/images/caf.png">
 
     <!-- ExcelJS + FileSaver -->
@@ -51,13 +52,6 @@
         #cancel-delete { background: #6c757d; color: white; }
         #confirm-delete { background: #dc3545; color: white; }
         .modal-actions button:hover { opacity: .9; }
-        @media (max-width:768px) {
-            table, thead, tbody, th, td, tr { display: block; }
-            thead tr { position: absolute; top: -9999px; left: -9999px; }
-            tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
-            td { border: none; position: relative; padding-left: 50%; }
-            td::before { content: attr(data-label); position: absolute; left: 1rem; width: 45%; font-weight: 600; }
-            }
     </style>
     </head>
     <body>

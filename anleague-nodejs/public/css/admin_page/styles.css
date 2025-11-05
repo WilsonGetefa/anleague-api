@@ -1,0 +1,144 @@
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 2rem;
+  }
+
+  .controls {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+
+  .controls button {
+    min-width: 140px;
+  }
+
+  .sticky-top header {
+    padding: 1.5rem 2rem;
+  }
+
+  .sticky-top nav {
+    padding: 1.2rem 2rem;
+  }
+
+  .page-title {
+    font-size: 1.8rem;
+  }
+
+  .section h3 {
+    font-size: 1.4rem;
+  }
+
+  table {
+    font-size: 0.95rem;
+  }
+
+  th, td {
+    padding: 1rem 1.2rem;
+  }
+}
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;
+    padding: 0 1.5rem;
+  }
+
+  .sticky-top header {
+    padding: 1.8rem 3rem;
+  }
+
+  .sticky-top nav a {
+    font-size: 1rem;
+    margin: 0 12px;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+  }
+
+  .controls {
+    gap: 1.5rem;
+  }
+
+  table {
+    font-size: 1rem;
+  }
+
+  .modal-content {
+    max-width: 500px;
+    padding: 2.5rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+
+  .sticky-top header h1 {
+    font-size: 2.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sticky-top header {
+    padding: 1rem;
+  }
+
+  .sticky-top header h1 {
+    font-size: 1.5rem;
+  }
+
+  .sticky-top nav {
+    padding: 0.8rem 1rem;
+  }
+
+  .sticky-top nav a {
+    display: block;
+    margin: 0.4rem 0;
+    font-size: 0.9rem;
+  }
+
+  .page-title {
+    font-size: 1.4rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .controls button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 0.95rem;
+  }
+
+  .section h3 {
+    font-size: 1.2rem;
+  }
+
+  .no-data {
+    padding: 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}
