@@ -423,17 +423,15 @@ router.post('/play', async (req, res) => {
 router.post('/advance', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
-        .populate({path: 'bracket.quarterfinals.match_id'})
-        .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.semifinals.match_id'})
-        .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.final.match_id'})
-        .populate({path: 'bracket.final.team1_id',select: 'country'})
-        .populate({path: 'bracket.final.team2_id',select: 'country'});
+        .populate({ path: 'bracket.quarterfinals.match_id' })
+        .populate({ path: 'bracket.quarterfinals.team1_id', select: 'country' })
+        .populate({ path: 'bracket.quarterfinals.team2_id', select: 'country' })
+        .populate({ path: 'bracket.semifinals.match_id' })
+        .populate({ path: 'bracket.semifinals.team1_id', select: 'country' })
+        .populate({ path: 'bracket.semifinals.team2_id', select: 'country' })
+        .populate({ path: 'bracket.final.match_id' })
+        .populate({ path: 'bracket.final.team1_id', select: 'country' })
+        .populate({ path: 'bracket.final.team2_id', select: 'country' });
 
     if (!tournament) {
       return res.render('admin_dashboard', {
@@ -447,14 +445,12 @@ router.post('/advance', async (req, res) => {
       });
     }
 
-
     const resolveWinner = async (match, team1Doc, team2Doc) => {
       if (!match || match.status !== 'completed') return null;
 
       if (match.score.team1 !== match.score.team2) {
         return match.score.team1 > match.score.team2 ? team1Doc : team2Doc;
       }
-
 
       const isExtraTime = Math.random() < 0.5;
       const winner = Math.random() < 0.5 ? team1Doc : team2Doc;
@@ -469,23 +465,23 @@ router.post('/advance', async (req, res) => {
       return winner;
     };
 
-
+    // === QUARTERFINALS → SEMIFINALS ===
     if (tournament.status === 'quarterfinals') {
       const qfs = tournament.bracket.quarterfinals;
       if (qfs.length < 4) {
         return res.render('admin_dashboard', { 
-        error: 'Not enough quarterfinals', 
-        tournament, 
-        user: req.user 
+          error: 'Not enough quarterfinals', 
+          tournament, 
+          user: req.user 
         });
       }
 
       const allCompleted = qfs.every(qf => qf.match_id?.status === 'completed');
       if (!allCompleted) {
         return res.render('admin_dashboard', { 
-        error: 'All quarterfinals must be completed', 
-        tournament, 
-        user: req.user 
+          error: 'All quarterfinals must be completed', 
+          tournament, 
+          user: req.user 
         });
       }
 
@@ -501,9 +497,9 @@ router.post('/advance', async (req, res) => {
 
         if (!winner1 || !winner2) {
           return res.render('admin_dashboard', { 
-          error: 'Could not determine semifinalists', 
-          tournament, 
-          user: req.user 
+            error: 'Could not determine semifinalists', 
+            tournament, 
+            user: req.user 
           });
         }
 
@@ -530,24 +526,24 @@ router.post('/advance', async (req, res) => {
       tournament.bracket.semifinals = semifinalPairs;
       tournament.status = 'semifinals';
       await tournament.save();
-    }
 
-    else if (tournament.status === 'semifinals') {
+    // === SEMIFINALS → FINAL ===
+    } else if (tournament.status === 'semifinals') {
       const sfs = tournament.bracket.semifinals;
       if (sfs.length < 2) {
         return res.render('admin_dashboard', { 
-        error: 'Not enough semifinals', 
-        tournament, 
-        user: req.user 
+          error: 'Not enough semifinals', 
+          tournament, 
+          user: req.user 
         });
       }
 
       const allCompleted = sfs.every(sf => sf.match_id?.status === 'completed');
       if (!allCompleted) {
         return res.render('admin_dashboard', { 
-        error: 'All semifinals must be completed', 
-        tournament, 
-        user: req.user 
+          error: 'All semifinals must be completed', 
+          tournament, 
+          user: req.user 
         });
       }
 
@@ -560,9 +556,9 @@ router.post('/advance', async (req, res) => {
 
       if (!finalist1 || !finalist2) {
         return res.render('admin_dashboard', { 
-        error: 'Could not determine finalists', 
-        tournament, 
-        user: req.user 
+          error: 'Could not determine finalists', 
+          tournament, 
+          user: req.user 
         });
       }
 
@@ -586,48 +582,67 @@ router.post('/advance', async (req, res) => {
       }];
       tournament.status = 'final';
       await tournament.save();
-    }
 
-    else if (tournament.status === 'final') {
+    // === FINAL → COMPLETED + ARCHIVE WITH TEAMS ===
+    } else if (tournament.status === 'final') {
       const final = tournament.bracket.final[0];
       if (!final?.match_id || final.match_id.status !== 'completed') {
         return res.render('admin_dashboard', { 
-        error: 'Final match must be completed', 
-        tournament, 
-        user: req.user 
+          error: 'Final match must be completed', 
+          tournament, 
+          user: req.user 
         });
       }
 
+      // --- REBUILD 8 UNIQUE TEAM IDs FROM ALL ROUNDS ---
+      const teamIds = new Set();
+      const allRounds = [
+        ...(tournament.bracket?.quarterfinals || []),
+        ...(tournament.bracket?.semifinals    || []),
+        ...(tournament.bracket?.final        || [])
+      ];
+
+      allRounds.forEach(r => {
+        if (r.team1_id?._id) teamIds.add(r.team1_id._id.toString());
+        if (r.team2_id?._id) teamIds.add(r.team2_id._id.toString());
+      });
+
+      const uniqueTeamIds = Array.from(teamIds).map(id => mongoose.Types.ObjectId(id));
+
+      // --- CLEAN BRACKET (IDs only) ---
       const cleanBracket = {
-        quarterfinals: tournament.bracket.quarterfinals.map(qf => ({
-          team1_id: qf.team1_id?._id,
-          team2_id: qf.team2_id?._id,
-          match_id: qf.match_id?._id
+        quarterfinals: (tournament.bracket?.quarterfinals || []).map(qf => ({
+          team1_id: qf.team1_id?._id || qf.team1_id,
+          team2_id: qf.team2_id?._id || qf.team2_id,
+          match_id: qf.match_id?._id || qf.match_id
         })),
-        semifinals: tournament.bracket.semifinals.map(sf => ({
-          team1_id: sf.team1_id?._id,
-          team2_id: sf.team2_id?._id,
-          match_id: sf.match_id?._id
+        semifinals: (tournament.bracket?.semifinals || []).map(sf => ({
+          team1_id: sf.team1_id?._id || sf.team1_id,
+          team2_id: sf.team2_id?._id || sf.team2_id,
+          match_id: sf.match_id?._id || sf.match_id
         })),
         final: [{
-          team1_id: final.team1_id?._id,
-          team2_id: final.team2_id?._id,
-          match_id: final.match_id?._id
+          team1_id: final.team1_id?._id || final.team1_id,
+          team2_id: final.team2_id?._id || final.team2_id,
+          match_id: final.match_id?._id || final.match_id
         }]
       };
 
+      // --- SAVE TO PastTournament WITH TEAMS ---
       const past = new PastTournament({
         year: new Date().getFullYear(),
+        teams: uniqueTeamIds,        // ← FIXED: Now includes 8 teams
         bracket: cleanBracket,
         status: 'completed'
       });
       await past.save();
 
+      // --- Mark active tournament as completed ---
       tournament.status = 'completed';
       await tournament.save();
-    }
 
-    else {
+    // === INVALID STATUS ===
+    } else {
       return res.render('admin_dashboard', {
         title: 'Admin Dashboard',
         username: req.user.username,
@@ -639,18 +654,17 @@ router.post('/advance', async (req, res) => {
       });
     }
 
+    // === RELOAD TOURNAMENT FOR RENDER ===
     const updated = await Tournament.findById(tournament._id)
-        .populate({path: 'bracket.quarterfinals.match_id'})
-        .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.quarterfinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.semifinals.match_id'})
-        .populate({path: 'bracket.semifinals.team1_id',select: 'country'})
-        .populate({path: 'bracket.semifinals.team2_id',select: 'country'})
-
-        .populate({path: 'bracket.final.match_id'})
-        .populate({path: 'bracket.final.team1_id',select: 'country'})
-        .populate({path: 'bracket.final.team2_id',select: 'country'});
+        .populate({ path: 'bracket.quarterfinals.match_id' })
+        .populate({ path: 'bracket.quarterfinals.team1_id', select: 'country' })
+        .populate({ path: 'bracket.quarterfinals.team2_id', select: 'country' })
+        .populate({ path: 'bracket.semifinals.match_id' })
+        .populate({ path: 'bracket.semifinals.team1_id', select: 'country' })
+        .populate({ path: 'bracket.semifinals.team2_id', select: 'country' })
+        .populate({ path: 'bracket.final.match_id' })
+        .populate({ path: 'bracket.final.team1_id', select: 'country' })
+        .populate({ path: 'bracket.final.team2_id', select: 'country' });
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
