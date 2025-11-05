@@ -854,7 +854,9 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
         .populate('team1_id', 'country')
         .populate('team2_id', 'country')
         .lean(),
-      PastTournament.find().lean()                        
+      PastTournament.find()
+      .populate('teams')
+      .lean()                        
     ]);
 
     res.render('admin_data', {
