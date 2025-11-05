@@ -679,52 +679,89 @@ router.post('/advance', async (req, res) => {
 
 router.post('/restart', async (req, res) => {
   try {
-    const tournament = await Tournament.findOne().sort({ createdAt: -1 });
+    const tournament = await Tournament.findOne();
+
+    if (!tournament) {
+      return res.render('admin_dashboard', {
+        title: 'Admin Dashboard',
+        username: req.user.username,
+        role: req.user.role,
+        message: 'No active tournament to restart',
+        error: null,
+        tournament: null,
+        user: req.user
+      });
+    }
+
+
+    const bracketHash = JSON.stringify({
+      quarterfinals: (tournament.bracket?.quarterfinals || []).map(qf => ({
+        team1_id: qf.team1_id?._id?.toString() || qf.team1_id,
+        team2_id: qf.team2_id?._id?.toString() || qf.team2_id,
+        match_id: qf.match_id?._id?.toString() || qf.match_id
+      })),
+      semifinals: (tournament.bracket?.semifinals || []).map(sf => ({
+        team1_id: sf.team1_id?._id?.toString() || sf.team1_id,
+        team2_id: sf.team2_id?._id?.toString() || sf.team2_id,
+        match_id: sf.match_id?._id?.toString() || sf.match_id
+      })),
+      final: (tournament.bracket?.final || []).map(f => ({
+        team1_id: f.team1_id?._id?.toString() || f.team1_id,
+        team2_id: f.team2_id?._id?.toString() || f.team2_id,
+        match_id: f.match_id?._id?.toString() || f.match_id
+      }))
+    });
+
+    const alreadyArchived = await PastTournament.findOne({
+      'bracket.quarterfinals': { $size: tournament.bracket?.quarterfinals?.length || 0 },
+      'bracket.semifinals': { $size: tournament.bracket?.semifinals?.length || 0 },
+      'bracket.final': { $size: tournament.bracket?.final?.length || 0 },
+      year: new Date().getFullYear()
+    });
 
     let archived = null;
 
-    if (tournament) {
-      
-      const { _id, ...cleanData } = tournament.toObject();
-
-      const pastTournament = new PastTournament({
-        ...cleanData,
+    if (!alreadyArchived) {
+      const past = new PastTournament({
         year: new Date().getFullYear(),
+        teams: tournament.teams || [],
         bracket: {
-          quarterfinals: (cleanData.bracket?.quarterfinals || []).map(qf => ({
+          quarterfinals: (tournament.bracket?.quarterfinals || []).map(qf => ({
             team1_id: qf.team1_id?._id || qf.team1_id,
             team2_id: qf.team2_id?._id || qf.team2_id,
             match_id: qf.match_id?._id || qf.match_id
           })),
-          semifinals: (cleanData.bracket?.semifinals || []).map(sf => ({
+          semifinals: (tournament.bracket?.semifinals || []).map(sf => ({
             team1_id: sf.team1_id?._id || sf.team1_id,
             team2_id: sf.team2_id?._id || sf.team2_id,
             match_id: sf.match_id?._id || sf.match_id
           })),
-          final: (cleanData.bracket?.final || []).map(f => ({
+          final: (tournament.bracket?.final || []).map(f => ({
             team1_id: f.team1_id?._id || f.team1_id,
             team2_id: f.team2_id?._id || f.team2_id,
             match_id: f.match_id?._id || f.match_id
           }))
-        }
+        },
+        status: 'completed'
       });
 
-      archived = await pastTournament.save();
+      archived = await past.save();
       console.log('Archived tournament:', archived._id);
-
-      const deleteResult = await Tournament.deleteOne({ _id: tournament._id });
-      console.log('Deleted active tournament:', deleteResult.deletedCount);
     } else {
-      console.log('No tournament to restart');
+      console.log('Tournament already archived – skipping duplicate');
     }
+
+    
+    await Tournament.deleteOne({ _id: tournament._id });
+    console.log('Active tournament deleted');
 
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
       message: archived 
-        ? 'Tournament archived and fully reset'
-        : 'No tournament to restart',
+        ? 'Tournament archived and reset' 
+        : 'Tournament already archived – reset only',
       error: null,
       tournament: null,
       user: req.user
@@ -732,7 +769,7 @@ router.post('/restart', async (req, res) => {
 
   } catch (err) {
     console.error('Restart error:', err);
-    res.status(500).render('admin_dashboard', {
+    res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
       role: req.user.role,
