@@ -305,121 +305,105 @@
     </div>
 
     <!-- ==================== SCRIPTS ==================== -->
-        <script>
-        // -------------------------------------------------
-        // 1. Make data available to the client
-        // -------------------------------------------------
-        const allTeams = <%- JSON.stringify(teams) %>;   // <-- note: <%- (unescaped)
+     <script>
+  // Global data - CORRECT EJS SYNTAX
+  const allTeams = <%- JSON.stringify(teams) %>;
 
-        // -------------------------------------------------
-        // 2. Excel export (unchanged – works with rawData string)
-        // -------------------------------------------------
-        async function downloadExcel(type, rawData) {
-            const data = JSON.parse(rawData);               // payload is a JSON string
-            const wb   = new ExcelJS.Workbook();
-            const ws   = wb.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
+  // Excel Export
+  async function downloadExcel(type, rawData) {
+    const data = JSON.parse(rawData);
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
 
-            let headers = [], rows = [];
+    let headers = [], rows = [];
 
-            if (type === 'users') {
-            headers = ['Username', 'Email', 'Role', 'Team'];
-            rows = data.map(u => [
-                u.username,
-                u.email,
-                u.role,
-                u.team ? (allTeams.find(t => t._id === u.team)?.country || 'None') : 'None'
-            ]);
-            } else if (type === 'teams') {
-            headers = ['Country', 'Manager', 'Rep', 'Rating', 'Squad Size'];
-            rows = data.map(t => [
-                t.country,
-                t.manager,
-                t.representative_id?.username || 'N/A',
-                isNaN(t.rating) ? '0.0' : Number(t.rating).toFixed(1),
-                Array.isArray(t.squad) ? t.squad.length : 0
-            ]);
-            } else if (type === 'pasttournaments') {
-            headers = ['Status', 'Teams', 'Stage', 'Created'];
-            rows = data.map(t => [t.status, t.teams, t.stage, t.created]);
-            } else if (type === 'matches') {
-            headers = ['Stage', 'Team 1', 'Score', 'Team 2', 'Status'];
-            rows = data.map(m => [
-                m.stage || '—',
-                m.team1_id?.country || 'TBD',
-                `${m.score?.team1 ?? 0}–${m.score?.team2 ?? 0}`,
-                m.team2_id?.country || 'TBD',
-                m.status || '—'
-            ]);
-            }
+    if (type === 'users') {
+      headers = ['Username', 'Email', 'Role', 'Team'];
+      rows = data.map(u => [
+        u.username,
+        u.email,
+        u.role,
+        u.team ? (allTeams.find(t => t._id === u.team)?.country || 'None') : 'None'
+      ]);
+    } else if (type === 'teams') {
+      headers = ['Country', 'Manager', 'Rep', 'Rating', 'Squad Size'];
+      rows = data.map(t => [
+        t.country,
+        t.manager,
+        t.representative_id?.username || 'N/A',
+        isNaN(t.rating) ? '0.0' : Number(t.rating).toFixed(1),
+        Array.isArray(t.squad) ? t.squad.length : 0
+      ]);
+    } else if (type === 'pasttournaments') {
+      headers = ['Status', 'Teams', 'Stage', 'Created'];
+      rows = data.map(t => [t.status, t.teams, t.stage, t.created]);
+    } else if (type === 'matches') {
+      headers = ['Stage', 'Team 1', 'Score', 'Team 2', 'Status'];
+      rows = data.map(m => [
+        m.stage || '—',
+        m.team1_id?.country || 'TBD',
+        `${m.score?.team1 ?? 0}–${m.score?.team2 ?? 0}`,
+        m.team2_id?.country || 'TBD',
+        m.status || '—'
+      ]);
+    }
 
-            // Header styling
-            ws.addRow(headers).font = { bold: true, color: { argb: 'FFFFFFFF' } };
-            ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2e6b5b' } };
+    ws.addRow(headers).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2e6b5b' } };
+    rows.forEach(r => ws.addRow(r));
 
-            rows.forEach(r => ws.addRow(r));
+    ws.columns.forEach(c => {
+      c.width = 18;
+      c.alignment = { vertical: 'middle', horizontal: 'left' };
+    });
 
-            ws.columns.forEach(c => {
-            c.width = 18;
-            c.alignment = { vertical: 'middle', horizontal: 'left' };
-            });
+    ws.eachRow(row => {
+      row.eachCell(cell => {
+        cell.border = { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} };
+      });
+    });
 
-            ws.eachRow(row => {
-            row.eachCell(cell => {
-                cell.border = { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} };
-            });
-            });
+    const buf = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([buf]), `${type}_report_${new Date().toISOString().slice(0,10)}.xlsx`);
+  }
 
-            const buf = await wb.xlsx.writeBuffer();
-            saveAs(new Blob([buf]), `${type}_report_${new Date().toISOString().slice(0,10)}.xlsx`);
-        }
+  // Attach all buttons
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('delete-modal');
+    const msgSpan = document.getElementById('modal-message');
+    const deleteForm = document.getElementById('delete-form');
+    const cancelBtn = document.getElementById('cancel-delete');
 
-        // -------------------------------------------------
-        // 3. Attach **all** button behaviours **once**
-        // -------------------------------------------------
-        document.addEventListener('DOMContentLoaded', () => {
-            const modal      = document.getElementById('delete-modal');
-            const msgSpan    = document.getElementById('modal-message');
-            const deleteForm = document.getElementById('delete-form');
-            const cancelBtn  = document.getElementById('cancel-delete');
+    // Excel buttons
+    document.querySelectorAll('.btn-download').forEach(btn => {
+      btn.addEventListener('click', () => {
+        downloadExcel(btn.dataset.type, btn.dataset.payload);
+      });
+    });
 
-            // ----- Excel download buttons -----
-            document.querySelectorAll('.btn-download').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const type    = btn.dataset.type;
-                const payload = btn.dataset.payload;   // JSON string
-                downloadExcel(type, payload);
-            });
-            });
+    // Single delete
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        msgSpan.innerHTML = `Delete <strong>${btn.dataset.name}</strong>?`;
+        deleteForm.action = btn.dataset.url;
+        modal.style.display = 'flex';
+      });
+    });
 
-            // ----- Single-delete buttons -----
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const name = btn.dataset.name;
-                const url  = btn.dataset.url;
-                msgSpan.innerHTML = `Are you sure you want to delete <strong>${name}</strong>?`;
-                deleteForm.action = url;
-                modal.style.display = 'flex';
-            });
-            });
+    // Delete all
+    document.querySelectorAll('.delete-all-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        msgSpan.innerHTML = `<strong>${btn.dataset.message}</strong>`;
+        deleteForm.action = btn.dataset.url;
+        modal.style.display = 'flex';
+      });
+    });
 
-            // ----- Delete-all buttons -----
-            document.querySelectorAll('.delete-all-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const url     = btn.dataset.url;
-                const message = btn.dataset.message;
-                msgSpan.innerHTML = `<strong>${message}</strong>`;
-                deleteForm.action = url;
-                modal.style.display = 'flex';
-            });
-            });
-
-            // ----- Modal close actions -----
-            cancelBtn.addEventListener('click', () => modal.style.display = 'none');
-            modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
-            document.addEventListener('keydown', e => {
-            if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
-            });
-        });
-        </script>
+    // Close modal
+    cancelBtn.onclick = () => modal.style.display = 'none';
+    modal.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
+    document.onkeydown = e => { if (e.key === 'Escape') modal.style.display = 'none'; };
+  });
+</script>
     </body>
 </html>
