@@ -109,7 +109,7 @@ app.use((err, req, res, next) => {
 
   // Set status
   const status = err.status || 500;
-  const message = status === 404 ? 'Page not found' : 'Server error. Please try again.';
+  const message = status === 404 ? 'Page not found' : '"Server error". Please try again.';
 
   // RENDER error.ejs (NOT redirect)
   res.status(status).render('error', {
