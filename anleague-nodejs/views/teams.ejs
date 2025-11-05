@@ -1,22 +1,3 @@
-<%--
-  African Nations League (ANL) Application
-  ==================================================
-  Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
-
-  Built with: Node.js, Express, MongoDB, EJS
-  Deployment: Render, MongoDB, GitHub, Node.js host
-  Features:
-    • Admin data overview with Excel export
-    • Responsive design with mobile-first tables
-    • Secure delete modals and JWT authentication
-    • Real-time match simulation and bracket system
-
-  Build by: Wilson Getefa Sisimi
-  Year: 2025
-  Copyright: © 2025 African Nations League. All rights reserved.
-  Info: Official platform powered by WGS - UCT
---%>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,7 +93,7 @@
     .page-title { text-align: center; color: var(--primary-dark); font-weight: 600; margin: 1.5rem 0 1rem; font-size: 1.5rem; }
     .error { background:#f8d7da; color:#721c24; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center; border:1px solid #f5c6cb; }
     .no-teams { text-align:center; color:var(--gray); font-style:italic; padding:2rem; background:white; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.08); }
-   
+    /* TEAM CARD & HEADER */
     .team-card { background:white; border-radius:12px; overflow:hidden; margin-bottom:1.5rem; box-shadow:0 3px 10px rgba(0,0,0,0.08); transition:transform .2s; }
     .team-card:hover { transform:translateY(-3px); box-shadow:0 6px 16px rgba(0,0,0,0.12); }
     .team-header {
@@ -139,7 +120,7 @@
     .squad-list { padding:0 1.2rem; background:#fdfdfd; border-top:1px solid var(--border); max-height:0; overflow:hidden; transition:max-height .4s ease,padding .4s ease; }
     .squad-list.open { max-height:1500px; padding:1.2rem; }
     .captain-info { margin-bottom:.8rem; font-size:.95rem; color:var(--primary-dark); }
-   
+    /* PLAYER GRID WITH TITLES */
     .player-header {
       display:grid; grid-template-columns:1fr auto auto; gap:.8rem; padding:.6rem 0;
       font-weight:600; color:var(--primary-dark); font-size:.85rem; border-bottom:1px solid var(--border); margin-bottom:.4rem;
@@ -190,7 +171,7 @@
         max-width: 100%;
         padding: 0 1rem;
       ">
-
+        <!-- LOGO (clickable to home) -->
         <a href="/" style="display: block; line-height: 0;">
           <img src="/images/caf.png"
               alt="ANL Logo"
@@ -199,7 +180,7 @@
                 width: auto;
               ">
         </a>
-
+        <!-- TITLE (centered) -->
         <h1 style="
           margin: 0;
           font-size: 2rem;
@@ -268,7 +249,7 @@
                 <div class="ratings">
                   <%= player.ratings.GK %> | <%= player.ratings.DF %> | <%= player.ratings.MD %> | <%= player.ratings.AT %>
                 </div>
-
+                <!-- LIVE GOAL COUNT – same source as rankings.ejs -->
                 <div class="goals"><%= player.goals %></div>
               </div>
             <% }) %>
