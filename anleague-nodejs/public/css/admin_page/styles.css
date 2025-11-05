@@ -1,144 +1,88 @@
+/* -------------------------------------------------------------
+   MOBILE – ≤ 768 px
+   Show <thead> as a sticky header, stack <tbody> rows as cards
+   ------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .controls { justify-content: center; }
 
-@media (min-width: 768px) {
-  .container {
-    padding: 0 2rem;
-  }
-
-  .controls {
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    gap: 1rem;
-  }
-
-  .controls button {
-    min-width: 140px;
-  }
-
-  .sticky-top header {
-    padding: 1.5rem 2rem;
-  }
-
-  .sticky-top nav {
-    padding: 1.2rem 2rem;
-  }
-
-  .page-title {
-    font-size: 1.8rem;
-  }
-
-  .section h3 {
-    font-size: 1.4rem;
-  }
-
+  /* ---------- 1. TABLE CONTAINER ---------- */
   table {
-    font-size: 0.95rem;
+    border: 0;
+    width: 100%;
+    background: transparent;
   }
 
-  th, td {
-    padding: 1rem 1.2rem;
-  }
-}
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1200px;
-    padding: 0 1.5rem;
-  }
-
-  .sticky-top header {
-    padding: 1.8rem 3rem;
-  }
-
-  .sticky-top nav a {
-    font-size: 1rem;
-    margin: 0 12px;
-  }
-
-  .page-title {
-    font-size: 2rem;
-  }
-
-  .section {
-    margin-bottom: 4rem;
-  }
-
-  .controls {
-    gap: 1.5rem;
-  }
-
-  table {
-    font-size: 1rem;
-  }
-
-  .modal-content {
-    max-width: 500px;
-    padding: 2.5rem;
-  }
-}
-
-@media (min-width: 1440px) {
-  .container {
-    max-width: 1400px;
-  }
-
-  .sticky-top header h1 {
-    font-size: 2.4rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .sticky-top header {
-    padding: 1rem;
-  }
-
-  .sticky-top header h1 {
-    font-size: 1.5rem;
-  }
-
-  .sticky-top nav {
-    padding: 0.8rem 1rem;
-  }
-
-  .sticky-top nav a {
+  /* ---------- 2. KEEP THEAD VISIBLE ---------- */
+  thead {
     display: block;
-    margin: 0.4rem 0;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 0.5rem;
+  }
+
+  thead tr {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  thead th {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    font-weight: 600;
     font-size: 0.9rem;
+    text-align: left;
+    border: none;
   }
 
-  .page-title {
-    font-size: 1.4rem;
+  /* ---------- 3. TBODY – CARD STYLE ---------- */
+  tbody {
+    display: block;
   }
 
-  .controls {
-    flex-direction: column;
-    align-items: stretch;
+  tbody tr {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    overflow: hidden;
   }
 
-  .controls button {
-    width: 100%;
-    padding: 0.8rem;
+  tbody td {
+    display: block;
+    position: relative;
+    padding: 0.6rem 1rem 0.6rem 50%;
     font-size: 0.95rem;
+    border: none;
   }
 
-  .section h3 {
-    font-size: 1.2rem;
-  }
-
-  .no-data {
-    padding: 1.5rem;
+  tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 1rem;
+    width: 45%;
+    font-weight: 600;
+    color: var(--primary-dark);
     font-size: 0.9rem;
+    text-transform: capitalize;
   }
 
-  .modal-content {
-    width: 95%;
-    padding: 1.5rem;
+  /* Separator between cells */
+  tbody td:not(:last-child) {
+    border-bottom: 1px dashed #eee;
   }
 
-  .modal-actions {
-    flex-direction: column;
-    gap: 0.8rem;
+  /* ---------- 4. ACTIONS COLUMN ---------- */
+  .actions {
+    text-align: right;
+    padding-left: 1rem;
   }
+  .actions::before { content: "Actions"; }
 
-  .modal-actions button {
-    width: 100%;
-  }
+  /* ---------- 5. HIDE ORIGINAL <TH> FROM BODY (optional) ---------- */
+  tbody th { display: none; }
 }

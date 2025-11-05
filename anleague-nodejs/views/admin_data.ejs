@@ -52,60 +52,6 @@
         #cancel-delete { background: #6c757d; color: white; }
         #confirm-delete { background: #dc3545; color: white; }
         .modal-actions button:hover { opacity: .9; }
-        @media (max-width: 768px) {
-  .controls { justify-content: center; }
-
-  /* Hide real <thead> but keep it for semantics */
-  table, thead, tbody, th, td, tr { display: block; }
-  thead tr { 
-    position: absolute; 
-    top: -9999px; 
-    left: -9999px; 
-  }
-
-  /* Card-style row */
-  tr { 
-    border: 1px solid var(--border); 
-    border-radius: 8px; 
-    margin-bottom: 1rem; 
-    background: white; 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  }
-
-  /* Cell styling */
-  td {
-    border: none;
-    position: relative;
-    padding: 0.6rem 1rem 0.6rem 50%;
-    font-size: 0.95rem;
-  }
-
-  /* Label (from data-label) */
-  td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 1rem;
-    width: 45%;
-    font-weight: 600;
-    color: var(--primary-dark);
-    font-size: 0.9rem;
-    text-transform: capitalize;
-  }
-
-  /* Special: Actions column */
-  .actions {
-    text-align: right;
-    padding-left: 1rem;
-  }
-  .actions::before {
-    content: "Actions";
-  }
-
-  /* Optional: Add subtle separator between cells */
-  td:not(:last-child) {
-    border-bottom: 1px dashed #eee;
-  }
-}
     </style>
     </head>
     <body>
