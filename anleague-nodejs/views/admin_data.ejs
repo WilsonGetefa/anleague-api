@@ -52,6 +52,28 @@
         #cancel-delete { background: #6c757d; color: white; }
         #confirm-delete { background: #dc3545; color: white; }
         .modal-actions button:hover { opacity: .9; }
+        @media (max-width: 768px) {
+      .controls { justify-content: center; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; background: white; }
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: 45%;
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+      .actions { text-align: right; padding-left: 1rem; }
+    }
     </style>
     </head>
     <body>
