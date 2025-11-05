@@ -469,20 +469,12 @@ router.post('/advance', async (req, res) => {
     if (tournament.status === 'quarterfinals') {
       const qfs = tournament.bracket.quarterfinals;
       if (qfs.length < 4) {
-        return res.render('admin_dashboard', { 
-          error: 'Not enough quarterfinals', 
-          tournament, 
-          user: req.user 
-        });
+        return res.render('admin_dashboard', { error: 'Not enough quarterfinals', tournament, user: req.user });
       }
 
       const allCompleted = qfs.every(qf => qf.match_id?.status === 'completed');
       if (!allCompleted) {
-        return res.render('admin_dashboard', { 
-          error: 'All quarterfinals must be completed', 
-          tournament, 
-          user: req.user 
-        });
+        return res.render('admin_dashboard', { error: 'All quarterfinals must be completed', tournament, user: req.user });
       }
 
       const semifinalPairs = [];
@@ -496,11 +488,7 @@ router.post('/advance', async (req, res) => {
         const winner2 = await resolveWinner(m2, t3, t4);
 
         if (!winner1 || !winner2) {
-          return res.render('admin_dashboard', { 
-            error: 'Could not determine semifinalists', 
-            tournament, 
-            user: req.user 
-          });
+          return res.render('admin_dashboard', { error: 'Could not determine semifinalists', tournament, user: req.user });
         }
 
         const match = new Match({
@@ -531,20 +519,12 @@ router.post('/advance', async (req, res) => {
     } else if (tournament.status === 'semifinals') {
       const sfs = tournament.bracket.semifinals;
       if (sfs.length < 2) {
-        return res.render('admin_dashboard', { 
-          error: 'Not enough semifinals', 
-          tournament, 
-          user: req.user 
-        });
+        return res.render('admin_dashboard', { error: 'Not enough semifinals', tournament, user: req.user });
       }
 
       const allCompleted = sfs.every(sf => sf.match_id?.status === 'completed');
       if (!allCompleted) {
-        return res.render('admin_dashboard', { 
-          error: 'All semifinals must be completed', 
-          tournament, 
-          user: req.user 
-        });
+        return res.render('admin_dashboard', { error: 'All semifinals must be completed', tournament, user: req.user });
       }
 
       const m1 = sfs[0].match_id, m2 = sfs[1].match_id;
@@ -555,11 +535,7 @@ router.post('/advance', async (req, res) => {
       const finalist2 = await resolveWinner(m2, t3, t4);
 
       if (!finalist1 || !finalist2) {
-        return res.render('admin_dashboard', { 
-          error: 'Could not determine finalists', 
-          tournament, 
-          user: req.user 
-        });
+        return res.render('admin_dashboard', { error: 'Could not determine finalists', tournament, user: req.user });
       }
 
       const finalMatch = new Match({
@@ -587,14 +563,10 @@ router.post('/advance', async (req, res) => {
     } else if (tournament.status === 'final') {
       const final = tournament.bracket.final[0];
       if (!final?.match_id || final.match_id.status !== 'completed') {
-        return res.render('admin_dashboard', { 
-          error: 'Final match must be completed', 
-          tournament, 
-          user: req.user 
-        });
+        return res.render('admin_dashboard', { error: 'Final match must be completed', tournament, user: req.user });
       }
 
-      // --- REBUILD 8 UNIQUE TEAM IDs FROM ALL ROUNDS ---
+      // === REBUILD 8 UNIQUE TEAM IDs FROM ALL ROUNDS ===
       const teamIds = new Set();
       const allRounds = [
         ...(tournament.bracket?.quarterfinals || []),
@@ -607,9 +579,10 @@ router.post('/advance', async (req, res) => {
         if (r.team2_id?._id) teamIds.add(r.team2_id._id.toString());
       });
 
-      const uniqueTeamIds = Array.from(teamIds).map(id => mongoose.Types.ObjectId(id));
+      // === FIXED: Use `new` with ObjectId ===
+      const uniqueTeamIds = Array.from(teamIds).map(id => new mongoose.Types.ObjectId(id));
 
-      // --- CLEAN BRACKET (IDs only) ---
+      // === CLEAN BRACKET (IDs only) ===
       const cleanBracket = {
         quarterfinals: (tournament.bracket?.quarterfinals || []).map(qf => ({
           team1_id: qf.team1_id?._id || qf.team1_id,
@@ -628,16 +601,16 @@ router.post('/advance', async (req, res) => {
         }]
       };
 
-      // --- SAVE TO PastTournament WITH TEAMS ---
+      // === SAVE TO PastTournament WITH TEAMS ===
       const past = new PastTournament({
         year: new Date().getFullYear(),
-        teams: uniqueTeamIds,        // ← FIXED: Now includes 8 teams
+        teams: uniqueTeamIds,        // ← NOW 8 valid ObjectIds
         bracket: cleanBracket,
         status: 'completed'
       });
       await past.save();
 
-      // --- Mark active tournament as completed ---
+      // === Mark active tournament as completed ===
       tournament.status = 'completed';
       await tournament.save();
 
