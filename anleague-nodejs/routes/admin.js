@@ -863,6 +863,11 @@ router.post('/delete-all-tournaments', authMiddleware, adminOnly, async (req, re
   res.redirect('/admin/data?message=All tournaments deleted');
 });
 
+router.post('/delete-pasttournaments/:id', authMiddleware, adminOnly, async (req, res) => {
+  await Tournament.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/data?message=Past-tournament deleted');
+});
+
 router.post('/delete-all-pasttournaments', authMiddleware, adminOnly, async (req, res) => {
   await pasttournaments.deleteMany({});
   res.redirect('/admin/data?message=All pasttournaments deleted');
