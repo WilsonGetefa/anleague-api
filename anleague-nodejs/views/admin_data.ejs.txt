@@ -7,8 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js" integrity="sha512-+ + +sha384-... (trimmed for brevity) + + +"></script>
+
+  <!-- ExcelJS + FileSaver -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
   <style>
     :root {
       --primary: #2e6b5b;
@@ -19,36 +22,28 @@
       --border: #dee2e6;
       --gold: #d4af37;
       --empty-star: #cccccc;
-      --danger: #dc3545;
-      --success: #28a745;
     }
+
     html, body {
       height: 100%;
       margin: 0;
     }
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: #f4f6f9;
-      color: #333;
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      background: #f4f6f9; 
+      color: #333; 
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
-    .container {
-      max-width: 1100px;
-      margin: 2rem auto;
+
+    .container { 
+      max-width: 1100px; 
+      margin: 2rem auto; 
       padding: 0 1rem;
     }
-    header {
-      text-align: center;
-      padding: 2rem 1rem;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border-radius: 0 0 16px 16px;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
     header h1 { margin: 0; font-size: 2rem; font-weight: 700; }
+
     nav {
       text-align: center;
       margin-bottom: 2rem;
@@ -59,234 +54,201 @@
     }
     nav a { margin: 0 6px; color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
     nav a:hover { color: var(--accent); }
-  
+
     .sticky-top {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: white;
+      position: sticky; 
+      top: 0; 
+      z-index: 1000; 
+      background: white; 
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      flex-shrink: 0;
     }
+    main {
+      flex: 1;
+    }
+
     .sticky-top header {
-      text-align: center;
-      padding: 1rem 1rem;
+      text-align: center; 
+      padding: 1rem 1rem; 
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border-radius: 0 0 16px 16px;
-      margin-bottom: 1rem;
+      color: white; 
+      border-radius: 0 0 16px 16px; 
+      margin-bottom: 1rem; 
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
+
     .sticky-top nav {
-      background: white;
-      padding: 1rem 1rem;
+      background: white; 
+      padding: 1rem 1rem; 
       text-align: center;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #eee; 
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
+
     .sticky-top nav a {
-      margin: 0 10px;
-      color: var(--primary);
+      margin: 0 10px; 
+      color: var(--primary); 
       text-decoration: none;
-      font-weight: 500;
-      font-size: 0.95rem;
+      font-weight: 500; 
+      font-size: 0.95rem; 
       transition: color 0.2s;
     }
+
     .sticky-top nav a:hover {
       color: var(--accent);
     }
+
     .page-title { text-align: center; color: var(--primary-dark); font-weight: 600; margin: 1.5rem 0 1rem; font-size: 1.5rem; }
+
     .error { background:#f8d7da; color:#721c24; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center; border:1px solid #f5c6cb; }
     .success { background:#d4edda; color:#155724; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center; border:1px solid #c3e6cb; }
-    .no-data { text-align:center; color:var(--gray); font-style:italic; padding:2rem; background:white; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.08); }
-    
-    /* SECTION STYLES */
-    .section {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    }
+
+    .section { margin-bottom: 3rem; }
     .section h3 {
-      margin: 0 0 1rem;
-      font-size: 1.25rem;
       color: var(--primary-dark);
-      font-weight: 600;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
+      font-size: 1.3rem;
+      margin: 1.5rem 0 1rem;
+      padding-bottom: .4rem;
+      border-bottom: 2px solid var(--primary);
+      display: inline-block;
     }
+
     .controls {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 1rem; 
+      flex-wrap: wrap; 
+      gap: .5rem;
     }
-    .btn-delete-all {
-      background: var(--danger);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
+    .controls button {
+      padding: .6rem 1.2rem; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      font-size: .9rem;
     }
-    .btn-delete-all:hover { background: #c82333; }
-    .btn-download {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-download:hover { background: var(--primary-dark); }
-    
-    /* TABLE STYLES */
+    .btn-delete { background: #dc3545; color: white; }
+    .btn-delete-all { background: #c82333; color: white; }
+    .btn-download { background: #28a745; color: white; }
+    .btn-delete:hover, .btn-delete-all:hover { opacity: .9; }
+    .btn-download:hover { background: #218838; }
+
     table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
+      width: 100%; 
+      border-collapse: collapse; 
+      background: white; 
+      border-radius: 8px; 
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08); 
+      margin-bottom: 1.5rem;
     }
-    thead th {
-      background: var(--primary);
-      color: white;
-      padding: 0.75rem 0.5rem;
-      text-align: left;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-    tbody td {
-      padding: 0.75rem 0.5rem;
+    th, td {
+      padding: .8rem 1rem; 
+      text-align: left; 
       border-bottom: 1px solid var(--border);
     }
-    tbody tr:hover {
-      background: #f8f9fa;
+    th {
+      background: var(--primary); 
+      color: white; 
+      font-weight: 600; 
+      font-size: .9rem;
     }
-    .actions {
-      white-space: nowrap;
-    }
-    .delete-btn {
-      background: var(--danger);
-      color: white;
-      border: none;
-      padding: 0.35rem 0.75rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
+    tr:hover td { background: #f8f9fa; }
+    .actions { white-space: nowrap; }
+    .actions button {
+      background: none; 
+      border: none; 
+      color: #dc3545; 
+      font-size: 1.1rem; 
       cursor: pointer;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
       transition: background 0.2s;
     }
-    .delete-btn:hover { background: #c82333; }
-    
-    /* MODAL */
+    .actions button:hover { 
+      background: #f8d7da; 
+      color: #c82333; 
+    }
+
+    .no-data { text-align:center; color:var(--gray); font-style:italic; padding:2rem; background:white; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.08); }
+
+    @media (max-width:768px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
+      td { border: none; position: relative; padding-left: 50%; }
+      td::before { content: attr(data-label); position: absolute; left: 1rem; width: 45%; font-weight: 600; }
+    }
+
+    /* ---------- MODAL ---------- */
     .modal {
       display: none;
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
       background: rgba(0,0,0,0.5);
-      align-items: center;
       justify-content: center;
+      align-items: center;
       z-index: 2000;
-      padding: 1rem;
+      backdrop-filter: blur(3px);
     }
     .modal-content {
       background: white;
+      padding: 2rem;
       border-radius: 12px;
-      padding: 1.5rem;
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
     }
     .modal-content h3 {
       margin: 0 0 1rem;
-      color: var(--primary-dark);
-      font-weight: 600;
+      color: #721c24;
+      font-size: 1.4rem;
     }
-    #modal-message {
-      margin-bottom: 1.5rem;
+    .modal-content p {
+      margin: 0 0 1.5rem;
+      color: #333;
       line-height: 1.5;
     }
     .modal-actions {
       display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
+      justify-content: center;
+      gap: 1rem;
     }
     .modal-actions button {
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 500;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: 600;
+      min-width: 100px;
     }
-    #cancel-delete {
-      background: #6c757d;
-      color: white;
-      border: none;
-    }
-    #confirm-delete {
-      background: var(--danger);
-      color: white;
-      border: none;
-    }
-    
-    main { flex: 1; }
-    
-    @media (max-width: 768px) {
-      .controls { justify-content: center; }
-      table, thead, tbody, th, td, tr { display: block; }
-      thead tr { position: absolute; top: -9999px; left: -9999px; }
-      tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; background: white; }
-      td {
-        border: none;
-        position: relative;
-        padding-left: 50%;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-      }
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 1rem;
-        width: 45%;
-        font-weight: 600;
-        color: var(--primary-dark);
-      }
-      .actions { text-align: right; padding-left: 1rem; }
+    #cancel-delete { background: #6c757d; color: white; }
+    #confirm-delete { background: #dc3545; color: white; }
+    .modal-actions button:hover { opacity: .9; }
+    main {
+      flex: 1;
     }
   </style>
 </head>
 <body>
   <div class="sticky-top">
     <header>
-      <div style="
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        max-width: 100%;
-        padding: 0 1rem;
-      ">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 100%; padding: 0 1rem;">
         <a href="/" style="display: block; line-height: 0;">
-          <img src="/images/caf.png"
-               alt="ANL Logo"
-               style="height: 40px; width: auto;">
+          <img src="/images/caf.png" alt="ANL Logo" style="height: 40px; width: auto;">
         </a>
-        <h1 style="
-          margin: 0;
-          font-size: 2rem;
-          font-weight: 700;
-          color: white;
-          text-align: center;
-          flex: 1;
-        ">
+        <h1 style="margin: 0; font-size: 2rem; font-weight: 700; color: white; text-align: center; flex: 1;">
           <%= title %>
         </h1>
       </div>
     </header>
+
     <nav>
       <a href="/">Home</a> |
       <a href="/bracket">Bracket</a> |
@@ -309,6 +271,7 @@
 
   <main class="container">
     <h2 class="page-title">Admin Data Overview</h2>
+
     <% if (error) { %>
       <p class="error"><%= error %></p>
     <% } %>
@@ -320,15 +283,18 @@
     <div class="section">
       <h3>Users (<%= users.length %>)</h3>
       <div class="controls">
+        <!-- Delete-All button (opens modal) -->
         <button type="button" class="btn-delete-all delete-all-btn"
                 data-url="/admin/delete-all-users"
                 data-message="Delete ALL users?">
           Delete All Users
         </button>
+
         <button class="btn-download" onclick="downloadExcel('users', <%= JSON.stringify(users.map(u => ({ ...u, team: u.team ? u.team.toString() : null }))) %>)">
           Download Users Excel
         </button>
       </div>
+
       <% if (users.length === 0) { %>
         <div class="no-data">No users found.</div>
       <% } else { %>
@@ -349,7 +315,7 @@
                 <td data-label="Email"><%= u.email %></td>
                 <td data-label="Role"><%= u.role %></td>
                 <td data-label="Team">
-                  <%
+                  <% 
                     const userTeamId = u.team ? u.team.toString() : null;
                     const teamObj = teams.find(t => t._id.toString() === userTeamId);
                   %>
@@ -380,10 +346,12 @@
                 data-message="Delete ALL teams?">
           Delete All Teams
         </button>
+
         <button class="btn-download" onclick="downloadExcel('teams', <%= JSON.stringify(teams) %>)">
           Download Teams Excel
         </button>
       </div>
+
       <% if (teams.length === 0) { %>
         <div class="no-data">No teams found.</div>
       <% } else { %>
@@ -431,10 +399,12 @@
                 data-message="Delete ALL past-tournaments?">
           Delete All
         </button>
+
         <button class="btn-download" onclick="downloadExcel('pasttournaments', <%= JSON.stringify(pasttournaments) %>)">
           Download Excel
         </button>
       </div>
+
       <% if (pasttournaments.length === 0) { %>
         <div class="no-data">No Past-tournaments found.</div>
       <% } else { %>
@@ -480,10 +450,12 @@
                 data-message="Delete ALL matches?">
           Delete All
         </button>
+
         <button class="btn-download" onclick="downloadExcel('matches', <%= JSON.stringify(matches) %>)">
           Download Excel
         </button>
       </div>
+
       <% if (matches.length === 0) { %>
         <div class="no-data">No matches found.</div>
       <% } else { %>
@@ -535,13 +507,8 @@
     </div>
   </div>
 
-  <footer style="
-    background: linear-gradient(135deg, #1a3f35, #2e6b5b);
-    color: white;
-    padding: 2rem 1rem;
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-    font-family: 'Roboto', sans-serif;">
+  <footer style="background: linear-gradient(135deg, #1a3f35, #2e6b5b); color: white; padding: 2rem 1rem; 
+    border-radius: 16px 16px 0 0; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); font-family: 'Roboto', sans-serif;">
     <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
       <div style="display: flex; align-items: center; gap: 12px;">
         <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
@@ -550,12 +517,14 @@
           <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
         </div>
       </div>
+
       <div style="text-align: center; flex: 1; min-width: 200px;">
         <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
         <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
         <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
         <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
       </div>
+
       <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
         © <%= new Date().getFullYear() %> ANL<br>
         <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
@@ -565,12 +534,14 @@
 
   <!-- ==================== SCRIPTS ==================== -->
   <script>
-    /* ---------- Excel Export ---------- */
+    /* ---------- Excel Export (unchanged) ---------- */
     async function downloadExcel(type, data) {
       const wb = new ExcelJS.Workbook();
       const ws = wb.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
+
       let headers = [];
       let rows = [];
+
       if (type === 'users') {
         headers = ['Username', 'Email', 'Role', 'Team'];
         rows = data.map(u => [
@@ -606,13 +577,17 @@
           m.status || '—'
         ]);
       }
+
       ws.addRow(headers).font = { bold: true, color: { argb: 'FFFFFFFF' } };
       ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2e6b5b' } };
+
       rows.forEach(row => ws.addRow(row));
+
       ws.columns.forEach(col => {
         col.width = 18;
         col.alignment = { vertical: 'middle', horizontal: 'left' };
       });
+
       ws.eachRow((row) => {
         row.eachCell(cell => {
           cell.border = {
@@ -621,45 +596,53 @@
           };
         });
       });
+
       const buf = await wb.xlsx.writeBuffer();
       saveAs(new Blob([buf]), `${type}_report_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
     /* ---------- DELETE MODAL LOGIC ---------- */
     document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('delete-modal');
-      const msgSpan = document.getElementById('modal-message');
+      const modal      = document.getElementById('delete-modal');
+      const msgSpan    = document.getElementById('modal-message');
       const deleteForm = document.getElementById('delete-form');
-      const cancelBtn = document.getElementById('cancel-delete');
+      const cancelBtn  = document.getElementById('cancel-delete');
 
+      /* ---- Single-row delete buttons ---- */
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const name = btn.dataset.name;
-          const url = btn.dataset.url;
+          const url  = btn.dataset.url;
+
           msgSpan.innerHTML = `Are you sure you want to delete <strong>${name}</strong>?`;
           deleteForm.action = url;
           modal.style.display = 'flex';
         });
       });
 
+      /* ---- "Delete All" buttons ---- */
       document.querySelectorAll('.delete-all-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          const url = btn.dataset.url;
+          const url     = btn.dataset.url;
           const message = btn.dataset.message;
+
           msgSpan.innerHTML = `<strong>${message}</strong>`;
           deleteForm.action = url;
           modal.style.display = 'flex';
         });
       });
 
+      /* ---- Cancel ---- */
       cancelBtn.addEventListener('click', () => {
         modal.style.display = 'none';
       });
 
+      /* ---- Click outside modal ---- */
       modal.addEventListener('click', e => {
         if (e.target === modal) modal.style.display = 'none';
       });
 
+      /* ---- Escape key ---- */
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal.style.display === 'flex') {
           modal.style.display = 'none';
