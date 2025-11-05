@@ -838,6 +838,7 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
 });
 
 // DELETE ROUTES
+// DELETE ROUTES
 router.post('/delete-user/:id', authMiddleware, adminOnly, async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.redirect('/admin/data?message=User deleted');
@@ -858,24 +859,21 @@ router.post('/delete-all-teams', authMiddleware, adminOnly, async (req, res) => 
   res.redirect('/admin/data?message=All teams deleted');
 });
 
+// Active Tournament (singular)
 router.post('/delete-tournament/:id', authMiddleware, adminOnly, async (req, res) => {
   await Tournament.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/data?message=Tournament deleted');
+  res.redirect('/admin/data?message=Active tournament deleted');
 });
 
-router.post('/delete-all-tournaments', authMiddleware, adminOnly, async (req, res) => {
-  await Tournament.deleteMany({});
-  res.redirect('/admin/data?message=All tournaments deleted');
-});
-
+// Past Tournaments
 router.post('/delete-pasttournaments/:id', authMiddleware, adminOnly, async (req, res) => {
   await PastTournament.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/data?message=Past-tournament deleted');
+  res.redirect('/admin/data?message=Past tournament deleted');
 });
 
 router.post('/delete-all-pasttournaments', authMiddleware, adminOnly, async (req, res) => {
-  await PastTournaments.deleteMany({});
-  res.redirect('/admin/data?message=All pasttournaments deleted');
+  await PastTournament.deleteMany({});
+  res.redirect('/admin/data?message=All past tournaments deleted');
 });
 
 router.post('/delete-match/:id', authMiddleware, adminOnly, async (req, res) => {
