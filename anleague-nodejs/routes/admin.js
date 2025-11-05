@@ -797,44 +797,41 @@ router.post('/edit-match', async (req, res) => {
 // ADMIN DATA ROUTES
 router.get('/data', authMiddleware, adminOnly, async (req, res) => {
   try {
-    const [users, teams, tournaments, matches, pasttournaments] = await Promise.all([
+    const [
+      users,
+      teams,
+      tournament,          // <-- active tournament (singular)
+      matches,
+      pasttournaments
+    ] = await Promise.all([
       User.find().lean(),
       Team.find().populate('representative_id', 'username').lean(),
-      Tournament.find().lean(),
-      PastTournament.find().lean(),
-      mongoose.model('Match').find()
+      Tournament.findOne().lean(),                         // current
+      Match.find()
         .populate('team1_id', 'country')
         .populate('team2_id', 'country')
-        .lean()
+        .lean(),
+      PastTournament.find().lean()                         // <-- YOUR MODEL
     ]);
-
-      if (matches.length > 0) {
-      console.log('TEAM1 COUNTRY:', matches[0].team1_id?.country);
-      console.log('TEAM2 COUNTRY:', matches[0].team2_id?.country);
-    }
 
     res.render('admin_data', {
       title: 'Admin Data Overview',
       user: req.user,
       users: users || [],
       teams: teams || [],
-      tournaments: tournaments || [],
+      tournament: tournament || null,          // <-- NEW
       matches: matches || [],
       pasttournaments: pasttournaments || [],
       message: req.query.message || null,
       error: null
     });
-
   } catch (err) {
     console.error('Admin Data Error:', err);
     res.render('admin_data', {
       title: 'Admin Data Overview',
       user: req.user,
-      users: [],
-      teams: [],
-      tournaments: [],
-      pasttournaments: [],
-      matches: [],
+      users: [], teams: [], tournament: null,
+      matches: [], pasttournaments: [],
       error: 'Failed to load data: ' + err.message
     });
   }
@@ -872,12 +869,12 @@ router.post('/delete-all-tournaments', authMiddleware, adminOnly, async (req, re
 });
 
 router.post('/delete-pasttournaments/:id', authMiddleware, adminOnly, async (req, res) => {
-  await Tournament.findByIdAndDelete(req.params.id);
+  await PastTournament.findByIdAndDelete(req.params.id);
   res.redirect('/admin/data?message=Past-tournament deleted');
 });
 
 router.post('/delete-all-pasttournaments', authMiddleware, adminOnly, async (req, res) => {
-  await pasttournaments.deleteMany({});
+  await PastTournaments.deleteMany({});
   res.redirect('/admin/data?message=All pasttournaments deleted');
 });
 

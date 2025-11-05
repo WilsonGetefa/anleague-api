@@ -231,6 +231,9 @@
     #cancel-delete { background: #6c757d; color: white; }
     #confirm-delete { background: #dc3545; color: white; }
     .modal-actions button:hover { opacity: .9; }
+    main {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
@@ -276,29 +279,17 @@
       <p class="success"><%= message %></p>
     <% } %>
 
-    <!-- ==================== CURRENT TOURNAMENT ==================== -->
-    <div class="section">
-      <h3>Current Tournament</h3>
-      <% if (tournament) { %>
-        <p>
-          <strong>Status:</strong> <%= tournament.status %> |
-          <strong>Teams:</strong> <%= Array.isArray(tournament.teams) ? tournament.teams.length : 0 %> |
-          <strong>Created:</strong> <%= tournament.createdAt ? new Date(tournament.createdAt).toLocaleDateString() : '—' %>
-        </p>
-      <% } else { %>
-        <div class="no-data">No active tournament.</div>
-      <% } %>
-    </div>
-
     <!-- ==================== USERS ==================== -->
     <div class="section">
       <h3>Users (<%= users.length %>)</h3>
       <div class="controls">
+        <!-- Delete-All button (opens modal) -->
         <button type="button" class="btn-delete-all delete-all-btn"
                 data-url="/admin/delete-all-users"
                 data-message="Delete ALL users?">
           Delete All Users
         </button>
+
         <button class="btn-download" onclick="downloadExcel('users', <%= JSON.stringify(users.map(u => ({ ...u, team: u.team ? u.team.toString() : null }))) %>)">
           Download Users Excel
         </button>
@@ -355,6 +346,7 @@
                 data-message="Delete ALL teams?">
           Delete All Teams
         </button>
+
         <button class="btn-download" onclick="downloadExcel('teams', <%= JSON.stringify(teams) %>)">
           Download Teams Excel
         </button>
@@ -400,25 +392,21 @@
 
     <!-- ==================== PAST TOURNAMENTS ==================== -->
     <div class="section">
-      <h3>Past Tournaments (<%= pasttournaments.length %>)</h3>
+      <h3>Past-tournaments (<%= pasttournaments.length %>)</h3>
       <div class="controls">
         <button type="button" class="btn-delete-all delete-all-btn"
                 data-url="/admin/delete-all-pasttournaments"
-                data-message="Delete ALL past tournaments?">
+                data-message="Delete ALL past-tournaments?">
           Delete All
         </button>
-        <button class="btn-download" onclick="downloadExcel('pasttournaments', <%= JSON.stringify(pasttournaments.map(t => ({
-          status: t.status || '—',
-          teams: Array.isArray(t.teams) ? t.teams.length : 0,
-          stage: t.status || '—',
-          created: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—'
-        }))) %>)">
+
+        <button class="btn-download" onclick="downloadExcel('pasttournaments', <%= JSON.stringify(pasttournaments) %>)">
           Download Excel
         </button>
       </div>
 
       <% if (pasttournaments.length === 0) { %>
-        <div class="no-data">No past tournaments found.</div>
+        <div class="no-data">No Past-tournaments found.</div>
       <% } else { %>
         <table>
           <thead>
@@ -442,7 +430,7 @@
                           data-id="<%= t._id %>"
                           data-name="Tournament #<%= t._id %>"
                           data-type="tournament"
-                          data-url="/admin/delete-pasttournaments/<%= t._id %>">
+                          data-url="/admin/delete-tournament/<%= t._id %>">
                     Delete
                   </button>
                 </td>
@@ -462,6 +450,7 @@
                 data-message="Delete ALL matches?">
           Delete All
         </button>
+
         <button class="btn-download" onclick="downloadExcel('matches', <%= JSON.stringify(matches) %>)">
           Download Excel
         </button>
@@ -545,9 +534,7 @@
 
   <!-- ==================== SCRIPTS ==================== -->
   <script>
-    // Pass teams to client-side for lookup in Excel export
-    const teams = <%= JSON.stringify(teams) %>;
-
+    /* ---------- Excel Export (unchanged) ---------- */
     async function downloadExcel(type, data) {
       const wb = new ExcelJS.Workbook();
       const ws = wb.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
@@ -569,16 +556,16 @@
           t.country,
           t.manager,
           t.representative_id?.username || 'N/A',
-          isNaN(t.rating) ? '0.0' : Number(t.rating).toFixed(1),
-          Array.isArray(t.squad) ? t.squad.length : 0
+          t.rating?.toFixed(1) || '0.0',
+          t.squad?.length || 0
         ]);
       } else if (type === 'pasttournaments') {
         headers = ['Status', 'Teams', 'Stage', 'Created'];
         rows = data.map(t => [
           t.status || '—',
-          t.teams || 0,
-          t.stage || '—',
-          t.created || '—'
+          t.teams?.length || 0,
+          t.status || '—',
+          t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—'
         ]);
       } else if (type === 'matches') {
         headers = ['Stage', 'Team 1', 'Score', 'Team 2', 'Status'];
@@ -591,14 +578,11 @@
         ]);
       }
 
-      // Header row
       ws.addRow(headers).font = { bold: true, color: { argb: 'FFFFFFFF' } };
       ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2e6b5b' } };
 
-      // Data rows
       rows.forEach(row => ws.addRow(row));
 
-      // Styling
       ws.columns.forEach(col => {
         col.width = 18;
         col.alignment = { vertical: 'middle', horizontal: 'left' };
@@ -624,34 +608,41 @@
       const deleteForm = document.getElementById('delete-form');
       const cancelBtn  = document.getElementById('cancel-delete');
 
+      /* ---- Single-row delete buttons ---- */
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const name = btn.dataset.name;
           const url  = btn.dataset.url;
+
           msgSpan.innerHTML = `Are you sure you want to delete <strong>${name}</strong>?`;
           deleteForm.action = url;
           modal.style.display = 'flex';
         });
       });
 
+      /* ---- "Delete All" buttons ---- */
       document.querySelectorAll('.delete-all-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const url     = btn.dataset.url;
           const message = btn.dataset.message;
+
           msgSpan.innerHTML = `<strong>${message}</strong>`;
           deleteForm.action = url;
           modal.style.display = 'flex';
         });
       });
 
+      /* ---- Cancel ---- */
       cancelBtn.addEventListener('click', () => {
         modal.style.display = 'none';
       });
 
+      /* ---- Click outside modal ---- */
       modal.addEventListener('click', e => {
         if (e.target === modal) modal.style.display = 'none';
       });
 
+      /* ---- Escape key ---- */
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal.style.display === 'flex') {
           modal.style.display = 'none';
