@@ -471,13 +471,16 @@ router.post('/advance', async (req, res) => {
       if (qfs.length < 4) {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
-          error: 'Not enough quarterfinals', tournament, user: req.user });
+          message: null,
+          error: 'Not enough quarterfinals', 
+          tournament, user: req.user });
       }
 
       const allCompleted = qfs.every(qf => qf.match_id?.status === 'completed');
       if (!allCompleted) {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
+          message: null,
           error: 'All quarterfinals must be completed', tournament, user: req.user });
       }
 
@@ -494,6 +497,7 @@ router.post('/advance', async (req, res) => {
         if (!winner1 || !winner2) {
           return res.render('admin_dashboard', {
             title: 'Admin Dashboard',
+            message: null,
             error: 'Could not determine semifinalists', tournament, user: req.user });
         }
 
@@ -527,6 +531,7 @@ router.post('/advance', async (req, res) => {
       if (sfs.length < 2) {
         return res.render('admin_dashboard', { 
           title: 'Admin Dashboard',
+          message: null,
           error: 'Not enough semifinals', tournament, user: req.user });
       }
 
@@ -534,6 +539,7 @@ router.post('/advance', async (req, res) => {
       if (!allCompleted) {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
+          message: null,
            error: 'All semifinals must be completed', 
            tournament, user: req.user });
       }
@@ -548,6 +554,7 @@ router.post('/advance', async (req, res) => {
       if (!finalist1 || !finalist2) {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
+          message: null,
           error: 'Could not determine finalists', 
           tournament, user: req.user });
       }
@@ -579,6 +586,7 @@ router.post('/advance', async (req, res) => {
       if (!final?.match_id || final.match_id.status !== 'completed') {
         return res.render('admin_dashboard', {
           title: 'Admin Dashboard',
+          message: null,
           error: 'Final match must be completed', 
           tournament, user: req.user });
       }
