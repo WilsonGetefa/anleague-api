@@ -41,9 +41,7 @@
       max-width: 1100px; 
       margin: 2rem auto; 
       padding: 0 1rem;
-      /* DO NOT add flex: 1 here — main handles growth */
     }
-
     header h1 { margin: 0; font-size: 2rem; font-weight: 700; }
 
     nav {
@@ -57,17 +55,14 @@
     nav a { margin: 0 6px; color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
     nav a:hover { color: var(--accent); }
 
-    /* STICKY HEADER — CRITICAL: flex-shrink: 0 */
     .sticky-top {
       position: sticky; 
       top: 0; 
       z-index: 1000; 
       background: white; 
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      flex-shrink: 0; /* Prevents collapse in flex layout */
+      flex-shrink: 0;
     }
-
-    /* Main grows to fill space */
     main {
       flex: 1;
     }
@@ -236,6 +231,9 @@
     #cancel-delete { background: #6c757d; color: white; }
     #confirm-delete { background: #dc3545; color: white; }
     .modal-actions button:hover { opacity: .9; }
+    main {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
@@ -285,6 +283,7 @@
     <div class="section">
       <h3>Users (<%= users.length %>)</h3>
       <div class="controls">
+        <!-- Delete-All button (opens modal) -->
         <button type="button" class="btn-delete-all delete-all-btn"
                 data-url="/admin/delete-all-users"
                 data-message="Delete ALL users?">
@@ -609,6 +608,7 @@
       const deleteForm = document.getElementById('delete-form');
       const cancelBtn  = document.getElementById('cancel-delete');
 
+      /* ---- Single-row delete buttons ---- */
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const name = btn.dataset.name;
@@ -620,6 +620,7 @@
         });
       });
 
+      /* ---- "Delete All" buttons ---- */
       document.querySelectorAll('.delete-all-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const url     = btn.dataset.url;
@@ -631,14 +632,17 @@
         });
       });
 
+      /* ---- Cancel ---- */
       cancelBtn.addEventListener('click', () => {
         modal.style.display = 'none';
       });
 
+      /* ---- Click outside modal ---- */
       modal.addEventListener('click', e => {
         if (e.target === modal) modal.style.display = 'none';
       });
 
+      /* ---- Escape key ---- */
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal.style.display === 'flex') {
           modal.style.display = 'none';
