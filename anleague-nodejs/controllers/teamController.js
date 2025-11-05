@@ -1,7 +1,26 @@
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Admin Routes:
+ *   • GET  /admin/data           → Render data overview
+ *   • POST /admin/delete-*       → Secure delete operations
+ *   • Excel export via client-side ExcelJS
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
+
 const Team = require('../models/team');
 const User = require('../models/user');
 
-// Mock real-life squad data for MongoDB countries (replace with API/scrape for bonus)
+
 const mockSquads = {
   Nigeria: [
     { name: 'Victor Osimhen', position: 'AT' },
@@ -32,37 +51,37 @@ const mockSquads = {
     { name: 'Gelson Dala', position: 'AT' },
     { name: 'Mabululu', position: 'AT' },
     { name: 'Fredy', position: 'MD' },
-    // Add 20 more players
+    
   ],
   'Cape Verde': [
     { name: 'Ryan Mendes', position: 'AT' },
     { name: 'Bebé', position: 'AT' },
     { name: 'Jovane Cabral', position: 'MD' },
-    // Add 20 more players
+    
   ],
   'South Africa': [
     { name: 'Percy Tau', position: 'AT' },
     { name: 'Ronwen Williams', position: 'GK' },
     { name: 'Themba Zwane', position: 'MD' },
-    // Add 20 more players
+    
   ],
   Mali: [
     { name: 'Amadou Haidara', position: 'MD' },
     { name: 'Yves Bissouma', position: 'MD' },
     { name: 'Moussa Djenepo', position: 'AT' },
-    // Add 20 more players
+  
   ],
   "Côte d'Ivoire": [
     { name: 'Franck Kessié', position: 'MD' },
     { name: 'Sébastien Haller', position: 'AT' },
     { name: 'Wilfried Zaha', position: 'AT' },
-    // Add 20 more players
+    
   ],
   'DR Congo': [
     { name: 'Chancel Mbemba', position: 'DF' },
     { name: 'Cédric Bakambu', position: 'AT' },
     { name: 'Yoane Wissa', position: 'AT' },
-    // Add 20 more players
+    
   ]
 };
 

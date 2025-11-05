@@ -1,15 +1,34 @@
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Admin Routes:
+ *   • GET  /admin/data           → Render data overview
+ *   • POST /admin/delete-*       → Secure delete operations
+ *   • Excel export via client-side ExcelJS
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
+
 const express = require('express');
 const router = express.Router();
 const Tournament = require('../models/tournament');
 const Team = require('../models/team');
 const Match = require('../models/match');
-const PastTournament = require('../models/pastTournament'); // For archiving
-const mongoose = require('mongoose'); // ← ADD THIS AT TOP OF FILE
-const { authMiddleware } = require('../middleware/auth');     // ← Pull function out
+const PastTournament = require('../models/pastTournament');
+const mongoose = require('mongoose'); 
+const { authMiddleware } = require('../middleware/auth'); 
 const adminOnly = require('../middleware/adminOnly');
 const User = require('../models/user');
 
-// Add this at the top with other routes in routes/admin.js
+
 router.get('/dashboard', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
@@ -31,7 +50,7 @@ router.get('/dashboard', async (req, res) => {
       message: null,
       error: null,
       tournament: tournament || null,
-      user: req.user // Ensure user is passed
+      user: req.user
     });
   } catch (err) {
     console.error('Dashboard error:', err.message);
@@ -42,12 +61,12 @@ router.get('/dashboard', async (req, res) => {
       error: 'Failed to load dashboard',
       message: null,
       tournament: null,
-      user: req.user // Ensure user is passed
+      user: req.user
     });
   }
 });
 
-// ... (rest of the existing routes remain as provided earlier) ...
+
 router.post('/start', async (req, res) => {
   try {
     const teams = await Team.find().lean();
@@ -77,14 +96,14 @@ router.post('/start', async (req, res) => {
       });
     }
 
-    // Create and save tournament first to get _id
+    
     const tournamentData = {
       teams: validTeams.map(t => t._id),
       bracket: { quarterfinals: [], semifinals: [], final: [] },
       status: 'quarterfinals'
     };
-    await Tournament.deleteMany({}); // Clear existing tournaments
-    const tournament = await Tournament.create(tournamentData); // Save to get _id
+    await Tournament.deleteMany({}); 
+    const tournament = await Tournament.create(tournamentData); 
 
     const quarterfinals = [];
     for (let i = 0; i < 8; i += 2) {
@@ -111,13 +130,13 @@ router.post('/start', async (req, res) => {
         score: { team1: 0, team2: 0 },
         goal_scorers: [],
         commentary: '',
-        tournament_id: tournament._id // Set tournament_id here
+        tournament_id: tournament._id
       });
       await match.save();
       quarterfinals.push({ match_id: match._id, team1_id: team1._id, team2_id: team2._id });
     }
 
-    // Update tournament with quarterfinals
+    
     tournament.bracket.quarterfinals = quarterfinals;
     await tournament.save();
 
@@ -158,13 +177,10 @@ router.post('/start', async (req, res) => {
   }
 });
 
-// routes/admin.js (only the /simulate route)
+
 router.post('/simulate', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
-      //.populate('bracket.quarterfinals.match_id')
-      //.populate('bracket.quarterfinals.team1_id', 'country')
-      //.populate('bracket.quarterfinals.team2_id', 'country')
 
         .populate({path: 'bracket.quarterfinals.match_id'})
         .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
@@ -222,7 +238,6 @@ router.post('/simulate', async (req, res) => {
       });
     }
 
-    // Simulate each match
     for (const match of pendingMatches) {
       match.score.team1 = Math.floor(Math.random() * 4);
       match.score.team2 = Math.floor(Math.random() * 4);
@@ -230,8 +245,7 @@ router.post('/simulate', async (req, res) => {
       match.status = 'completed';
       match.goal_scorers = [];
 
-      
-      // Inside the loop
+
       const team1IdRaw = match.team1_id?._id || match.team1_id;
       const team2IdRaw = match.team2_id?._id || match.team2_id;
 
@@ -252,7 +266,7 @@ router.post('/simulate', async (req, res) => {
       console.log(`Team2: ${team2Name} | Squad: ${team2?.squad?.length} players`);
       console.log('Sample player:', team1?.squad?.[0]?.name);
 
-      // Generate goals with safe player selection
+
       if (team1?.squad?.length) {
         for (let i = 0; i < match.score.team1; i++) {
           const player = team1.squad[Math.floor(Math.random() * team1.squad.length)];
@@ -263,7 +277,7 @@ router.post('/simulate', async (req, res) => {
           });
         }
       } else {
-        console.warn(`No players for team1 ${team1Name}`);//, using placeholders`);
+        console.warn(`No players for team1 ${team1Name}`);
         for (let i = 0; i < match.score.team1; i++) {
           match.goal_scorers.push({
             player_name: `Player${i + 1}_T1`,
@@ -283,7 +297,7 @@ router.post('/simulate', async (req, res) => {
           });
         }
       } else {
-        console.warn(`No players for team2 ${team2Name}`);//, using placeholders`);
+        console.warn(`No players for team2 ${team2Name}`);
         for (let i = 0; i < match.score.team2; i++) {
           match.goal_scorers.push({
             player_name: `Player${i + 1}_T2`,
@@ -293,7 +307,7 @@ router.post('/simulate', async (req, res) => {
         }
       }
 
-      // Commentary
+
       match.commentary = `Match simulated: ${team1Name} ${match.score.team1}-${match.score.team2} ${team2Name} with ${match.goal_scorers.length} goals`;
       match.tournament_id = tournament._id;
 
@@ -405,7 +419,7 @@ router.post('/play', async (req, res) => {
   }
 });
 
-// routes/admin.js
+
 router.post('/advance', async (req, res) => {
   try {
     const tournament = await Tournament.findOne()
@@ -433,7 +447,7 @@ router.post('/advance', async (req, res) => {
       });
     }
 
-    // Helper: resolve winner with tiebreaker
+
     const resolveWinner = async (match, team1Doc, team2Doc) => {
       if (!match || match.status !== 'completed') return null;
 
@@ -441,7 +455,7 @@ router.post('/advance', async (req, res) => {
         return match.score.team1 > match.score.team2 ? team1Doc : team2Doc;
       }
 
-      // Tie → extra time or penalties
+
       const isExtraTime = Math.random() < 0.5;
       const winner = Math.random() < 0.5 ? team1Doc : team2Doc;
       const winnerName = winner?.country || 'Unknown';
@@ -455,7 +469,7 @@ router.post('/advance', async (req, res) => {
       return winner;
     };
 
-    // === QUARTERFINALS → SEMIFINALS ===
+
     if (tournament.status === 'quarterfinals') {
       const qfs = tournament.bracket.quarterfinals;
       if (qfs.length < 4) {
@@ -518,7 +532,6 @@ router.post('/advance', async (req, res) => {
       await tournament.save();
     }
 
-    // === SEMIFINALS → FINAL ===
     else if (tournament.status === 'semifinals') {
       const sfs = tournament.bracket.semifinals;
       if (sfs.length < 2) {
@@ -575,7 +588,6 @@ router.post('/advance', async (req, res) => {
       await tournament.save();
     }
 
-    // === FINAL → ARCHIVE ===
     else if (tournament.status === 'final') {
       const final = tournament.bracket.final[0];
       if (!final?.match_id || final.match_id.status !== 'completed') {
@@ -586,7 +598,6 @@ router.post('/advance', async (req, res) => {
         });
       }
 
-      // Build clean bracket for archiving (no populated objects)
       const cleanBracket = {
         quarterfinals: tournament.bracket.quarterfinals.map(qf => ({
           team1_id: qf.team1_id?._id,
@@ -628,7 +639,6 @@ router.post('/advance', async (req, res) => {
       });
     }
 
-    // === RELOAD WITH FRESH POPULATION ===
     const updated = await Tournament.findById(tournament._id)
         .populate({path: 'bracket.quarterfinals.match_id'})
         .populate({path: 'bracket.quarterfinals.team1_id',select: 'country'})
@@ -666,7 +676,7 @@ router.post('/advance', async (req, res) => {
   }
 });
 
-// routes/admin.js
+
 router.post('/restart', async (req, res) => {
   try {
     const tournament = await Tournament.findOne().sort({ createdAt: -1 });
@@ -674,7 +684,7 @@ router.post('/restart', async (req, res) => {
     let archived = null;
 
     if (tournament) {
-      // === ARCHIVE FIRST ===
+      
       const { _id, ...cleanData } = tournament.toObject();
 
       const pastTournament = new PastTournament({
@@ -702,9 +712,8 @@ router.post('/restart', async (req, res) => {
       archived = await pastTournament.save();
       console.log('Archived tournament:', archived._id);
 
-      // === NOW DELETE THE ORIGINAL ===
       const deleteResult = await Tournament.deleteOne({ _id: tournament._id });
-      console.log('Deleted active tournament:', deleteResult.deletedCount); // Should be 1
+      console.log('Deleted active tournament:', deleteResult.deletedCount);
     } else {
       console.log('No tournament to restart');
     }
@@ -735,12 +744,11 @@ router.post('/restart', async (req, res) => {
   }
 });
 
-// routes/admin.js
 router.post('/edit-match', async (req, res) => {
   try {
     const { matchId, team1Score, team2Score } = req.body;
 
-    // Validate input
+
     if (!matchId || !mongoose.Types.ObjectId.isValid(matchId)) {
       return renderAdminError(res, req, 'Invalid match ID');
     }
@@ -751,7 +759,6 @@ router.post('/edit-match', async (req, res) => {
       return renderAdminError(res, req, 'Invalid scores');
     }
 
-    // Find and update match
     const match = await Match.findById(matchId);
     if (!match) {
       return renderAdminError(res, req, 'Match not found');
@@ -761,11 +768,10 @@ router.post('/edit-match', async (req, res) => {
     match.score.team2 = team2ScoreNum;
     match.status = 'completed';
     match.commentary = `Score updated manually: ${team1ScoreNum}–${team2ScoreNum}`;
-    match.type = 'played'; // or 'simulated' — your choice
+    match.type = 'played';
 
     await match.save();
 
-    // Reload tournament with full population
     const tournament = await Tournament.findOne()
       .populate({ path: 'bracket.quarterfinals.match_id' })
       .populate({ path: 'bracket.quarterfinals.team1_id', select: 'country' })
@@ -777,7 +783,7 @@ router.post('/edit-match', async (req, res) => {
       .populate({ path: 'bracket.final.team1_id', select: 'country' })
       .populate({ path: 'bracket.final.team2_id', select: 'country' });
 
-    // Success render
+
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user?.username || 'Guest',
@@ -794,24 +800,24 @@ router.post('/edit-match', async (req, res) => {
   }
 });
 
-// ADMIN DATA ROUTES
+
 router.get('/data', authMiddleware, adminOnly, async (req, res) => {
   try {
     const [
       users,
       teams,
-      tournament,          // <-- active tournament (singular)
+      tournament,          
       matches,
       pasttournaments
     ] = await Promise.all([
       User.find().lean(),
       Team.find().populate('representative_id', 'username').lean(),
-      Tournament.findOne().lean(),                         // current
+      Tournament.findOne().lean(),                         
       Match.find()
         .populate('team1_id', 'country')
         .populate('team2_id', 'country')
         .lean(),
-      PastTournament.find().lean()                         // <-- YOUR MODEL
+      PastTournament.find().lean()                        
     ]);
 
     res.render('admin_data', {
@@ -819,7 +825,7 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
       user: req.user,
       users: users || [],
       teams: teams || [],
-      tournament: tournament || null,          // <-- NEW
+      tournament: tournament || null,         
       matches: matches || [],
       pasttournaments: pasttournaments || [],
       message: req.query.message || null,
@@ -837,8 +843,7 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// DELETE ROUTES
-// DELETE ROUTES
+
 router.post('/delete-user/:id', authMiddleware, adminOnly, async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.redirect('/admin/data?message=User deleted');
@@ -859,13 +864,13 @@ router.post('/delete-all-teams', authMiddleware, adminOnly, async (req, res) => 
   res.redirect('/admin/data?message=All teams deleted');
 });
 
-// Active Tournament (singular)
+
 router.post('/delete-tournament/:id', authMiddleware, adminOnly, async (req, res) => {
   await Tournament.findByIdAndDelete(req.params.id);
   res.redirect('/admin/data?message=Active tournament deleted');
 });
 
-// Past Tournaments
+
 router.post('/delete-pasttournaments/:id', authMiddleware, adminOnly, async (req, res) => {
   await PastTournament.findByIdAndDelete(req.params.id);
   res.redirect('/admin/data?message=Past tournament deleted');

@@ -1,3 +1,22 @@
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Admin Routes:
+ *   • GET  /admin/data           → Render data overview
+ *   • POST /admin/delete-*       → Secure delete operations
+ *   • Excel export via client-side ExcelJS
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
+
 const express = require('express');
 const router = express.Router();
 const Tournament = require('../models/tournament');
@@ -144,7 +163,7 @@ router.get('/bracket', async (req, res) => {
       .sort({ createdAt: -1 })
       .populate('teams', 'country')
 
-      // === QUARTERFINALS ===
+    
       .populate({
         path: 'bracket.quarterfinals.match_id',
         populate: [
@@ -155,7 +174,7 @@ router.get('/bracket', async (req, res) => {
       .populate({ path: 'bracket.quarterfinals.team1_id', select: 'country' })
       .populate({ path: 'bracket.quarterfinals.team2_id', select: 'country' })
 
-      // === SEMIFINALS ===
+      
       .populate({
         path: 'bracket.semifinals.match_id',
         populate: [
@@ -166,7 +185,7 @@ router.get('/bracket', async (req, res) => {
       .populate({ path: 'bracket.semifinals.team1_id', select: 'country' })
       .populate({ path: 'bracket.semifinals.team2_id', select: 'country' })
 
-      // === FINAL ===
+      
       .populate({
         path: 'bracket.final.match_id',
         populate: [
@@ -193,7 +212,7 @@ router.get('/bracket', async (req, res) => {
       });
     }
 
-    // Clean empty matches
+    
     tournament.bracket = tournament.bracket || {};
     tournament.bracket.quarterfinals = (tournament.bracket.quarterfinals || []).filter(m => m.match_id?._id);
     tournament.bracket.semifinals = (tournament.bracket.semifinals || []).filter(m => m.match_id?._id);
@@ -212,10 +231,10 @@ router.get('/bracket', async (req, res) => {
   }
 });
 
-// routes/public.js
+
 router.get('/rankings', async (req, res) => {
   try {
-    // === CURRENT TOURNAMENT RANKINGS (all time) ===
+    
     const matches = await Match.find({ type: { $in: ['simulated', 'played'] } })
       .populate('team1_id', 'country')
       .populate('team2_id', 'country')
@@ -240,14 +259,14 @@ router.get('/rankings', async (req, res) => {
       .sort((a, b) => b.goals - a.goals)
       .slice(0, 20);
 
-    // === PAST TOURNAMENTS WITH FULL MATCH DATA ===
+   
     const pastTournaments = await PastTournament.find()
       .sort({ year: -1 })
       .lean();
 
     const pastWithMatches = await Promise.all(
       pastTournaments.map(async (pt) => {
-        // Extract all match_ids from bracket
+       
         const matchIds = [];
         ['quarterfinals', 'semifinals', 'final'].forEach(stage => {
           pt.bracket[stage]?.forEach(fixture => {
@@ -255,13 +274,12 @@ router.get('/rankings', async (req, res) => {
           });
         });
 
-        // Fetch matches + populate teams
+        
         const matches = await Match.find({ _id: { $in: matchIds } })
           .populate('team1_id', 'country')
           .populate('team2_id', 'country')
           .lean();
 
-        // Determine winner & runner-up
         const finalMatch = matches.find(m => m.stage === 'final');
         const winner = finalMatch
           ? (finalMatch.score.team1 > finalMatch.score.team2
@@ -303,7 +321,7 @@ router.get('/rankings', async (req, res) => {
   }
 });
 
-// routes/public.js
+
 router.get('/match/:id', async (req, res) => {
   try {
     const match = await Match.findById(req.params.id)

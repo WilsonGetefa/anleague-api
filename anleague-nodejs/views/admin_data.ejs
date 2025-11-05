@@ -1,3 +1,22 @@
+<%--
+  African Nations League (ANL) Application
+  ==================================================
+  Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+
+  Built with: Node.js, Express, MongoDB, EJS
+  Deployment: Render, MongoDB, GitHub, Node.js host
+  Features:
+    • Admin data overview with Excel export
+    • Responsive design with mobile-first tables
+    • Secure delete modals and JWT authentication
+    • Real-time match simulation and bracket system
+
+  Build by: Wilson Getefa Sisimi
+  Year: 2025
+  Copyright: © 2025 African Nations League. All rights reserved.
+  Info: Official platform powered by WGS - UCT
+--%>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,12 +28,12 @@
     <link rel="stylesheet" href="/css/admin_page/styles.css">
     <link rel="icon" type="image/x-icon" href="/images/caf.png">
 
-    <!-- ExcelJS + FileSaver -->
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
-        /* ... (all your CSS from before – unchanged) ... */
+
         :root { --primary: #2e6b5b; --primary-dark: #1a3f35; --accent: #e67e22; --light: #f8f9fa; --gray: #6c757d; --border: #dee2e6; }
         html, body { height: 100%; margin: 0; }
         body { font-family: 'Roboto', sans-serif; background: #f4f6f9; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
@@ -55,7 +74,7 @@
     </style>
     </head>
     <body>
-    <!-- ==================== HEADER & NAV ==================== -->
+
     <div class="sticky-top">
         <header>
         <div style="display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 100%; padding: 0 1rem;">
@@ -307,10 +326,10 @@
 
     <!-- ==================== SCRIPTS ==================== -->
      <script>
-  // Global data - CORRECT EJS SYNTAX
+
   const allTeams = <%- JSON.stringify(teams) %>;
 
-  // Excel Export
+
   async function downloadExcel(type, rawData) {
     const data = JSON.parse(rawData);
     const wb = new ExcelJS.Workbook();
@@ -368,21 +387,21 @@
     saveAs(new Blob([buf]), `${type}_report_${new Date().toISOString().slice(0,10)}.xlsx`);
   }
 
-  // Attach all buttons
+ 
   document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('delete-modal');
     const msgSpan = document.getElementById('modal-message');
     const deleteForm = document.getElementById('delete-form');
     const cancelBtn = document.getElementById('cancel-delete');
 
-    // Excel buttons
+  
     document.querySelectorAll('.btn-download').forEach(btn => {
       btn.addEventListener('click', () => {
         downloadExcel(btn.dataset.type, btn.dataset.payload);
       });
     });
 
-    // Single delete
+
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         msgSpan.innerHTML = `Delete <strong>${btn.dataset.name}</strong>?`;
@@ -391,7 +410,7 @@
       });
     });
 
-    // Delete all
+
     document.querySelectorAll('.delete-all-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         msgSpan.innerHTML = `<strong>${btn.dataset.message}</strong>`;
@@ -400,7 +419,7 @@
       });
     });
 
-    // Close modal
+  
     cancelBtn.onclick = () => modal.style.display = 'none';
     modal.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
     document.onkeydown = e => { if (e.key === 'Escape') modal.style.display = 'none'; };

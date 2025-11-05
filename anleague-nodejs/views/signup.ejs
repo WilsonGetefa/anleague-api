@@ -1,3 +1,22 @@
+<%--
+  African Nations League (ANL) Application
+  ==================================================
+  Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+
+  Built with: Node.js, Express, MongoDB, EJS
+  Deployment: Render, MongoDB, GitHub, Node.js host
+  Features:
+    • Admin data overview with Excel export
+    • Responsive design with mobile-first tables
+    • Secure delete modals and JWT authentication
+    • Real-time match simulation and bracket system
+
+  Build by: Wilson Getefa Sisimi
+  Year: 2025
+  Copyright: © 2025 African Nations League. All rights reserved.
+  Info: Official platform powered by WGS - UCT
+--%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -213,7 +232,7 @@
         max-width: 100%;
         padding: 0 1rem;
       ">
-        <!-- LOGO (clickable to home) -->
+
         <a href="/" style="display: block; line-height: 0;">
           <img src="/images/caf.png" 
               alt="ANL Logo" 
@@ -223,7 +242,7 @@
               ">
         </a>
 
-        <!-- TITLE (centered) -->
+    
         <h1 style="
           margin: 0;
           font-size: 2rem;
@@ -237,7 +256,7 @@
       </div>
     </header>
 
-    <!-- NAVIGATION -->
+
     <nav>
       <a href="/">Home</a> |
       <a href="/bracket">Bracket</a> |
@@ -272,7 +291,6 @@
           <input type="password" id="password" name="password" placeholder="Enter strong password" required>
         </div>
 
-        <!-- COUNTRY – REQUIRED ONLY FOR REPRESENTATIVE -->
         <div class="form-group">
           <label for="country">
             Country <span id="country-required" style="color:red; display:none;">*</span>
@@ -285,7 +303,7 @@
           </select>
         </div>
 
-        <!-- ROLE -->
+ 
         <div class="form-group">
           <label for="role">Role</label>
           <select id="role" name="role" required onchange="toggleCountryRequired()">
@@ -337,9 +355,7 @@
     </div>
   </footer>
 
-  <!-- -------------------------------------------------
-       JavaScript – toggle country requirement
-       ------------------------------------------------- -->
+
   <script>
     function toggleCountryRequired() {
       const role = document.getElementById('role').value;
@@ -352,11 +368,11 @@
       } else {
         countrySelect.removeAttribute('required');
         requiredMark.style.display = 'none';
-        countrySelect.value = '';   // clear selection for admin
+        countrySelect.value = '';  
       }
     }
 
-    // Run on page load (in case a role is pre‑selected via query string, etc.)
+   
     document.addEventListener('DOMContentLoaded', toggleCountryRequired);
   </script>
 

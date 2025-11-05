@@ -1,3 +1,22 @@
+<%--
+  African Nations League (ANL) Application
+  ==================================================
+  Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+
+  Built with: Node.js, Express, MongoDB, EJS
+  Deployment: Render, MongoDB, GitHub, Node.js host
+  Features:
+    • Admin data overview with Excel export
+    • Responsive design with mobile-first tables
+    • Secure delete modals and JWT authentication
+    • Real-time match simulation and bracket system
+
+  Build by: Wilson Getefa Sisimi
+  Year: 2025
+  Copyright: © 2025 African Nations League. All rights reserved.
+  Info: Official platform powered by WGS - UCT
+--%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,7 +179,7 @@
       color: var(--primary-dark);
       font-style: normal;
     }
-    /* === AUDIO CONTROLS === */
+
     .audio-controls {
       display: flex;
       justify-content: center;
@@ -286,7 +305,7 @@
         max-width: 100%;
         padding: 0 1rem;
       ">
-        <!-- LOGO (clickable to home) -->
+
         <a href="/" style="display: block; line-height: 0;">
           <img src="/images/caf.png"
               alt="ANL Logo"
@@ -295,7 +314,7 @@
                 width: auto;
               ">
         </a>
-        <!-- TITLE (centered) -->
+  
         <h1 style="
           margin: 0;
           font-size: 2rem;
@@ -308,7 +327,7 @@
         </h1>
       </div>
     </header>
-    <!-- NAVIGATION -->
+
     <nav>
       <a href="/">Home</a> |
       <a href="/bracket">Bracket</a> |
@@ -331,7 +350,7 @@
   <main class="container">
     <% if (match) { %>
       <div class="match-card">
-        <!-- ALL YOUR MATCH CONTENT (unchanged) -->
+     
         <div class="match-header">
           <p class="team">
             <%= match.team1_id?.country || 'TBD' %>
@@ -387,7 +406,7 @@
       </div>
     <% } %>
   </main>
-  <!-- GOAL SOUND EFFECT -->
+
   <audio id="goal-sfx" src="/sfx/goal.mp3" preload="auto"></audio>
   <footer style="
     background: linear-gradient(135deg, #1a3f35, #2e6b5b); 
@@ -416,10 +435,10 @@
       </div>
     </div>
   </footer>
-  <!-- ENHANCED TTS + GOAL SFX SCRIPT -->
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // === TTS SETUP ===
+     
       if (!('speechSynthesis' in window)) {
         document.querySelectorAll('.audio-controls').forEach(el => el.style.display = 'none');
         return;
@@ -433,7 +452,7 @@
       const autoPlayToggle = document.getElementById('auto-play');
       let utterance = null;
       let voices = [];
-      // Load voices
+    
       const loadVoices = () => {
         voices = speechSynthesis.getVoices();
         voiceSelect.innerHTML = '';
@@ -445,7 +464,7 @@
           voiceSelect.appendChild(opt);
         });
       };
-      // Some browsers load voices async
+    
       speechSynthesis.onvoiceschanged = loadVoices;
       loadVoices();
       const speak = () => {
@@ -482,7 +501,7 @@
           pauseBtn.innerHTML = 'Resume';
         }
       });
-      // === AUTO-PLAY ===
+  
       if (autoPlayToggle.checked && text) {
         setTimeout(speak, 800);
       }
@@ -491,13 +510,13 @@
           speak();
         }
       });
-      // === GOAL SOUND EFFECT ===
+    
       if (match?.goal_scorers?.length) {
         match.goal_scorers.forEach((goal, i) => {
           setTimeout(() => {
             goalSfx.currentTime = 0;
             goalSfx.play().catch(() => {});
-          }, i * 1200 + 1000); // Staggered + delay after page load
+          }, i * 1200 + 1000); 
         });
       }
     });

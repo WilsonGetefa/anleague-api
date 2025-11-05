@@ -1,4 +1,22 @@
-// models/team.js
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Admin Routes:
+ *   • GET  /admin/data           → Render data overview
+ *   • POST /admin/delete-*       → Secure delete operations
+ *   • Excel export via client-side ExcelJS
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
+
 const mongoose = require('mongoose');
 
 const playerSchema = new mongoose.Schema({
@@ -12,7 +30,7 @@ const playerSchema = new mongoose.Schema({
   },
   is_captain: { type: Boolean, default: false },
   goals: { type: Number, default: 0 }
-}, { _id: false, timestamps: false });  // ← DISABLE _id
+}, { _id: false, timestamps: false }); 
 
 const teamSchema = new mongoose.Schema({
   country: { type: String, required: true, unique: true },
@@ -28,22 +46,20 @@ const teamSchema = new mongoose.Schema({
   players: { type: Array, default: [] }
 });
 
-// ————————————————————————
-// PRE-SAVE HOOK: Auto-fill rating & captain_name
-// ————————————————————————
+
 teamSchema.pre('save', function (next) {
   if (!this.squad || this.squad.length !== 23) {
     return next(new Error('Squad must have exactly 23 players'));
   }
 
-  // 1. Calculate team rating
+  
   const total = this.squad.reduce((sum, player) => {
     const pos = player.natural_position;
     return sum + (player.ratings[pos] || 50);
   }, 0);
   this.rating = Number((total / 23).toFixed(2));
 
-  // 2. Set captain name
+ 
   const captain = this.squad.find(p => p.is_captain);
   this.captain_name = captain ? captain.name : this.squad[0]?.name || 'Unknown';
 

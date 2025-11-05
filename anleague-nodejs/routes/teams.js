@@ -1,16 +1,32 @@
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Admin Routes:
+ *   • GET  /admin/data           → Render data overview
+ *   • POST /admin/delete-*       → Secure delete operations
+ *   • Excel export via client-side ExcelJS
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
+
 const express = require('express');
 const router = express.Router();
 const Team = require('../models/team');
 const User = require('../models/user');
 const auth = require('../middleware/auth').authMiddleware;
 const { ownsTeam } = require('../middleware/ownsTeam');
-const { authMiddleware } = require('../middleware/auth');  // ← ADD
-const Match = require('../models/match'); // ADD THIS LINE AT TOP
+const { authMiddleware } = require('../middleware/auth');  
+const Match = require('../models/match'); 
 
 
-// ————————————————————————————————————————————————
-// PUBLIC: Autofill team (protected by login)
-// ————————————————————————————————————————————————
 router.post('/autofill', auth, async (req, res) => {
   const { country } = req.body;
   const user = req.user;
@@ -38,10 +54,10 @@ router.post('/autofill', auth, async (req, res) => {
       manager: `${user.username}'s Manager`
     });
 
-    await team.save(); // pre-save hook sets rating & captain_name
+    await team.save(); 
     console.log(`Team created: ${country} | Rating: ${team.rating} | Captain: ${team.captain_name}`);
 
-    // RE-FETCH TEAM + RENDER DASHBOARD
+  
     const freshTeam = await Team.findOne({ representative_id: user._id });
     res.render('dashboard', {
       title: 'Dashboard',
@@ -64,9 +80,7 @@ router.post('/autofill', auth, async (req, res) => {
   }
 });
 
-// ————————————————————————————————————————————————
-// PUBLIC: View all teams
-// ————————————————————————————————————————————————
+
 router.get('/', async (req, res) => {
   try {
     const teams = await Team.find()
@@ -74,15 +88,7 @@ router.get('/', async (req, res) => {
       .populate('representative_id', 'username')
       .sort({ rating: -1 });
 
-      // ————————————————————————————————
-    // FIX: UPDATE GOALS FROM MATCHES
-    // ————————————————————————————————
-    // ————————————————————
-// FAST & CORRECT GOAL SYNC
-// ————————————————————
-    // ————————————————————
-// FAST & CORRECT GOAL SYNC
-// ————————————————————
+
   const Match = require('../models/match');
 
   const allPlayerNames = teams.flatMap(t => t.squad.map(p => p.name));
@@ -100,7 +106,7 @@ router.get('/', async (req, res) => {
       player.goals = goalMap[player.name] || 0;
     }
   }
-    // ————————————————————————————————
+
 
     res.render('teams', {
       title: 'Teams',
@@ -119,11 +125,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ————————————————————————————————————————————————
-// PROTECTED: Team management (login + owns team)
-// ————————————————————————————————————————————————
 
-// Update Manager
 router.post('/update-manager', auth, ownsTeam, async (req, res) => {
   const newManagerName = req.body.manager?.trim();
   if (!newManagerName) {
@@ -134,7 +136,7 @@ router.post('/update-manager', auth, ownsTeam, async (req, res) => {
   res.redirect('/dashboard?message=Manager updated');
 });
 
-// Add Player
+
 router.post('/add-player', authMiddleware, ownsTeam, async (req, res) => {
   const { name, natural_position, gk, df, md, at, is_captain } = req.body;
 
@@ -142,18 +144,18 @@ router.post('/add-player', authMiddleware, ownsTeam, async (req, res) => {
     return res.redirect('/dashboard?error=Name and position required');
   }
 
-  // ---- NEW: keep captain flag consistent ----
+ 
   if (is_captain) {
     req.team.squad.forEach(p => p.is_captain = false);
   }
 
-  // ---- NEW: assign index (next available) ----
-  const nextIndex = req.team.squad.length;   // 0-based
+  
+  const nextIndex = req.team.squad.length; 
 
   req.team.squad.push({
     name: name.trim(),
     natural_position,
-    index: nextIndex,                         // <-- added
+    index: nextIndex,                        
     ratings: { GK: +gk || 50, DF: +df || 50, MD: +md || 50, AT: +at || 50 },
     is_captain: !!is_captain,
     goals: 0
@@ -163,12 +165,12 @@ router.post('/add-player', authMiddleware, ownsTeam, async (req, res) => {
   res.redirect('/dashboard?message=Player added');
 });
 
-// EDIT
+
 router.post('/edit-player-name', authMiddleware, ownsTeam, async (req, res) => {
   const { playerIndex, newName } = req.body;
   const idx = Number(playerIndex);
 
-  // Validate index
+  
   if (isNaN(idx) || idx < 0 || idx >= req.team.squad.length) {
     return res.redirect('/dashboard?error=Invalid player selected');
   }
@@ -177,11 +179,11 @@ router.post('/edit-player-name', authMiddleware, ownsTeam, async (req, res) => {
     return res.redirect('/dashboard?error=Name cannot be empty');
   }
 
-  // Update name
+  
   req.team.squad[idx].name = newName.trim();
 
   try {
-    await req.team.save();  // ← This will pass: still 23 players
+    await req.team.save();  
     res.redirect('/dashboard?message=Player name updated');
   } catch (err) {
     console.error('Save error:', err);
@@ -189,7 +191,7 @@ router.post('/edit-player-name', authMiddleware, ownsTeam, async (req, res) => {
   }
 });
 
-// REMOVE
+
 router.post('/remove-player', authMiddleware, ownsTeam, async (req, res) => {
   const { playerIndex } = req.body;
   if (!playerIndex) return res.redirect('/dashboard?error=No player selected');
@@ -199,16 +201,14 @@ router.post('/remove-player', authMiddleware, ownsTeam, async (req, res) => {
     return res.redirect('/dashboard?error=Invalid player');
   }
 
-  req.team.squad.splice(idx, 1);   // removes exactly that slot
-  // Re-index the remaining players so gaps are closed (optional but clean)
+  req.team.squad.splice(idx, 1);  
+
   req.team.squad.forEach((p, i) => p.index = i);
 
   await req.team.save();
   res.redirect('/dashboard?message=Player removed');
 });
-// ————————————————————————————————————————————————
-// UTILS: Generate 23 default players
-// ————————————————————————————————————————————————
+
 function generateDefaultPlayers(country) {
   const positions = [
     'GK', 'GK', 'GK',

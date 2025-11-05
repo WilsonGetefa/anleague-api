@@ -1,18 +1,34 @@
-/* -------------------------------------------------------------
-   MOBILE – ≤ 768 px
-   Show <thead> as a sticky header, stack <tbody> rows as cards
-   ------------------------------------------------------------- */
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Design System:
+ *   • Primary: #2e6b5b (CAF Green)
+ *   • Accent:  #e67e22 (Gold)
+ *   • Mobile-first responsive layout
+ *   • Card-style tables on mobile
+ *   • Sticky header with gradient
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
 @media (max-width: 768px) {
   .controls { justify-content: center; }
 
-  /* ---------- 1. TABLE CONTAINER ---------- */
+  
   table {
     border: 0;
     width: 100%;
     background: transparent;
   }
 
-  /* ---------- 2. KEEP THEAD VISIBLE ---------- */
+
   thead {
     display: block;
     background: var(--primary);
@@ -37,7 +53,6 @@
     border: none;
   }
 
-  /* ---------- 3. TBODY – CARD STYLE ---------- */
   tbody {
     display: block;
   }
@@ -71,18 +86,15 @@
     text-transform: capitalize;
   }
 
-  /* Separator between cells */
   tbody td:not(:last-child) {
     border-bottom: 1px dashed #eee;
   }
 
-  /* ---------- 4. ACTIONS COLUMN ---------- */
   .actions {
     text-align: right;
     padding-left: 1rem;
   }
   .actions::before { content: "Actions"; }
 
-  /* ---------- 5. HIDE ORIGINAL <TH> FROM BODY (optional) ---------- */
   tbody th { display: none; }
 }

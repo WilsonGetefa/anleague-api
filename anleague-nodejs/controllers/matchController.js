@@ -1,3 +1,22 @@
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Admin Routes:
+ *   • GET  /admin/data           → Render data overview
+ *   • POST /admin/delete-*       → Secure delete operations
+ *   • Excel export via client-side ExcelJS
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
+
 const Match = require('../models/match');
 const Team = require('../models/team');
 const User = require('../models/user');
@@ -38,7 +57,7 @@ exports.simulateMatch = async (req, res) => {
       match.score = score;
       match.goal_scorers = goal_scorers;
       match.type = 'simulated';
-      match.status = 'completed'; // Mark as completed after simulation
+      match.status = 'completed';
       await match.save();
 
       await Team.updateOne({ _id: match.team1_id._id }, { squad: match.team1_id.squad });

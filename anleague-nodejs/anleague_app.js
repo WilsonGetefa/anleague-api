@@ -1,4 +1,22 @@
-// anleague_app.js
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Admin Routes:
+ *   • GET  /admin/data           → Render data overview
+ *   • POST /admin/delete-*       → Secure delete operations
+ *   • Excel export via client-side ExcelJS
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
+
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -9,13 +27,13 @@ const Team = require('./models/team');
 const { authMiddleware } = require('./middleware/auth');
 const errorRoutes = require('./routes/error');
 
-// Load environment variables
+
 dotenv.config();
 
-// Initialize Express app
+
 const app = express();
 
-// Middleware
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -23,7 +41,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// JWT middleware to set req.user
+
 app.use((req, res, next) => {
   if (
     req.path.startsWith('/public') ||
@@ -52,7 +70,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Admin middleware
+
 const adminMiddleware = (req, res, next) => {
   if (!req.user || req.user.role !== 'admin') {
     return res.render('error', { title: 'Error', error: 'Admin access required' });
@@ -60,7 +78,7 @@ const adminMiddleware = (req, res, next) => {
   next();
 };
 
-// Routes
+
 app.use('/auth', require('./routes/auth'));
 app.use('/teams', require('./routes/teams'));
 app.use('/admin', authMiddleware, adminMiddleware, require('./routes/admin')); // Corrected line
@@ -68,17 +86,17 @@ app.use('/', require('./routes/public')); // Already includes rankings, bracket,
 app.use('/', require('./routes/index')); 
 app.use('/', errorRoutes);
 
-// In anleague_app.js — add these
+
 app.get('/signup', (req, res) => res.redirect('/auth/signup'));
 app.get('/login', (req, res) => res.redirect('/auth/login'));
 
-// Home route (redirect to index.js handling)
+
 app.get('/', (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.render('index', { title: 'African Nations League', user: req.user });
 });
 
-// Admin dashboard route
+
 app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
   const { username } = req.user;
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
@@ -88,44 +106,44 @@ app.get('/admin/dashboard', authMiddleware, adminMiddleware, (req, res) => {
     role: 'admin',
     message: null,
     error: null,
-    tournament: null, // Will be populated by admin routes if started
+    tournament: null,
     user: req.user
   });
 });
 
-// 404 Handler (NOT FOUND)
+
 app.use((req, res, next) => {
   const err = new Error('Page not found');
   err.status = 404;
-  next(err); // Pass to error handler
+  next(err); 
 });
 
-// GLOBAL ERROR HANDLER (500, 404, etc.)
+
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
 
-  // Get user from session or JWT
+
   const user = req.user || req.session?.user || null;
 
-  // Set status
+  
   const status = err.status || 500;
   const message = status === 404 ? 'Page not found' : '"Server error". Please try again.';
 
-  // RENDER error.ejs (NOT redirect)
+  
   res.status(status).render('error', {
     title: 'Error',
     error: message,
-    user: user  // ← This fixes "user is not defined"
+    user: user  
   });
 });
 
 console.log('Team routes mounted: /update-manager → /teams/update-manager');
 
-// Start server
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-// Connect to MongoDB
+
 mongoose.connect(process.env.MONGO_URI, { dbName: 'anleague' })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));

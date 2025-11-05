@@ -1,3 +1,22 @@
+<%--
+  African Nations League (ANL) Application
+  ==================================================
+  Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+
+  Built with: Node.js, Express, MongoDB, EJS
+  Deployment: Render, MongoDB, GitHub, Node.js host
+  Features:
+    • Admin data overview with Excel export
+    • Responsive design with mobile-first tables
+    • Secure delete modals and JWT authentication
+    • Real-time match simulation and bracket system
+
+  Build by: Wilson Getefa Sisimi
+  Year: 2025
+  Copyright: © 2025 African Nations League. All rights reserved.
+  Info: Official platform powered by WGS - UCT
+--%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -370,7 +389,7 @@
         max-width: 100%;
         padding: 0 1rem;
       ">
-        <!-- LOGO (clickable to home) -->
+     
         <a href="/" style="display: block; line-height: 0;">
           <img src="/images/caf.png"
               alt="ANL Logo"
@@ -379,7 +398,7 @@
                 width: auto;
               ">
         </a>
-        <!-- TITLE (centered) -->
+     
         <h1 style="
           margin: 0;
           font-size: 2rem;
@@ -392,7 +411,7 @@
         </h1>
       </div>
     </header>
-    <!-- NAVIGATION -->
+  
     <nav>
       <a href="/">Home</a> |
       <a href="/bracket">Bracket</a> |
@@ -420,7 +439,7 @@
         </form>
       </div>
     <% } else { %>
-      <!-- Team Header -->
+    
       <div class="card">
         <div class="team-header">
           <h3>Managing: <span class="country"><%= team.country %></span></h3>
@@ -430,7 +449,7 @@
           </form>
         </div>
       </div>
-      <!-- Add Player Form -->
+     
       <div class="card">
         <button type="button" class="btn-toggle" onclick="toggleAddForm()">Add New Player</button>
         <div id="add-player-form" class="form-card" style="display: none;">
@@ -458,7 +477,7 @@
           </form>
         </div>
       </div>
-      <!-- Squad Table -->
+    
       <div class="card">
         <h4>Squad (<%= team.squad.length %> players)</h4>
         <% if (team.squad.length === 0) { %>

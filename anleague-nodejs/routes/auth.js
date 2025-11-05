@@ -1,3 +1,22 @@
+/**
+ * African Nations League (ANL) Application
+ * ==================================================
+ * Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+ *
+ * Built with: Node.js, Express, MongoDB, EJS
+ * Deployment: Render, MongoDB, GitHub, Node.js host
+ *
+ * Admin Routes:
+ *   • GET  /admin/data           → Render data overview
+ *   • POST /admin/delete-*       → Secure delete operations
+ *   • Excel export via client-side ExcelJS
+ *
+ * Build by: Wilson Getefa Sisimi
+ * Year: 2025
+ * Copyright: © 2025 African Nations League. All rights reserved.
+ * Info: Official platform powered by WGS - UCT
+ */
+
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -6,9 +25,6 @@ const User = require('../models/user');
 const Team = require('../models/team');
 const auth = require('../middleware/auth').authMiddleware;
 
-// ======================
-// PLACEHOLDER SQUAD GENERATOR (INLINE)
-// ======================
 function generatePlaceholderSquad(country) {
   const positions =[
     'GK', 'GK', 'GK',
@@ -28,19 +44,11 @@ function generatePlaceholderSquad(country) {
       MD: pos === 'MD' ? 80 : 50,
       AT: pos === 'AT' ? 80 : 50
     },
-    is_captain: i === 0,  // First player is captain
+    is_captain: i === 0,  
     goals: 0,
   }));
 }
 
-// ======================
-// CAF COUNTRIES
-// ======================
-//const CAF_COUNTRIES = [
-//  'Algeria', 'Angola', 'Cameroon', "Côte d'Ivoire", 'DR Congo', 'Egypt',
-//  'Ghana', 'Guinea', 'Mali', 'Morocco', 'Nigeria', 'Senegal',
-//  'South Africa', 'Tunisia', 'Zambia'
-//];
 
 const CAF_COUNTRIES = [
   'Algeria',
@@ -99,9 +107,7 @@ const CAF_COUNTRIES = [
   'Zimbabwe'
 ];
 
-// ======================
-// GET /auth/signup
-// ======================
+
 router.get('/signup', (req, res) => {
   res.render('signup', {
     title: 'Sign Up',
@@ -110,15 +116,11 @@ router.get('/signup', (req, res) => {
   });
 });
 
-// ======================
-// POST /auth/signup
-// ======================
+
 router.post('/signup', async (req, res) => {
   const { username, email, password, country, role = 'representative' } = req.body;
 
-  // -----------------------------------------------------------------
-  // 1. Validate role & country
-  // -----------------------------------------------------------------
+
   if (!['representative', 'admin'].includes(role)) {
     return res.render('signup', {
       title: 'Sign Up',
@@ -128,7 +130,6 @@ router.post('/signup', async (req, res) => {
   }
 
   if (role === 'representative' && !CAF_COUNTRIES.includes(country)) {
-  //if (!CAF_COUNTRIES.includes(country)) {
     return res.render('signup', {
       title: 'Sign Up',
       error: 'Invalid country selected',
@@ -137,9 +138,7 @@ router.post('/signup', async (req, res) => {
   }
 
   try {
-    // -----------------------------------------------------------------
-    // 2. User uniqueness
-    // -----------------------------------------------------------------
+
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       return res.render('signup', {
@@ -149,9 +148,6 @@ router.post('/signup', async (req, res) => {
       });
     }
 
-    // -----------------------------------------------------------------
-    // 3. Country already taken (only for representatives)
-    // -----------------------------------------------------------------
     if (role === 'representative') {
       const existingRep = await Team.findOne({
         country,
@@ -166,9 +162,6 @@ router.post('/signup', async (req, res) => {
       }
     }
 
-    // -----------------------------------------------------------------
-    // 4. Create the User
-    // -----------------------------------------------------------------
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
@@ -207,9 +200,7 @@ router.post('/signup', async (req, res) => {
         players: []
       });
     }
-    // -----------------------------------------------------------------
-    // 6. Auto-login with JWT
-    // -----------------------------------------------------------------
+
     const token = jwt.sign(
       { id: user._id, username: user.username, country: user.country, role: user.role },
       process.env.JWT_SECRET,
@@ -225,9 +216,6 @@ router.post('/signup', async (req, res) => {
 
     console.log('Signup & auto-login successful:', username, 'Role:', role);
 
-    // -----------------------------------------------------------------
-    // 7. Redirect according to role
-    // -----------------------------------------------------------------
     return res.redirect(role === 'admin' ? '/admin/dashboard' : '/dashboard');
 
   } catch (err) {
@@ -240,7 +228,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// GET /auth/login — show login form
 router.get('/login', (req, res) => {
   if (req.user) {
     return res.redirect(req.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
@@ -251,7 +238,6 @@ router.get('/login', (req, res) => {
   });
 });
 
-// POST /auth/login — handle login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -284,9 +270,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ======================
-// GET /dashboard — Representative Dashboard
-// ======================
 router.get('/dashboard', auth, async (req, res) => {
   try {
     console.log('=== DASHBOARD DEBUG ===');
@@ -315,9 +298,7 @@ router.get('/dashboard', auth, async (req, res) => {
   }
 });
 
-// ======================
-// GET /auth/logout
-// ======================
+
 router.get('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,

@@ -1,16 +1,32 @@
+<%--
+  African Nations League (ANL) Application
+  ==================================================
+  Welcome to the African Nations League (ANL) — a full-featured, production-ready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
+
+  Built with: Node.js, Express, MongoDB, EJS
+  Deployment: Render, MongoDB, GitHub, Node.js host
+  Features:
+    • Admin data overview with Excel export
+    • Responsive design with mobile-first tables
+    • Secure delete modals and JWT authentication
+    • Real-time match simulation and bracket system
+
+  Build by: Wilson Getefa Sisimi
+  Year: 2025
+  Copyright: © 2025 African Nations League. All rights reserved.
+  Info: Official platform powered by WGS - UCT
+--%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- Global CSS -->
   <link rel="stylesheet" href="/css/styles.css">
-  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/images/caf.png">
-  <!-- MATCHING TEAMS PAGE STYLE -->
+
   <style>
     :root {
       --primary: #2e6b5b;
@@ -191,7 +207,7 @@
         max-width: 100%;
         padding: 0 1rem;
       ">
-        <!-- LOGO (clickable to home) -->
+
         <a href="/" style="display: block; line-height: 0;">
           <img src="/images/caf.png"
               alt="ANL Logo"
@@ -200,7 +216,7 @@
                 width: auto;
               ">
         </a>
-        <!-- TITLE (centered) -->
+
         <h1 style="
           margin: 0;
           font-size: 2rem;
@@ -213,7 +229,7 @@
         </h1>
       </div>
     </header>
-    <!-- NAVIGATION -->
+
     <nav>
       <a href="/">Home</a> |
       <a href="/bracket">Bracket</a> |
@@ -234,7 +250,7 @@
     </nav>
   </div>
   <main class="container">
-    <!-- CURRENT TOURNAMENT CARD -->
+
     <div class="card">
       <h3>Current Tournament</h3>
       <% if (currentTournament && currentTournament.status) { %>
@@ -259,7 +275,7 @@
         <% } %>
       <% } %>
     </div>
-    <!-- PAST CHAMPIONS CARD -->
+
     <div class="card">
       <h3>Past Champions</h3>
       <% if (pastWinners && pastWinners.length) { %>
@@ -274,7 +290,7 @@
         <p style="color: var(--gray); font-style: italic; margin: 0.5rem 0;">No past champions recorded yet.</p>
       <% } %>
     </div>
-    <!-- TOTAL GOALS & RANKINGS -->
+
     <div class="card">
       <p style="margin: 0 0 1rem;">
         <strong>Total Goals Scored:</strong> <%= totalGoals %>
