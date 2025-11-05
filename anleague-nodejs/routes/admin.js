@@ -693,25 +693,7 @@ router.post('/restart', async (req, res) => {
       });
     }
 
-
-    const bracketHash = JSON.stringify({
-      quarterfinals: (tournament.bracket?.quarterfinals || []).map(qf => ({
-        team1_id: qf.team1_id?._id?.toString() || qf.team1_id,
-        team2_id: qf.team2_id?._id?.toString() || qf.team2_id,
-        match_id: qf.match_id?._id?.toString() || qf.match_id
-      })),
-      semifinals: (tournament.bracket?.semifinals || []).map(sf => ({
-        team1_id: sf.team1_id?._id?.toString() || sf.team1_id,
-        team2_id: sf.team2_id?._id?.toString() || sf.team2_id,
-        match_id: sf.match_id?._id?.toString() || sf.match_id
-      })),
-      final: (tournament.bracket?.final || []).map(f => ({
-        team1_id: f.team1_id?._id?.toString() || f.team1_id,
-        team2_id: f.team2_id?._id?.toString() || f.team2_id,
-        match_id: f.match_id?._id?.toString() || f.match_id
-      }))
-    });
-
+    
     const alreadyArchived = await PastTournament.findOne({
       'bracket.quarterfinals': { $size: tournament.bracket?.quarterfinals?.length || 0 },
       'bracket.semifinals': { $size: tournament.bracket?.semifinals?.length || 0 },
@@ -722,9 +704,26 @@ router.post('/restart', async (req, res) => {
     let archived = null;
 
     if (!alreadyArchived) {
+      
+      const teamIds = new Set();
+
+      const rounds = [
+        ...(tournament.bracket?.quarterfinals || []),
+        ...(tournament.bracket?.semifinals || []),
+        ...(tournament.bracket?.final || [])
+      ];
+
+      rounds.forEach(r => {
+        if (r.team1_id?._id) teamIds.add(r.team1_id._id.toString());
+        if (r.team2_id?._id) teamIds.add(r.team2_id._id.toString());
+      });
+
+      const uniqueTeamIds = Array.from(teamIds).map(id => mongoose.Types.ObjectId(id));
+
+      
       const past = new PastTournament({
         year: new Date().getFullYear(),
-        teams: tournament.teams || [],
+        teams: uniqueTeamIds,  
         bracket: {
           quarterfinals: (tournament.bracket?.quarterfinals || []).map(qf => ({
             team1_id: qf.team1_id?._id || qf.team1_id,
@@ -746,7 +745,7 @@ router.post('/restart', async (req, res) => {
       });
 
       archived = await past.save();
-      console.log('Archived tournament:', archived._id);
+      console.log('Archived tournament with', uniqueTeamIds.length, 'teams:', archived._id);
     } else {
       console.log('Tournament already archived – skipping duplicate');
     }
@@ -755,6 +754,7 @@ router.post('/restart', async (req, res) => {
     await Tournament.deleteOne({ _id: tournament._id });
     console.log('Active tournament deleted');
 
+    
     res.render('admin_dashboard', {
       title: 'Admin Dashboard',
       username: req.user.username,
