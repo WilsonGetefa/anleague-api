@@ -13,227 +13,48 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
   <style>
-    :root {
-      --primary: #2e6b5b;
-      --primary-dark: #1a3f35;
-      --accent: #e67e22;
-      --light: #f8f9fa;
-      --gray: #6c757d;
-      --border: #dee2e6;
-      --gold: #d4af37;
-      --empty-star: #cccccc;
-    }
-
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-    body { 
-      font-family: 'Roboto', sans-serif; 
-      background: #f4f6f9; 
-      color: #333; 
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .container { 
-      max-width: 1100px; 
-      margin: 2rem auto; 
-      padding: 0 1rem;
-    }
-    header h1 { margin: 0; font-size: 2rem; font-weight: 700; }
-
-    nav {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 1rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    nav a { margin: 0 6px; color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
-    nav a:hover { color: var(--accent); }
-
-    .sticky-top {
-      position: sticky; 
-      top: 0; 
-      z-index: 1000; 
-      background: white; 
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      flex-shrink: 0;
-    }
-    main {
-      flex: 1;
-    }
-
-    .sticky-top header {
-      text-align: center; 
-      padding: 1rem 1rem; 
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; 
-      border-radius: 0 0 16px 16px; 
-      margin-bottom: 1rem; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .sticky-top nav {
-      background: white; 
-      padding: 1rem 1rem; 
-      text-align: center;
-      border-bottom: 1px solid #eee; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-    .sticky-top nav a {
-      margin: 0 10px; 
-      color: var(--primary); 
-      text-decoration: none;
-      font-weight: 500; 
-      font-size: 0.95rem; 
-      transition: color 0.2s;
-    }
-
-    .sticky-top nav a:hover {
-      color: var(--accent);
-    }
-
+    /* ... (all your CSS from before – unchanged) ... */
+    :root { --primary: #2e6b5b; --primary-dark: #1a3f35; --accent: #e67e22; --light: #f8f9fa; --gray: #6c757d; --border: #dee2e6; }
+    html, body { height: 100%; margin: 0; }
+    body { font-family: 'Roboto', sans-serif; background: #f4f6f9; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+    .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    .sticky-top { position: sticky; top: 0; z-index: 1000; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); flex-shrink: 0; }
+    .sticky-top header { text-align: center; padding: 1rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 0 0 16px 16px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .sticky-top nav { background: white; padding: 1rem; text-align: center; border-bottom: 1px solid #eee; }
+    .sticky-top nav a { margin: 0 10px; color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+    .sticky-top nav a:hover { color: var(--accent); }
     .page-title { text-align: center; color: var(--primary-dark); font-weight: 600; margin: 1.5rem 0 1rem; font-size: 1.5rem; }
-
     .error { background:#f8d7da; color:#721c24; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center; border:1px solid #f5c6cb; }
     .success { background:#d4edda; color:#155724; padding:1rem; border-radius:8px; margin-bottom:1.5rem; text-align:center; border:1px solid #c3e6cb; }
-
     .section { margin-bottom: 3rem; }
-    .section h3 {
-      color: var(--primary-dark);
-      font-size: 1.3rem;
-      margin: 1.5rem 0 1rem;
-      padding-bottom: .4rem;
-      border-bottom: 2px solid var(--primary);
-      display: inline-block;
-    }
-
-    .controls {
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      margin-bottom: 1rem; 
-      flex-wrap: wrap; 
-      gap: .5rem;
-    }
-    .controls button {
-      padding: .6rem 1.2rem; 
-      border: none; 
-      border-radius: 6px; 
-      cursor: pointer; 
-      font-weight: 600; 
-      font-size: .9rem;
-    }
+    .section h3 { color: var(--primary-dark); font-size: 1.3rem; margin: 1.5rem 0 1rem; padding-bottom: .4rem; border-bottom: 2px solid var(--primary); display: inline-block; }
+    .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: .5rem; }
+    .controls button { padding: .6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: .9rem; }
     .btn-delete { background: #dc3545; color: white; }
     .btn-delete-all { background: #c82333; color: white; }
     .btn-download { background: #28a745; color: white; }
     .btn-delete:hover, .btn-delete-all:hover { opacity: .9; }
     .btn-download:hover { background: #218838; }
-
-    table {
-      width: 100%; 
-      border-collapse: collapse; 
-      background: white; 
-      border-radius: 8px; 
-      overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08); 
-      margin-bottom: 1.5rem;
-    }
-    th, td {
-      padding: .8rem 1rem; 
-      text-align: left; 
-      border-bottom: 1px solid var(--border);
-    }
-    th {
-      background: var(--primary); 
-      color: white; 
-      font-weight: 600; 
-      font-size: .9rem;
-    }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+    th, td { padding: .8rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--primary); color: white; font-weight: 600; font-size: .9rem; }
     tr:hover td { background: #f8f9fa; }
-    .actions { white-space: nowrap; }
-    .actions button {
-      background: none; 
-      border: none; 
-      color: #dc3545; 
-      font-size: 1.1rem; 
-      cursor: pointer;
-      padding: 0.4rem 0.6rem;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-    .actions button:hover { 
-      background: #f8d7da; 
-      color: #c82333; 
-    }
-
+    .actions button { background: none; border: none; color: #dc3545; font-size: 1.1rem; cursor: pointer; padding: 0.4rem 0.6rem; border-radius: 6px; }
+    .actions button:hover { background: #f8d7da; color: #c82333; }
     .no-data { text-align:center; color:var(--gray); font-style:italic; padding:2rem; background:white; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.08); }
-
-    @media (max-width:768px) {
-      table, thead, tbody, th, td, tr { display: block; }
-      thead tr { position: absolute; top: -9999px; left: -9999px; }
-      tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
-      td { border: none; position: relative; padding-left: 50%; }
-      td::before { content: attr(data-label); position: absolute; left: 1rem; width: 45%; font-weight: 600; }
-    }
-
-    /* ---------- MODAL ---------- */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; 
-      left: 0;
-      width: 100%; 
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-      backdrop-filter: blur(3px);
-    }
-    .modal-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
-    .modal-content h3 {
-      margin: 0 0 1rem;
-      color: #721c24;
-      font-size: 1.4rem;
-    }
-    .modal-content p {
-      margin: 0 0 1.5rem;
-      color: #333;
-      line-height: 1.5;
-    }
-    .modal-actions {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-    .modal-actions button {
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      min-width: 100px;
-    }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px); }
+    .modal-content { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); max-width: 400px; width: 90%; text-align: center; }
+    .modal-content h3 { margin: 0 0 1rem; color: #721c24; font-size: 1.4rem; }
+    .modal-content p { margin: 0 0 1.5rem; color: #333; line-height: 1.5; }
+    .modal-actions { display: flex; justify-content: center; gap: 1rem; }
+    .modal-actions button { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; min-width: 100px; }
     #cancel-delete { background: #6c757d; color: white; }
     #confirm-delete { background: #dc3545; color: white; }
     .modal-actions button:hover { opacity: .9; }
   </style>
 </head>
 <body>
+  <!-- ==================== HEADER & NAV ==================== -->
   <div class="sticky-top">
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 100%; padding: 0 1rem;">
@@ -266,6 +87,7 @@
     </nav>
   </div>
 
+  <!-- ==================== MAIN CONTENT ==================== -->
   <main class="container">
     <h2 class="page-title">Admin Data Overview</h2>
 
@@ -299,7 +121,9 @@
                 data-message="Delete ALL users?">
           Delete All Users
         </button>
-        <button class="btn-download" onclick="downloadExcel('users', <%= JSON.stringify(users.map(u => ({ ...u, team: u.team ? u.team.toString() : null }))) %>)">
+        <button type="button" class="btn-download"
+                data-type="users"
+                data-payload="<%= JSON.stringify(users.map(u => ({ ...u, team: u.team ? u.team.toString() : null }))) %>">
           Download Users Excel
         </button>
       </div>
@@ -308,33 +132,20 @@
         <div class="no-data">No users found.</div>
       <% } else { %>
         <table>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Team</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Team</th><th>Actions</th></tr></thead>
           <tbody>
             <% users.forEach(u => { %>
               <tr>
-                <td data-label="Username"><%= u.username %></td>
-                <td data-label="Email"><%= u.email %></td>
-                <td data-label="Role"><%= u.role %></td>
-                <td data-label="Team">
-                  <% 
-                    const userTeamId = u.team ? u.team.toString() : null;
-                    const teamObj = teams.find(t => t._id.toString() === userTeamId);
-                  %>
+                <td><%= u.username %></td>
+                <td><%= u.email %></td>
+                <td><%= u.role %></td>
+                <td>
+                  <% const teamObj = teams.find(t => t._id.toString() === (u.team ? u.team.toString() : '')); %>
                   <%= teamObj ? teamObj.country : 'None' %>
                 </td>
-                <td data-label="Actions" class="actions">
+                <td class="actions">
                   <button type="button" class="delete-btn"
-                          data-id="<%= u._id %>"
                           data-name="<%= u.username %>"
-                          data-type="user"
                           data-url="/admin/delete-user/<%= u._id %>">
                     Delete
                   </button>
@@ -355,7 +166,9 @@
                 data-message="Delete ALL teams?">
           Delete All Teams
         </button>
-        <button class="btn-download" onclick="downloadExcel('teams', <%= JSON.stringify(teams) %>)">
+        <button type="button" class="btn-download"
+                data-type="teams"
+                data-payload="<%= JSON.stringify(teams) %>">
           Download Teams Excel
         </button>
       </div>
@@ -364,29 +177,18 @@
         <div class="no-data">No teams found.</div>
       <% } else { %>
         <table>
-          <thead>
-            <tr>
-              <th>Country</th>
-              <th>Manager</th>
-              <th>Rep</th>
-              <th>Rating</th>
-              <th>Squad</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Country</th><th>Manager</th><th>Rep</th><th>Rating</th><th>Squad</th><th>Actions</th></tr></thead>
           <tbody>
             <% teams.forEach(t => { %>
               <tr>
-                <td data-label="Country"><%= t.country %></td>
-                <td data-label="Manager"><%= t.manager %></td>
-                <td data-label="Rep"><%= t.representative_id?.username || 'N/A' %></td>
-                <td data-label="Rating"><%= isNaN(t.rating) ? '0.0' : t.rating.toFixed(1) %></td>
-                <td data-label="Squad"><%= Array.isArray(t.squad) ? t.squad.length : 0 %> players</td>
-                <td data-label="Actions" class="actions">
+                <td><%= t.country %></td>
+                <td><%= t.manager %></td>
+                <td><%= t.representative_id?.username || 'N/A' %></td>
+                <td><%= isNaN(t.rating) ? '0.0' : t.rating.toFixed(1) %></td>
+                <td><%= Array.isArray(t.squad) ? t.squad.length : 0 %> players</td>
+                <td class="actions">
                   <button type="button" class="delete-btn"
-                          data-id="<%= t._id %>"
                           data-name="<%= t.country %>"
-                          data-type="team"
                           data-url="/admin/delete-team/<%= t._id %>">
                     Delete
                   </button>
@@ -407,12 +209,14 @@
                 data-message="Delete ALL past tournaments?">
           Delete All
         </button>
-        <button class="btn-download" onclick="downloadExcel('pasttournaments', <%= JSON.stringify(pasttournaments.map(t => ({
-          status: t.status || '—',
-          teams: Array.isArray(t.teams) ? t.teams.length : 0,
-          stage: t.status || '—',
-          created: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—'
-        }))) %>)">
+        <button type="button" class="btn-download"
+                data-type="pasttournaments"
+                data-payload="<%= JSON.stringify(pasttournaments.map(t => ({
+                  status: t.status || '—',
+                  teams: Array.isArray(t.teams) ? t.teams.length : 0,
+                  stage: t.status || '—',
+                  created: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—'
+                }))) %>">
           Download Excel
         </button>
       </div>
@@ -421,27 +225,17 @@
         <div class="no-data">No past tournaments found.</div>
       <% } else { %>
         <table>
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>Teams</th>
-              <th>Stage</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Status</th><th>Teams</th><th>Stage</th><th>Created</th><th>Actions</th></tr></thead>
           <tbody>
             <% pasttournaments.forEach(t => { %>
               <tr>
-                <td data-label="Status"><%= t.status || 'Unknown' %></td>
-                <td data-label="Teams"><%= Array.isArray(t.teams) ? t.teams.length : 0 %></td>
-                <td data-label="Stage"><%= t.status || '—' %></td>
-                <td data-label="Created"><%= t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—' %></td>
-                <td data-label="Actions" class="actions">
+                <td><%= t.status || 'Unknown' %></td>
+                <td><%= Array.isArray(t.teams) ? t.teams.length : 0 %></td>
+                <td><%= t.status || '—' %></td>
+                <td><%= t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—' %></td>
+                <td class="actions">
                   <button type="button" class="delete-btn"
-                          data-id="<%= t._id %>"
                           data-name="Tournament #<%= t._id %>"
-                          data-type="tournament"
                           data-url="/admin/delete-pasttournaments/<%= t._id %>">
                     Delete
                   </button>
@@ -462,7 +256,9 @@
                 data-message="Delete ALL matches?">
           Delete All
         </button>
-        <button class="btn-download" onclick="downloadExcel('matches', <%= JSON.stringify(matches) %>)">
+        <button type="button" class="btn-download"
+                data-type="matches"
+                data-payload="<%= JSON.stringify(matches) %>">
           Download Excel
         </button>
       </div>
@@ -471,27 +267,17 @@
         <div class="no-data">No matches found.</div>
       <% } else { %>
         <table>
-          <thead>
-            <tr>
-              <th>Team 1</th>
-              <th>Score</th>
-              <th>Team 2</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Team 1</th><th>Score</th><th>Team 2</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
             <% matches.forEach(m => { %>
               <tr>
-                <td data-label="Team 1"><%= m.team1_id?.country || 'TBD' %></td>
-                <td data-label="Score"><%= m.score?.team1 ?? 0 %>–<%= m.score?.team2 ?? 0 %></td>
-                <td data-label="Team 2"><%= m.team2_id?.country || 'TBD' %></td>
-                <td data-label="Status"><%= m.status || '—' %></td>
-                <td data-label="Actions" class="actions">
+                <td><%= m.team1_id?.country || 'TBD' %></td>
+                <td><%= m.score?.team1 ?? 0 %>–<%= m.score?.team2 ?? 0 %></td>
+                <td><%= m.team2_id?.country || 'TBD' %></td>
+                <td><%= m.status || '—' %></td>
+                <td class="actions">
                   <button type="button" class="delete-btn"
-                          data-id="<%= m._id %>"
                           data-name="<%= (m.team1_id?.country || 'TBD') %> vs <%= (m.team2_id?.country || 'TBD') %>"
-                          data-type="match"
                           data-url="/admin/delete-match/<%= m._id %>">
                     Delete
                   </button>
@@ -504,7 +290,7 @@
     </div>
   </main>
 
-  <!-- ==================== DELETE MODAL (shared) ==================== -->
+  <!-- ==================== DELETE MODAL ==================== -->
   <div id="delete-modal" class="modal">
     <div class="modal-content">
       <h3>Confirm Deletion</h3>
@@ -518,42 +304,18 @@
     </div>
   </div>
 
-  <footer style="background: linear-gradient(135deg, #1a3f35, #2e6b5b); color: white; padding: 2rem 1rem; 
-    border-radius: 16px 16px 0 0; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); font-family: 'Roboto', sans-serif;">
-    <div class="container" style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="/images/caf.png" alt="ANL Logo" style="height: 36px; width: auto;">
-        <div>
-          <div style="font-weight: 700; font-size: 1.1rem;">African Nations League</div>
-          <div style="font-size: 0.85rem; opacity: 0.9;">Official Platform</div>
-        </div>
-      </div>
-
-      <div style="text-align: center; flex: 1; min-width: 200px;">
-        <a href="/" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Home</a>
-        <a href="/bracket" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Bracket</a>
-        <a href="/rankings" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Rankings</a>
-        <a href="/teams" style="color: white; text-decoration: none; margin: 0 8px; font-size: 0.9rem; opacity: 0.9;">Teams</a>
-      </div>
-
-      <div style="text-align: right; font-size: 0.8rem; opacity: 0.8;">
-        © <%= new Date().getFullYear() %> ANL<br>
-        <span style="font-size: 0.75rem;">Powered by WGS - UCT</span>
-      </div>
-    </div>
-  </footer>
-
   <!-- ==================== SCRIPTS ==================== -->
   <script>
-    // Pass teams to client-side for lookup in Excel export
+    // Make data available globally
     const teams = <%= JSON.stringify(teams) %>;
 
-    async function downloadExcel(type, data) {
+    // Excel Export Function
+    async function downloadExcel(type, rawData) {
+      const data = JSON.parse(rawData); // because we passed it as string
       const wb = new ExcelJS.Workbook();
       const ws = wb.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
 
-      let headers = [];
-      let rows = [];
+      let headers = [], rows = [];
 
       if (type === 'users') {
         headers = ['Username', 'Email', 'Role', 'Team'];
@@ -574,12 +336,7 @@
         ]);
       } else if (type === 'pasttournaments') {
         headers = ['Status', 'Teams', 'Stage', 'Created'];
-        rows = data.map(t => [
-          t.status || '—',
-          t.teams || 0,
-          t.stage || '—',
-          t.created || '—'
-        ]);
+        rows = data.map(t => [t.status, t.teams, t.stage, t.created]);
       } else if (type === 'matches') {
         headers = ['Stage', 'Team 1', 'Score', 'Team 2', 'Status'];
         rows = data.map(m => [
@@ -591,25 +348,18 @@
         ]);
       }
 
-      // Header row
       ws.addRow(headers).font = { bold: true, color: { argb: 'FFFFFFFF' } };
       ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2e6b5b' } };
-
-      // Data rows
       rows.forEach(row => ws.addRow(row));
 
-      // Styling
       ws.columns.forEach(col => {
         col.width = 18;
         col.alignment = { vertical: 'middle', horizontal: 'left' };
       });
 
-      ws.eachRow((row) => {
+      ws.eachRow(row => {
         row.eachCell(cell => {
-          cell.border = {
-            top: { style: 'thin' }, left: { style: 'thin' },
-            bottom: { style: 'thin' }, right: { style: 'thin' }
-          };
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
         });
       });
 
@@ -617,17 +367,26 @@
       saveAs(new Blob([buf]), `${type}_report_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    /* ---------- DELETE MODAL LOGIC ---------- */
+    // Attach Excel buttons
+    document.querySelectorAll('.btn-download').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const type = btn.dataset.type;
+        const payload = btn.dataset.payload;
+        downloadExcel(type, payload);
+      });
+    });
+
+    // Delete Modal Logic
     document.addEventListener('DOMContentLoaded', () => {
-      const modal      = document.getElementById('delete-modal');
-      const msgSpan    = document.getElementById('modal-message');
+      const modal = document.getElementById('delete-modal');
+      const msgSpan = document.getElementById('modal-message');
       const deleteForm = document.getElementById('delete-form');
-      const cancelBtn  = document.getElementById('cancel-delete');
+      const cancelBtn = document.getElementById('cancel-delete');
 
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const name = btn.dataset.name;
-          const url  = btn.dataset.url;
+          const url = btn.dataset.url;
           msgSpan.innerHTML = `Are you sure you want to delete <strong>${name}</strong>?`;
           deleteForm.action = url;
           modal.style.display = 'flex';
@@ -636,7 +395,7 @@
 
       document.querySelectorAll('.delete-all-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          const url     = btn.dataset.url;
+          const url = btn.dataset.url;
           const message = btn.dataset.message;
           msgSpan.innerHTML = `<strong>${message}</strong>`;
           deleteForm.action = url;
@@ -644,18 +403,10 @@
         });
       });
 
-      cancelBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-      });
-
-      modal.addEventListener('click', e => {
-        if (e.target === modal) modal.style.display = 'none';
-      });
-
+      cancelBtn.addEventListener('click', () => modal.style.display = 'none');
+      modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
       document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-          modal.style.display = 'none';
-        }
+        if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
       });
     });
   </script>
