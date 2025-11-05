@@ -802,19 +802,16 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
       Team.find().populate('representative_id', 'username').lean(),
       Tournament.find().lean(),
       PastTournament.find().lean(),
-      Match.find()
-        .populate({
-          path: 'team1_id',
-          select: 'country',
-          model: 'Team'  // ← EXPLICITLY tell Mongoose which model
-        })
-        .populate({
-          path: 'team2_id',
-          select: 'country',
-          model: 'Team'
-        })
+      mongoose.model('Match').find()
+        .populate('team1_id', 'country')
+        .populate('team2_id', 'country')
         .lean()
     ]);
+
+      if (matches.length > 0) {
+      console.log('TEAM1 COUNTRY:', matches[0].team1_id?.country);
+      console.log('TEAM2 COUNTRY:', matches[0].team2_id?.country);
+    }
 
     res.render('admin_data', {
       title: 'Admin Data Overview',
@@ -827,11 +824,6 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
       message: req.query.message || null,
       error: null
     });
-
-    if (matches.length > 0) {
-      console.log('TEAM1 COUNTRY:', matches[0].team1_id?.country);
-      console.log('TEAM2 COUNTRY:', matches[0].team2_id?.country);
-    }
 
   } catch (err) {
     console.error('Admin Data Error:', err);
