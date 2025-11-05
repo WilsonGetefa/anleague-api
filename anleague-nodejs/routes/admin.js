@@ -802,7 +802,10 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
       Team.find().populate('representative_id', 'username').lean(),
       Tournament.find().lean(),
       PastTournament.find().lean(),
-      Match.find().populate('team1_id team2_id', 'country').lean()
+      Match.find()
+      .populate('team1_id', 'country')
+      .populate('team2_id', 'country')
+      .lean()
     ]);
 
     res.render('admin_data', {
