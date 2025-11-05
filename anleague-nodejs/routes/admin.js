@@ -801,7 +801,7 @@ router.get('/data', authMiddleware, adminOnly, async (req, res) => {
       User.find().lean(),
       Team.find().populate('representative_id', 'username').lean(),
       Tournament.find().lean(),
-      PastTournament.find().lean(),
+      PastTournament.find().populate('team1_id team2_id', 'country').lean(),
       Match.find().populate('team1_id team2_id', 'country').lean()
     ]);
 
