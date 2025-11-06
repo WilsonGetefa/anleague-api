@@ -1,4 +1,5 @@
 > African Nations League (ANL) Application
+https://anleague-api.onrender.com/auth/login
 
 Welcome to the African Nations League (ANL) — a fullfeatured, productionready web application that simulates a realistic African football tournament with 8 national teams, real player names, goal scorers, match commentary, historical archives, and admin controls.
 
@@ -180,3 +181,17 @@ UCT License
 
 **Request for mongoldb has beeen send to** `ammarcanani@gmail.com`
 **Request for mongoldb has beeen send to** `elsje.scott@uct.ac.za`
+
+The username and password are inlcude already in the link
+
+From MongoDB CL
+mongodb+srv://superuser_db_user:MwmbpSJkxASfvwNf@cluster0.6yy73qx.mongodb.net/anleague?retryWrites=true&w=majority
+
+From Linux CLI
+mongosh mongodb+srv://superuser_db_user:MwmbpSJkxASfvwNf@cluster0.6yy73qx.mongodb.net/anleague?retryWrites=true&w=majority &
+fg
+Link to the application:
+https://anleague-api.onrender.com/auth/login
+
+ Username  Password  Role 
+ wilson_W  W1!$0n$&  admin
